@@ -267,7 +267,7 @@ Section simpl_fun_def.
             (Unique (fun P => P x) l).
 
     Definition finite_measured (P : X -> Prop) : Prop :=
-        Rbar_lt (μ P) p_infty.
+        ∃ x : R, (μ P) = Finite x.
 
     Definition well_formed_decomposition (l : list (X -> Prop)) : Prop :=
         disjoint l ∧ 
@@ -282,7 +282,16 @@ Section simpl_fun_def.
                 ∀ x : X, P x -> f x = v
             )
             l
-        ).
+        )
+        ∧
+        ∀ x : X, 
+            (List.Forall
+                (fun (c : (X -> Prop) * E) =>
+                    let (P, v) := c in
+                    ¬ P x
+                )
+                l
+            -> f x = zero).
 
     Inductive simpl_fun (f : X -> E) : Prop :=
         | decomposition :
@@ -338,7 +347,7 @@ Section simpl_fun_norm.
                 induction l => //.
                 simpl; congr cons; auto.
 
-        assert (simpl_fun_for μ lnorm (fun_norm f)).
+        assert (simpl_fun_for μ lnorm (fun_norm f)) as Goal.
             split.
             (* lnorm est une décomposition bien formée *)
             rewrite Hl.
@@ -346,16 +355,37 @@ Section simpl_fun_norm.
             (* et fun_norm f coïncide bien avec la décomposition donnée par lnorm *)
             case: l_is_dec => _ l_describe_f.
             unfold lnorm.
+            split.
             pose Pl :=
-                fun c : ((X -> Prop) * E)  => 
+                fun c : ((X -> Prop) * E) => 
                     let (P, v) := c in
                     ∀ x : X, P x -> f x = v.
             apply (Forall_map _ _ (fun c => (fst c, norm (snd c))) Pl).
                 move => [P v]; unfold Pl => Hf x => /= Px.
                 unfold fun_norm; congr norm; auto.
-                assumption.
+                case: l_describe_f => //.
+            case: l_describe_f => [_ Hlzero].
+            move => x.
+            fold lnorm => Hlnorm.
+            assert 
+                (List.Forall 
+                (λ c : (X → Prop) * E, 
+                    let (P, _) := c in
+                    ¬ P x) l) as Subgoal.
+                clear Hlzero Hl f μ gen; move: Hlnorm; unfold lnorm; clear lnorm.
+                induction l => //; case: a => [P v].
+                simpl. move => H.
+                pose Hhead := List.Forall_inv H; clearbody Hhead.
+                pose Htail := List.Forall_inv_tail H; clearbody Htail; clear H.
+                simpl in Hhead.
+                apply List.Forall_cons => //; auto.
+                assert (f x = zero) as fnul.
+                    apply Hlzero => //.
+                replace (zero) with 0 at 1. 2 : by compute.
+                unfold fun_norm; rewrite fnul.
+                apply norm_zero.
         
-        assumption.
+        fold lnorm; assumption.
     Qed.
 
     Lemma fun_norm_simpl : ∀ f : X -> E,
