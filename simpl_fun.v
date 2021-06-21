@@ -13,6 +13,8 @@ From Coq Require Import
     Utf8
 
     ClassicalDescription
+
+    Rdefinitions
 .
 
 From Coquelicot Require Import
@@ -250,7 +252,7 @@ Section simpl_fun_def.
     
     (* Un espace mesuré *)
     Context {gen : (X -> Prop) -> Prop}.
-    Context {μ : measure gen}.
+    Context (μ : measure gen).
 
     Inductive Unique {T : Type} (P : T -> Prop) : list T -> Prop := 
         | Unique_base_case : ∀ (x : T), ∀ (tail : list T), 
@@ -282,4 +284,89 @@ Section simpl_fun_def.
             l
         ).
 
+    Inductive simpl_fun (f : X -> E) : Prop :=
+        | decomposition :
+            ∀ l : list ((X -> Prop) * E),
+            simpl_fun_for l f
+            -> simpl_fun f.
+
 End simpl_fun_def.
+
+Lemma Forall_map :
+    forall A B : Type, forall f : A -> B, forall P : A -> Prop, forall Q : B -> Prop,
+        (forall a : A, P a -> Q (f a)) -> forall l : list A, List.Forall P l -> List.Forall Q (List.map f l).
+Proof.
+    move => A B f P Q H l.
+    induction l.
+    simpl; trivial.
+    simpl.
+    move => LFP.
+    pose tl := (List.map f l).
+    apply List.Forall_cons.
+    apply List.Forall_inv in LFP.
+    auto.
+    apply List.Forall_inv_tail in LFP.
+    auto.
+Qed.
+
+Section simpl_fun_norm.
+
+    (* espace de départ *)
+    Context  {X : Set}.
+    (* espace d'arrivé *)
+    Context {A : AbsRing}.
+    Context {E : NormedModule A}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context (μ : measure gen).
+
+    Open Scope R_scope.
+
+    Definition fun_norm (f : X -> E) :=
+        fun x => norm (f x).
+
+    Lemma fun_norm_simpl_for : ∀ f : X -> E, ∀ l : list ((X -> Prop) * E),
+        simpl_fun_for μ l f -> 
+        simpl_fun_for μ (List.map (fun c => (fst c, norm (snd c))) l) (fun_norm f).
+    Proof.
+        move => f l l_is_dec.
+        
+        pose lnorm := List.map (fun c => (fst c, norm (snd c))) l.
+        assert ((List.map fst lnorm) = (List.map fst l)) as Hl.
+                clear l_is_dec μ gen.
+                unfold lnorm; clear lnorm.
+                induction l => //.
+                simpl; congr cons; auto.
+
+        assert (simpl_fun_for μ lnorm (fun_norm f)).
+            split.
+            (* lnorm est une décomposition bien formée *)
+            rewrite Hl.
+            case: l_is_dec => well_formed_l _ => //.
+            (* et fun_norm f coïncide bien avec la décomposition donnée par lnorm *)
+            case: l_is_dec => _ l_describe_f.
+            unfold lnorm.
+            pose Pl :=
+                fun c : ((X -> Prop) * E)  => 
+                    let (P, v) := c in
+                    ∀ x : X, P x -> f x = v.
+            apply (Forall_map _ _ (fun c => (fst c, norm (snd c))) Pl).
+                move => [P v]; unfold Pl => Hf x => /= Px.
+                unfold fun_norm; congr norm; auto.
+                assumption.
+        
+        assumption.
+    Qed.
+
+    Lemma fun_norm_simpl : ∀ f : X -> E,
+        simpl_fun μ f -> simpl_fun μ (fun_norm f).
+    Proof.
+        move => f.
+        case => l /fun_norm_simpl_for Hl.
+        Print decomposition.
+        apply (@decomposition X _ R_NormedModule gen μ (fun_norm f)
+            (List.map (λ c : (X → Prop) * E, (fst c, norm (snd c))) l)).
+        exact Hl.
+    Defined.
+
+End simpl_fun_norm.
