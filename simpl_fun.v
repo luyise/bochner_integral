@@ -532,18 +532,78 @@ Section simpl_fun_prop.
         lg) ++
         (List.flat_map decomp_on_lg lf).
 
-    (*
+    Section simpl_fun_sum.
+        
+        Lemma lem1 : 
+            ∀ (lf lg : list ((X → Prop) * E)) (f g : X → E),
+                simpl_fun_for μ lf f
+                → simpl_fun_for μ lg g
+                → disjoint (List.map fst (adapted_list_sf_sum lf lg)).
+        Admitted.
+
+        Lemma lem2 :
+            ∀ (lf lg : list ((X → Prop) * E)) (f g : X → E),
+                simpl_fun_for μ lf f
+                → simpl_fun_for μ lg g
+                → List.Forall (measurable gen) (List.map fst (adapted_list_sf_sum lf lg)).
+        Admitted.
+
+        Lemma lem3 :
+            ∀ (lf lg : list ((X → Prop) * E)) (f g : X → E),
+                simpl_fun_for μ lf f
+                → simpl_fun_for μ lg g
+                → List.Forall (finite_measured μ)
+                    (List.map fst (adapted_list_sf_sum lf lg)).
+        Admitted.
+
+        Lemma lem4 :
+            ∀ (lf lg : list ((X → Prop) * E)) (f g : X → E),
+                simpl_fun_for μ lf f
+                → simpl_fun_for μ lg g
+                → ∀ x : X,
+                    List.Forall
+                        (λ c : (X → Prop) * E, let (P, v) := c in P x → fun_plus f g x = v)
+                        (adapted_list_sf_sum lf lg).
+        Admitted.
+
+        Lemma lem5 :
+            ∀ (lf lg : list ((X → Prop) * E)) (f g : X → E),
+                simpl_fun_for μ lf f
+                → simpl_fun_for μ lg g
+                → ∀ x : X,
+                    List.Forall (λ c : (X → Prop) * E, let (P, _) := c in ¬ P x)
+                        (adapted_list_sf_sum lf lg) → fun_plus f g x = zero.
+        Admitted.
+
+    End simpl_fun_sum.
+    
     Lemma simpl_fun_sum :
         ∀ f g : X -> E, ∀ lf lg : list ((X -> Prop) * E),
             simpl_fun_for μ lf f -> simpl_fun_for μ lg g 
             -> simpl_fun_for μ (adapted_list_sf_sum lf lg) (fun_plus f g).
     Proof.
+        move => f g lf lg Hf Hg.
+        repeat split.
+        all : move: Hf Hg.
+        all : move: f g.
+        all : move: lf lg.
+
+        exact lem1.
+        exact lem2.
+        exact lem3.
+        exact lem4.
+        exact lem5.
+    Qed.
+
+    (*
+
         move => f g lf lg; move: f g. move: lf lg.
         induction lf; induction lg.
+
             (* cas des listes nil *)
             move => f g 
-                [wf_lf [case_in_lf case_out_lf]]
-                [wf_lg [case_in_lg case_out_lg]].
+                [wf_lf [_ case_out_lf]]
+                [wf_lg [_ case_out_lg]].
             repeat split => //.
             unfold adapted_list_sf_sum => //=.
             move => x _.
@@ -551,23 +611,64 @@ Section simpl_fun_prop.
             pose fxnul := case_out_lf x nilForall; clearbody fxnul.
             pose gxnul := case_out_lg x nilForall; clearbody gxnul.
             unfold fun_plus; rewrite fxnul gxnul plus_zero_l => //.
+
             (* Cas de la liste lg non nulle *)
             case: a => [Q w] f g 
-                [wf_lf [case_in_lf case_out_lf]].
+                [wf_lf [case_in_lf case_out_lf]]
+                [wf_lgext [case_in_lgext case_out_lgext]].
+            split.
+                unfold well_formed_decomposition; split.
+                unfold well_formed_decomposition in wf_lgext.
+                case: wf_lgext => Disj _.
                 
-            
-            assert (simpl_fun_for μ nil f) as f_sf_nil 
+            assert (simpl_fun_for μ nil f) as f_sf_nil
                 by unfold simpl_fun_for => //.
-            unfold simpl_fun_for
+            clear case_in_lf wf_lf.
+            assert (∀ x : X, List.Forall (λ c : (X → Prop) * E, let (P, _) := c in ¬ P x) nil) as nilForall by easy.
+            assert (∀ x : X, f x = zero) as fnul.
+                move => x. apply case_out_lf => //.
+            clear case_out_lf nilForall.
             
+            pose wf_lg := well_formed_tail μ wf_lgext; clearbody wf_lg.
+            replace ((fix map (l : list ((X → Prop) * E)) : list (X → Prop) :=
+                    match l with
+                        | nil => nil
+                        | a :: t => fst a :: map t
+                    end) lg)
+                with (List.map fst lg) in wf_lg at 1 => //.
+            
+            pose h := sf_of_list lg.
+            pose Hh := sf_sf_of_list lg wf_lg; clearbody Hh; fold h in Hh.
+            pose Hfh := IHlg f h f_sf_nil Hh; clearbody Hfh.
+            clear Hh f_sf_nil.
+            unfold simpl_fun_for.
+            split.
+                unfold adapted_list_sf_sum => /=.
+                rewrite List.app_nil_r.
+                assert 
+                    (
+                        (List.map
+                            (λ c : (X → Prop) * E,
+                                let (Q, w) := c in
+                                (λ x : X,
+                                    List.Forall (λ c0 : (X → Prop) * E, ¬ fst c0 x) nil ∧ Q x,
+                                w)) lg)
+                        = adapted_list_sf_sum nil lg
+                    ) as Expr.
+                    unfold adapted_list_sf_sum => /=.
+                    rewrite List.app_nil_r; reflexivity.
+                rewrite Expr; clear Expr.
+                case: wf_lgext.
             unfold adapted_list_sf_sum => /=; rewrite List.app_nil_r.
             assert (List.Forall (λ c : (X → Prop) * E, let (P, _) := c in ¬ P x) nil) as nilForall by easy.
             pose fxnul := case_out_lf x nilForall; clearbody fxnul.
             unfold simpl_fun_for; repeat split => /=.
 
                 (* 1 : le support est disjoint *)
+    
+    *)
                 
-
+    (*
 
     Definition sf_plus (f_sf g_sf : { h : X -> E | simpl_fun μ h }) :=
         match (f_sf, g_sf) with
