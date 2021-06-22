@@ -804,6 +804,9 @@ Section simpl_fun_def.
                 is_finite (μ (fun x => which x = n))
     }.
 
+    Definition nth_carrier (sf : simpl_fun) (n : nat) : (X -> Prop) :=
+        (fun x => sf.(which) x = n).
+
     Definition fun_sf (sf : simpl_fun) : X -> E :=
         fun x => sf.(val) (sf.(which) x).
 
