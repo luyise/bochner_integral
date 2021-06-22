@@ -29,7 +29,7 @@ From MILC Require Import
 
 Require Import sum_list.
 
-(* Une tentative qui n'a pas fonctionné 
+(* Une tentative qui n'a pas fonctionné
 
 Section simpl_fun_def.
 
@@ -229,7 +229,7 @@ End simpl_sum_norm.
 
 (* 
 Une deuxième tentative !
-*)
+
 
 Section simpl_fun_def.
 
@@ -267,7 +267,8 @@ Section simpl_fun_def.
             (Unique (fun P => P x) l).
 
     Definition finite_measured (P : X -> Prop) : Prop :=
-        ∃ x : R, (μ P) = Finite x.
+        is_finite (μ P).
+    (* ∃ x : R, (μ P) = Finite x *)
 
     Definition well_formed_decomposition (l : list (X -> Prop)) : Prop :=
         disjoint l ∧ 
@@ -539,6 +540,79 @@ Section simpl_fun_prop.
                 simpl_fun_for μ lf f
                 → simpl_fun_for μ lg g
                 → disjoint (List.map fst (adapted_list_sf_sum lf lg)).
+        Proof.
+            move => lf lg f g [wf_lf _] [wf_lg _].
+            clear f g; move: wf_lf wf_lg; move: lf lg.
+            induction lf.
+                (* cas où lf est la liste nil *)
+                move => lg _ Hlg.
+                unfold adapted_list_sf_sum => /=.
+                rewrite List.app_nil_r.
+                move: Hlg; move: lg.
+                induction lg.
+                    (* cas lg nil *)
+                    case; easy.
+                    (* cas où lg <> nil *)
+                    case: a => [Q w].
+                    simpl => Hlgext x.
+                    pose Hlg := IHlg (well_formed_tail μ Hlgext); clearbody Hlg.
+                    case: (Hlg x); clear Hlg IHlg => Hlg.
+                    case: (excluded_middle_informative (Q x)).
+                        move => Qx; right.
+                        apply Unique_base_case.
+                            easy.
+                            assumption.
+                        move => NQx; left.
+                        apply List.Forall_cons => //.
+                        easy.
+                    right.
+                    unfold well_formed_decomposition in Hlgext.
+                    case: Hlgext => Disj_lgext _.
+                    unfold disjoint in Disj_lgext.
+                    assert (¬ Q x) as NQx.
+                    case: (Disj_lgext x); clear Disj_lgext.
+                        apply List.Forall_inv.
+                        move => U; inversion U; clear H H0 U tail x0 H1.
+                        apply False_ind.
+                        assert 
+                            (List.Forall (λ y : X → Prop, ¬ y x)
+                                (List.map fst
+                                    (List.map
+                                        (λ c : (X → Prop) * E,
+                                            let (Q, w) := c in
+                                            (λ x : X, List.Forall (λ c0 : (X → Prop) * E, ¬ fst c0 x) nil ∧
+                                             Q x, w)) lg))
+                            )
+                            as Absurdity.
+                            clear Q w Hlg.
+                            pose lg1 := (List.map fst lg).
+                            assert (lg1 = (List.map fst lg)); unfold lg1. 
+                                reflexivity.
+                            fold lg1 in H2.
+                            Check List.Forall_rect.
+                            clearbody lg1; move: H; move: lg; move: H2; move: lg1.
+                            pose P_to_prove := 
+                                (
+                                    fun lg1 => ∀ lg : list ((X → Prop) * E),
+                                        lg1 = List.map fst lg
+                                        → List.Forall (λ y : X → Prop, ¬ y x)
+                                            (List.map fst
+                                            (List.map
+                                                (λ c : (X → Prop) * E,
+                                                    let (Q, w) := c in
+                                                    (λ x0 : X, List.Forall (λ c0 : (X → Prop) * E, ¬ fst c0 x0) nil ∧ Q x0,
+                                                     w)) lg))
+                                ).
+                            apply (@List.Forall_ind _ (λ y : X → Prop, ¬ y x) P_to_prove).
+                                unfold P_to_prove => lg Hlg.
+                                assert (lg = nil) as nillg.
+                                    move: Hlg.
+                                    induction lg => //.
+                                rewrite nillg => //=.
+                                move => Q lg1 NQx Hlg1.
+                                unfold P_to_prove => IHlg1 lg Eqlg1.
+                                case_eq lg => //=.
+
         Admitted.
 
         Lemma lem2 :
@@ -680,3 +754,108 @@ Section simpl_fun_prop.
     *)
 
 End simpl_fun_prop.
+
+*)
+
+(* 
+
+Une troisième tentative !
+
+*)
+
+Section simpl_fun_def.
+
+    (* espace de départ *)
+    Context  {X : Set}.
+    (* espace d'arrivé *)
+    Context {A : AbsRing}.
+    Context (E : NormedModule A).
+
+    Definition indic (P : X -> Prop) : X -> A :=
+        fun x =>
+            match (excluded_middle_informative (P x)) return A with
+                | left _ => one
+                | right _ => zero
+            end.
+
+    Open Scope core_scope.
+    Open Scope type_scope.
+    Close Scope R_scope.
+    
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context (μ : measure gen).
+
+    (* la fonction est val ∘ which *)
+    Record simpl_fun := mk_simpl_fun {
+        (* where peut renvoyer une valeur plus grande que max_where
+        dans ce cas, val renvoie une valeur nulle *)
+        which : X -> nat;
+        val : nat -> E;
+        max_which : nat;
+
+        ax_max_which :
+            ∀ n : nat, n >= max_which -> val n = zero;
+        ax_mesurable :
+            ∀ n : nat, n < max_which ->
+                measurable gen (fun x => which x = n);
+        ax_finite :
+            ∀ n : nat, n < max_which ->
+                is_finite (μ (fun x => which x = n))
+    }.
+
+    Definition fun_sf (sf : simpl_fun) : X -> E :=
+        fun x => sf.(val) (sf.(which) x).
+
+    Definition is_simpl (f : X -> E) :=
+        ∃ sf : simpl_fun, ∀ x : X, fun_sf sf x = f x.
+
+End simpl_fun_def.
+
+Section simpl_fun_norm.
+
+    (* espace de départ *)
+    Context  {X : Set}.
+    (* espace d'arrivé *)
+    Context {A : AbsRing}.
+    Context (E : NormedModule A).
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context (μ : measure gen).
+
+    Open Scope R_scope.
+    Open Scope nat_scope.
+
+    Definition fun_norm (f : X -> E) :=
+        fun x => norm (f x).
+
+    Definition simpl_fun_norm_aux (sf : simpl_fun E μ) : simpl_fun R_NormedModule μ.
+        case: sf => which val max_which ax1 ax2 ax3.
+        pose nval :=
+            fun n => norm (val n).
+        apply (mk_simpl_fun R_NormedModule μ which nval max_which).
+            (* ax_max_which *)
+            move => n Hn; unfold nval.
+            rewrite ax1.
+            apply norm_zero.
+            assumption.
+            (* ax_mesurable *)
+            exact ax2.
+            (* ax_finite *)
+            exact ax3.
+    Defined.
+
+    Lemma simpl_fun_norm :
+        ∀ f : X -> E, is_simpl E μ f -> 
+            is_simpl R_NormedModule μ (fun_norm f).
+    Proof.
+        move => f.
+        case => sf. case_eq sf => which val max_which ax1 ax2 ax3 Eqsf Eqf.
+        exists (simpl_fun_norm_aux sf).
+        rewrite Eqsf.
+        move => x; unfold fun_sf, simpl_fun_norm_aux => /=.
+        simpl in Eqf.
+        rewrite Eqf => //.
+    Qed.
+
+End simpl_fun_norm.
