@@ -58,5 +58,3 @@ Section BInt_for_sf.
     *)
 
 End BInt_for_sf.
-
-About BInt_sf.

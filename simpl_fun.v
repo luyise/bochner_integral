@@ -27,7 +27,10 @@ From MILC Require Import
     sigma_algebra    
 .
 
-Require Import sum_list.
+Require Import 
+    sum_list
+    square_bij
+.
 
 (* Une tentative qui n'a pas fonctionné
 
@@ -863,7 +866,7 @@ Section simpl_fun_norm.
 
 End simpl_fun_norm.
 
-From MILC Require Import countable_sets.
+(*
 
 Section simpl_fun_plus.
 
@@ -919,3 +922,4 @@ Section simpl_fun_plus.
 
             unfold max_which in Lenmax.
             
+*)
