@@ -769,7 +769,7 @@ Section simpl_fun_def.
     Context  {X : Set}.
     (* espace d'arrivé *)
     Context {A : AbsRing}.
-    Context (E : NormedModule A).
+    Context {E : NormedModule A}.
 
     Definition indic (P : X -> Prop) : X -> A :=
         fun x =>
@@ -784,7 +784,7 @@ Section simpl_fun_def.
     
     (* Un espace mesuré *)
     Context {gen : (X -> Prop) -> Prop}.
-    Context (μ : measure gen).
+    Context {μ : measure gen}.
 
     (* la fonction est val ∘ which *)
     Record simpl_fun := mk_simpl_fun {
@@ -797,7 +797,7 @@ Section simpl_fun_def.
         ax_max_which :
             ∀ n : nat, n >= max_which -> val n = zero;
         ax_mesurable :
-            ∀ n : nat, n < max_which ->
+            ∀ n : nat, (* n < max_which -> *)
                 measurable gen (fun x => which x = n);
         ax_finite :
             ∀ n : nat, n < max_which ->
@@ -821,10 +821,10 @@ Section simpl_fun_norm.
     Context  {X : Set}.
     (* espace d'arrivé *)
     Context {A : AbsRing}.
-    Context (E : NormedModule A).
+    Context {E : NormedModule A}.
     (* Un espace mesuré *)
     Context {gen : (X -> Prop) -> Prop}.
-    Context (μ : measure gen).
+    Context {μ : measure gen}.
 
     Open Scope R_scope.
     Open Scope nat_scope.
@@ -832,11 +832,11 @@ Section simpl_fun_norm.
     Definition fun_norm (f : X -> E) :=
         fun x => norm (f x).
 
-    Definition simpl_fun_norm_aux (sf : simpl_fun E μ) : simpl_fun R_NormedModule μ.
+    Definition simpl_fun_norm_aux (sf : @simpl_fun _ _ E _ μ) : @simpl_fun _ _ R_NormedModule _ μ.
         case: sf => which val max_which ax1 ax2 ax3.
         pose nval :=
             fun n => norm (val n).
-        apply (mk_simpl_fun R_NormedModule μ which nval max_which).
+        apply (mk_simpl_fun which nval max_which).
             (* ax_max_which *)
             move => n Hn; unfold nval.
             rewrite ax1.
@@ -849,8 +849,8 @@ Section simpl_fun_norm.
     Defined.
 
     Lemma simpl_fun_norm :
-        ∀ f : X -> E, is_simpl E μ f -> 
-            is_simpl R_NormedModule μ (fun_norm f).
+        ∀ f : X -> E, @is_simpl _ _ E _ μ f -> 
+            @is_simpl _ _ _ _ μ (fun_norm f).
     Proof.
         move => f.
         case => sf. case_eq sf => which val max_which ax1 ax2 ax3 Eqsf Eqf.
@@ -862,3 +862,60 @@ Section simpl_fun_norm.
     Qed.
 
 End simpl_fun_norm.
+
+From MILC Require Import countable_sets.
+
+Section simpl_fun_plus.
+
+    (* espace de départ *)
+    Context  {X : Set}.
+    (* espace d'arrivé *)
+    Context {A : AbsRing}.
+    Context {E : NormedModule A}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context {μ : measure gen}.
+
+    Open Scope nat_scope.
+
+    Definition fun_plus (f : X -> E) (g : X -> E) :=
+        (fun x => plus (f x) (g x)).
+
+    Definition simpl_fun_plus_aux (sf sg : @simpl_fun _ _ E _ μ) : @simpl_fun _ _ E _ μ.
+        case: sf => wf vf maxf axf1 axf2 axf3.
+        case: sg => wg vg maxg axg1 axg2 axg3.
+        pose val := fun m =>
+            let (nf, ng) := bij_NN2 m in
+            plus (vf nf) (vg ng).
+        pose max_which := bij_N2N (maxf, maxg).
+        pose which := fun (x : X) =>
+            let nf := wf x in
+            let ng := wg x in
+            bij_N2N (nf, ng).
+        apply (mk_simpl_fun which val max_which).
+            (* ax_max_which *)
+            (* utilise la croissance de la bijection bij_NN2 *)
+            admit.
+            (* ax_measurable *)
+            move => n.
+            unfold which.
+            pose c := bij_NN2 n.
+            case_eq c => [nf ng] Eqc.
+            apply measurable_ext with (fun x => wf x = nf ∧ wg x = ng).
+            move => x.
+            assert (n = bij_N2N c) as Eqn.
+                rewrite bij_N2NN2 => //.
+            rewrite Eqn Eqc.
+            split.
+                case => -> -> //.
+                move => Eqwn.
+                assert (bij_NN2 (bij_N2N (wf x, wg x)) = bij_NN2 (bij_N2N (nf, ng))) by congruence.
+                do 2 rewrite bij_NN2N in H.
+                split; congruence.
+                apply measurable_inter.
+                    apply axf2.
+                    apply axg2.
+                
+
+            unfold max_which in Lenmax.
+            

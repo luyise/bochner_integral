@@ -32,30 +32,18 @@ Section BInt_for_sf.
     Context {E : NormedModule R_AbsRing}.
     (* Un espace mesuré *)
     Context {gen : (X -> Prop) -> Prop}.
-    Context (μ : measure gen).
+    Context {μ : measure gen}.
 
     Open Scope R_scope.
     Open Scope type_scope.
     Open Scope core_scope.
 
-    Definition Rbar_to_R (x : Rbar) : R :=
-        match x return R with
-            | Finite y => y
-            | p_infty | m_infty => 0
-        end.
-
     (* Une définition un peu lourde mais calculable de l'intégrale de Boshner pour une fonction simple *)
-    Definition BInt_sf (f : X -> E) (l : list ((X -> Prop) * E)) (π : simpl_fun_for μ l f) 
-        : E :=
-            sum_list (
-                List.map
-                    (fun (c : (X -> Prop) * E) => 
-                        let (P, v) := c in
-                        scal (Rbar_to_R (μ P)) v
-                    )
-                    l
-            ).
-    
+    Definition BInt_sf (sf : @simpl_fun _ _ E _ μ) : E :=
+        sum_n
+            (fun n => scal (real (μ (nth_carrier sf n))) (sf.(val) n))
+            (sf.(max_which)).
+
     (*
     Lemma BInt_sf_indep_of_dec :
         ∀ f : X -> E, ∀ l l' : list ((X -> Prop) * E),
@@ -70,3 +58,5 @@ Section BInt_for_sf.
     *)
 
 End BInt_for_sf.
+
+About BInt_sf.
