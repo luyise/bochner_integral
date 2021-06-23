@@ -943,7 +943,13 @@ Section simpl_fun_plus.
                 move => Eqwn.
                 assert (square_bij_inv (S maxg) (square_bij (S maxg) (wf x, wg x)) = square_bij_inv (S maxg) (square_bij (S maxg) (nf, ng))) 
                     by congruence.
-                do 2 rewrite is_bij_square in H.
+                rewrite is_bij_square in H.
+                    2 : apply axg2.
+                rewrite is_bij_square in H.
+                    all : swap 1 2.
+                    pose Hng := confined_snd_square_inv maxg n.
+                    fold c in Hng; clearbody Hng; rewrite Eqc in Hng.
+                    exact Hng.
                 split; congruence.
                 apply measurable_inter_fg with n c => //.
             (* ax_finite *)
@@ -971,7 +977,13 @@ Section simpl_fun_plus.
                     assert 
                         (square_bij_inv (S maxg) (square_bij (S maxg) (wf x, wg x)) = square_bij_inv (S maxg) (square_bij (S maxg) (nf, ng)))
                         as Eqfg2 by congruence.
-                    do 2 rewrite is_bij_square in Eqfg2.
+                    rewrite is_bij_square in Eqfg2.
+                        2 : apply axg2.
+                    rewrite is_bij_square in Eqfg2.
+                        all : swap 1 2.
+                        pose Hng := confined_snd_square_inv maxg n.
+                        fold c in Hng; clearbody Hng; rewrite Eqc in Hng.
+                        exact Hng.
                     split; congruence.
                 (* Ici il faut distinguer le cas ou
                     on est dans la composante de 0 pour f ou pour g,
@@ -1043,6 +1055,7 @@ Section simpl_fun_plus.
         case_eq sg => wg vg maxg axg1 axg2 axg3 axg4 Eqg.
         unfold fun_sf => /= x.
         rewrite is_bij_square.
+            2 : apply axg2.
         unfold fun_plus.
         congr plus.
             unfold fun_sf in Eq_sf_f.
