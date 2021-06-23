@@ -108,5 +108,87 @@ Section square_bij_prop.
 
 End square_bij_prop.
 
+From Coquelicot Require Import
+    Hierarchy
+.
+
+Section square_bij_sum.
+
+    Lemma sum_n_m_shift {G : AbelianGroup} :
+        ∀ n m k : nat, ∀ u : nat -> G,
+            sum_n_m (fun x => u (k + x)) n m
+            = sum_n_m u (k + n) (k + m).
+    Proof.
+        induction n => m k.
+            replace (k + 0) with k by lia.
+            move: m k.
+            induction m => k u.
+                rewrite sum_n_n; replace (k + 0) with k by lia; rewrite sum_n_n.
+                reflexivity.
+                rewrite sum_n_Sm. 
+                    2 : lia.
+                replace (k + S m) with (S (k + m)) by lia.
+                rewrite sum_n_Sm.
+                    2 : lia.
+                congr plus; auto.
+            move => u.
+            replace (k + S n) with (S (k + n)) by lia.
+            case_eq (m <? S n).
+                (* On traite à part le cas ou le support de la somme est l'ensemble vide *)
+                move /Nat.ltb_lt => Hmn.
+                rewrite sum_n_m_zero. 
+                    2 : assumption.
+                assert (k + m < S (k + n)) as Hkmn by lia.
+                rewrite sum_n_m_zero.
+                    2 : assumption.
+                reflexivity.
+            (* cas ou le support est non vide *)
+            move /Nat.ltb_ge => Hnm.
+            assert (n <= m) as Hnm_wk by lia.
+            pose IHn_mk := IHn m k u; clearbody IHn_mk. 
+            rewrite sum_Sn_m in IHn_mk.
+                2 : lia.
+            assert ((k + n) <= (k + m)) as Hknm by lia.
+            rewrite (sum_Sn_m u) in IHn_mk.
+                2 : lia.
+            apply plus_reg_l with (u (k + n)) => //.
+    Qed.
+                
+
+    Lemma square_bij_sum {G : AbelianGroup} :
+        ∀ n1 n2 : nat, ∀ u : nat -> G,
+            sum_n u (S n1 * S n2 - 1) = 
+            sum_n (
+                fun k1 => sum_n (
+                    fun k2 => u (square_bij (S n2) (k1, k2)) 
+                ) n2 
+            ) n1.
+    Proof.
+        induction n1 => n2 u.
+        simpl; replace (n2 + 0 - 0) with n2 by lia.
+        rewrite sum_O => //=.
+        replace (S (S n1) * S n2 - 1)
+            with ((S n1) * (S n2) - 1 + S n2)
+            by lia.
+        rewrite sum_Sn.
+        rewrite <-IHn1.
+        assert (0 <= S (S n1 * S n2 - 1)) as H0 by lia.
+        assert ((S n1 * S n2 - 1) <= (S n1 * S n2 - 1 + S n2)) as H1 by lia.
+        unfold sum_n at 1; rewrite (sum_n_m_Chasles _ _ _ _ H0 H1).
+        replace (sum_n_m u 0 (S n1 * S n2 - 1)) with (sum_n u (S n1 * S n2 - 1))
+            by unfold sum_n => //.
+        congr plus.
+        clear H0 H1 IHn1.
+        
+        replace (S (S n1 * S n2 - 1)) with (S n1 * S n2) by lia.
+        replace (S n1 * S n2 - 1 + S n2) with (S n1 * S n2 + n2) by lia.
+        unfold square_bij.
+        unfold sum_n; rewrite (sum_n_m_shift 0 n2 (S n1 * S n2) u).
+        replace (S n1 * S n2 + 0) with (S n1 * S n2) by lia.
+        reflexivity.
+    Qed.
+
+End square_bij_sum.
+
 Global Opaque square_bij.
 Global Opaque square_bij_inv.

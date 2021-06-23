@@ -29,8 +29,7 @@ From MILC Require Import
     sigma_algebra    
 .
 
-Require Import 
-    sum_list
+Require Import
     square_bij
 .
 
@@ -793,8 +792,6 @@ Section simpl_fun_def.
 
     (* la fonction est val ∘ which *)
     Record simpl_fun := mk_simpl_fun {
-        (* which peut renvoyer une valeur plus grande que max_where
-        dans ce cas, val renvoie une valeur nulle *)
         which : X -> nat;
         val : nat -> E;
         max_which : nat;
