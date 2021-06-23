@@ -10,6 +10,8 @@ pour simplifier le développement, on utilise l'axiome du tier exclu :
 From Coq Require Import 
     ssreflect
     ssrsearch
+    Arith
+    Lia
     Utf8
 
     ClassicalDescription
@@ -791,16 +793,18 @@ Section simpl_fun_def.
 
     (* la fonction est val ∘ which *)
     Record simpl_fun := mk_simpl_fun {
-        (* where peut renvoyer une valeur plus grande que max_where
+        (* which peut renvoyer une valeur plus grande que max_where
         dans ce cas, val renvoie une valeur nulle *)
         which : X -> nat;
         val : nat -> E;
         max_which : nat;
 
-        ax_max_which :
-            ∀ n : nat, n >= max_which -> val n = zero;
+        ax_val_max_which :
+            val max_which = zero;
+        ax_which_max_which :
+            ∀ x : X, which x <= max_which;
         ax_mesurable :
-            ∀ n : nat, (* n < max_which -> *)
+            ∀ n : nat, n <= max_which ->
                 measurable gen (fun x => which x = n);
         ax_finite :
             ∀ n : nat, n < max_which ->
@@ -836,19 +840,19 @@ Section simpl_fun_norm.
         fun x => norm (f x).
 
     Definition simpl_fun_norm_aux (sf : @simpl_fun _ _ E _ μ) : @simpl_fun _ _ R_NormedModule _ μ.
-        case: sf => which val max_which ax1 ax2 ax3.
+        case: sf => which val max_which ax1 ax2 ax3 ax4.
         pose nval :=
             fun n => norm (val n).
         apply (mk_simpl_fun which nval max_which).
-            (* ax_max_which *)
-            move => n Hn; unfold nval.
-            rewrite ax1.
-            apply norm_zero.
-            assumption.
-            (* ax_mesurable *)
+            (* ax_val_max_which *)
+            unfold nval; rewrite ax1.
+            apply norm_zero; assumption.
+            (* ax_which_max_which *)
             exact ax2.
-            (* ax_finite *)
+            (* ax_measurable *)
             exact ax3.
+            (* ax_finite *)
+            exact ax4.
     Defined.
 
     Lemma simpl_fun_norm :
@@ -856,7 +860,7 @@ Section simpl_fun_norm.
             @is_simpl _ _ _ _ μ (fun_norm f).
     Proof.
         move => f.
-        case => sf. case_eq sf => which val max_which ax1 ax2 ax3 Eqsf Eqf.
+        case => sf. case_eq sf => which val max_which ax1 ax2 ax3 ax4 Eqsf Eqf.
         exists (simpl_fun_norm_aux sf).
         rewrite Eqsf.
         move => x; unfold fun_sf, simpl_fun_norm_aux => /=.
@@ -866,7 +870,14 @@ Section simpl_fun_norm.
 
 End simpl_fun_norm.
 
-(*
+Open Scope nat_scope.
+
+Lemma le_lt_v_eq :
+    ∀ k1 k2 : nat, k1 <= k2 ->
+        k1 < k2 ∨ k1 = k2.
+Proof. lia. Qed.
+
+Close Scope nat_scope.
 
 Section simpl_fun_plus.
 
@@ -885,41 +896,161 @@ Section simpl_fun_plus.
         (fun x => plus (f x) (g x)).
 
     Definition simpl_fun_plus_aux (sf sg : @simpl_fun _ _ E _ μ) : @simpl_fun _ _ E _ μ.
-        case: sf => wf vf maxf axf1 axf2 axf3.
-        case: sg => wg vg maxg axg1 axg2 axg3.
+        case: sf => wf vf maxf axf1 axf2 axf3 axf4.
+        case: sg => wg vg maxg axg1 axg2 axg3 axg4.
         pose val := fun m =>
-            let (nf, ng) := bij_NN2 m in
+            let (nf, ng) := square_bij_inv (S maxg) m in
             plus (vf nf) (vg ng).
-        pose max_which := bij_N2N (maxf, maxg).
+        pose max_which := (S maxf) * (S maxg) - 1.
         pose which := fun (x : X) =>
             let nf := wf x in
             let ng := wg x in
-            bij_N2N (nf, ng).
+            square_bij (S maxg) (nf, ng).
         apply (mk_simpl_fun which val max_which).
-            (* ax_max_which *)
-            (* utilise la croissance de la bijection bij_NN2 *)
-            admit.
+            (* ax_val_max_which *)
+            unfold val, max_which.
+            rewrite (square_bij_inv_corner maxg maxf).
+            rewrite axf1 axg1 plus_zero_r; reflexivity.
+            (* ax_which_max_which *)
+            move => x; unfold which, max_which.
+            apply confined_square.
+            split; apply [axf2, axg2].
             (* ax_measurable *)
-            move => n.
-            unfold which.
-            pose c := bij_NN2 n.
+            1, 2 : assert
+                (∀ n : nat, n <= max_which -> 
+                ∀ c : nat * nat, c = square_bij_inv (S maxg) n ->
+                ∀ nf ng : nat, (nf, ng) = c ->
+                    measurable gen (λ x : X, wf x = nf ∧ wg x = ng)
+                ) as measurable_inter_fg.
+                1, 3 : move => n Hn c Eqc nf ng Hnfngc.
+                1, 2 : pose Hnfng := confined_square_inv maxg maxf n Hn; clearbody Hnfng => /=.
+                1, 2 : rewrite <-Eqc, <-Hnfngc in Hnfng.
+                1, 2 : case: Hnfng => Hnf Hng.
+                1, 2 : apply measurable_inter.
+                1, 3 : apply axf3 => //.
+                1, 2 : apply axg3 => //.
+
+            move => n Hn; unfold which.
+            pose c := square_bij_inv (S maxg) n.
             case_eq c => [nf ng] Eqc.
             apply measurable_ext with (fun x => wf x = nf ∧ wg x = ng).
             move => x.
-            assert (n = bij_N2N c) as Eqn.
-                rewrite bij_N2NN2 => //.
+            assert (n = square_bij (S maxg) c) as Eqn.
+                rewrite is_bij_square_inv => //.
             rewrite Eqn Eqc.
             split.
-                case => -> -> //.
+                case => -> -> //. 
                 move => Eqwn.
-                assert (bij_NN2 (bij_N2N (wf x, wg x)) = bij_NN2 (bij_N2N (nf, ng))) by congruence.
-                do 2 rewrite bij_NN2N in H.
+                assert (square_bij_inv (S maxg) (square_bij (S maxg) (wf x, wg x)) = square_bij_inv (S maxg) (square_bij (S maxg) (nf, ng))) 
+                    by congruence.
+                do 2 rewrite is_bij_square in H.
                 split; congruence.
-                apply measurable_inter.
-                    apply axf2.
-                    apply axg2.
-                
+                apply measurable_inter_fg with n c => //.
+            (* ax_finite *)
+            move => n Hn; unfold which.
+            pose c := square_bij_inv (S maxg) n.
+            case_eq c => [nf ng] Eqc.
+            assert (
+                ∀ x : Rbar, Rbar_le (@zero R_AbelianGroup) x -> Rbar_lt x p_infty ->
+                    is_finite x
+            ) as Rbar_pos_lt_finite.
+                move => x; case: x => //.
+            apply Rbar_pos_lt_finite.
+            apply meas_ge_0.
+            assert (n = square_bij (S maxg) c).
+                unfold c; rewrite is_bij_square_inv => //.
+            rewrite H Eqc.
+            replace
+                (μ (λ x : X, square_bij (S maxg) (wf x, wg x) = square_bij (S maxg) (nf, ng)))
+                with
+                (μ (λ x : X, wf x = nf ∧ wg x = ng)).
+                all : swap 1 2.
+                apply measure_ext => x; split.
+                    move => [-> ->] => //.
+                    move => Eqfg.
+                    assert 
+                        (square_bij_inv (S maxg) (square_bij (S maxg) (wf x, wg x)) = square_bij_inv (S maxg) (square_bij (S maxg) (nf, ng)))
+                        as Eqfg2 by congruence.
+                    do 2 rewrite is_bij_square in Eqfg2.
+                    split; congruence.
+                (* Ici il faut distinguer le cas ou
+                    on est dans la composante de 0 pour f ou pour g,
+                    sachant que les deux ne peuvent pas se produire simultanément *)
+                assert
+                    (n <= max_which)
+                    as Le_n_mw.
+                    apply le_Sn_le => //.
+                pose Hnfng := confined_square_inv maxg maxf n Le_n_mw; clearbody Hnfng.
+                fold c in Hnfng; rewrite Eqc in Hnfng; case: Hnfng => Hnf Hng.
+                assert
+                    (Rbar_le 
+                        (μ (λ x : X, wf x = nf ∧ wg x = ng))
+                        (μ (λ x : X, wf x = nf))
+                    ) as inter_le_f.
+                    apply measure_le.
+                    apply measurable_inter_fg with n c => //.
+                    apply axf3 => //.
+                    easy.
+                assert
+                (Rbar_le 
+                    (μ (λ x : X, wf x = nf ∧ wg x = ng))
+                    (μ (λ x : X, wg x = ng))
+                ) as inter_le_g.
+                    apply measure_le.
+                    apply measurable_inter_fg with n c => //.
+                    apply axg3 => //.
+                    easy.
+                case: (le_lt_v_eq nf maxf) => // Hnf'.
+                    (* cas ou le dommaine pour f est mesurable *)
+                    assert
+                        (is_finite (μ (λ x : X, wf x = nf))) 
+                        as fin_f.
+                        apply axf4 => //.
+                    assert
+                        (Rbar_lt (μ (λ x : X, wf x = nf)) p_infty) as fin_f'.
+                        unfold is_finite, real in fin_f.
+                        rewrite <-fin_f => //.
+                    apply (Rbar_le_lt_trans _ _ _ inter_le_f fin_f').
+                    (* cas ou nf = maxf, donc où le domaine pour g est mesurable *)
+                    assert (ng < maxg).
+                        apply not_le => Hng'.
+                        assert (ng = maxg) 
+                            as Eqgng by apply Nat.le_antisymm => //.
+                        rewrite Hnf' Eqgng in Eqc.
+                        rewrite Eqc in H; rewrite square_bij_corner in H.
+                        rewrite H in Hn; unfold max_which in Hn.
+                        exact (Nat.Private_Tac.lt_irrefl Hn).
+                    assert
+                        (is_finite (μ (λ x : X, wg x = ng))) 
+                        as fin_g.
+                        apply axg4 => //.
+                    assert
+                        (Rbar_lt (μ (λ x : X, wg x = ng)) p_infty) as fin_g'.
+                        unfold is_finite, real in fin_g.
+                        rewrite <-fin_g => //.
+                    apply (Rbar_le_lt_trans _ _ _ inter_le_g fin_g').
+    Defined.
 
-            unfold max_which in Lenmax.
-            
-*)
+    Lemma simpl_fun_plus :
+        ∀ f g : X -> E, 
+        @is_simpl _ _ E _ μ f -> @is_simpl _ _ E _ μ g ->
+        @is_simpl _ _ _ _ μ (fun_plus f g).
+    Proof.
+        move => f g.
+        case => sf Eq_sf_f; case => sg Eq_sg_g.
+        exists (simpl_fun_plus_aux sf sg).
+        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf.
+        case_eq sg => wg vg maxg axg1 axg2 axg3 axg4 Eqg.
+        unfold fun_sf => /= x.
+        rewrite is_bij_square.
+        unfold fun_plus.
+        congr plus.
+            unfold fun_sf in Eq_sf_f.
+            rewrite Eqf in Eq_sf_f; simpl in Eq_sf_f.
+            rewrite Eq_sf_f => //.
+            unfold fun_sf in Eq_sg_g.
+            rewrite Eqg in Eq_sg_g; simpl in Eq_sg_g.
+            rewrite Eq_sg_g => //.
+    Qed.
+
+End simpl_fun_plus.
