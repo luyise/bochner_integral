@@ -35,6 +35,8 @@ Declare Scope fun_scope.
 Delimit Scope fun_scope with fn.
 
 Open Scope hy_scope.
+Open Scope fun_scope.
+Open Scope sf_scope.
 
 Section simpl_fun_def.
 
@@ -93,6 +95,80 @@ End simpl_fun_def.
 Arguments simpl_fun {X A} E {gen} μ.
 Arguments is_simpl {X A} [E] {gen} μ f.
 
+Notation "'χ(' P ')'" := (indic P) (at level 0) : fun_scope.
+
+Section simpl_fun_indic.
+
+    (* espace de départ *)
+    Context  {X : Set}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context (μ : measure gen).
+
+    Open Scope nat_scope.
+    Open Scope R_scope.
+
+    Definition sf_indic_aux (P : X -> Prop) :
+        measurable gen P -> is_finite (μ P) -> simpl_fun R_ModuleSpace μ.
+    (* définition *)
+        move => Pmeas Pfin.
+        pose w := fun x =>
+            match (excluded_middle_informative (P x)) return nat with
+                | left _ => O
+                | right _ => (S O)
+            end.
+        pose v := fun n =>
+            match n return R with
+                | O => 1
+                | _ => 0
+            end.
+        pose max_w := (S O).
+        apply (mk_simpl_fun w v max_w).
+            unfold max_w => //.
+            move => x; unfold w, max_w.
+            case: (excluded_middle_informative (P x)); lia.
+            unfold max_w; case.
+                move => _.
+                apply measurable_ext with P.
+                unfold w => x.
+                case: (excluded_middle_informative (P x)) => //.
+                exact Pmeas.
+            move => n Hn.
+            assert (S n = 1%nat) by lia.
+            rewrite H; clear Hn H; clear n.
+            apply measurable_ext with (fun x => ¬ P x).
+            unfold w => x.
+            case: (excluded_middle_informative (P x)) => //.
+            apply measurable_compl.
+            apply measurable_ext with (fun x => P x).
+            move => x; split; case: (excluded_middle_informative (P x)).
+                move => _; auto.
+                auto.
+                auto.
+                move => NPx NNPx; apply False_ind.
+                exact (NNPx NPx).
+            exact Pmeas.
+            move => n Hn.
+            assert (n = O) by lia.
+            rewrite H; clear H Hn; clear n.
+            rewrite <-(measure_ext gen _ P).
+            exact Pfin.
+            move => x; unfold w.
+                case (excluded_middle_informative (P x)) => //.
+    Defined.
+
+    Lemma sf_indic :
+        ∀ P : X -> Prop, measurable gen P -> is_finite (μ P)
+            -> is_simpl μ (χ(P): X -> R).
+    Proof.
+        move => P Pmeas Pfin.
+        exists (sf_indic_aux P Pmeas Pfin) => x.
+        unfold fun_sf, "χ( _ )" => /=.
+        case: (excluded_middle_informative (P x)) => //.
+    Qed.
+
+End simpl_fun_indic.
+
 Section simpl_fun_norm.
 
     (* espace de départ *)
@@ -106,8 +182,6 @@ Section simpl_fun_norm.
 
     Open Scope R_scope.
     Open Scope nat_scope.
-    Open Scope fun_scope.
-    Open Scope sf_scope.
 
     Definition fun_norm (f : X -> E) :=
         fun x => norm (f x).
