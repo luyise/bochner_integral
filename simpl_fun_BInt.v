@@ -146,7 +146,7 @@ Proof.
         rewrite <-Le0uSn, <-Le0sum => //.
 Qed.
 
-Section Bint_sf_plus.
+Section BInt_sf_plus.
 
     (* espace de départ *)
     Context  {X : Set}.
@@ -160,10 +160,13 @@ Section Bint_sf_plus.
 
     Open Scope R_scope.
     Open Scope nat_scope.
+    Open Scope sf_scope.
+
+    Check (_ + _)%sf.
 
     Lemma BInt_sf_plus_aux :
         ∀ sf_f sf_g : @simpl_fun _ _ E _ μ,
-            BInt_sf (simpl_fun_plus_aux sf_f sf_g) = plus (BInt_sf sf_f) (BInt_sf sf_g).
+            BInt_sf (sf_f + sf_g) = plus (BInt_sf sf_f) (BInt_sf sf_g).
     Proof.
         move => sf_f sf_g.
         case_eq sf_f => wf vf maxf axf1 axf2 axf3 axf4 Eqf.
@@ -172,19 +175,19 @@ Section Bint_sf_plus.
         unfold BInt_sf.
         replace (max_which sf_f) with maxf by rewrite Eqf => //.
         replace (max_which sf_g) with maxg by rewrite Eqg => //.
-        replace (max_which (simpl_fun_plus_aux sf_f sf_g)) with ((S maxf) * (S maxg) - 1).
+        replace (max_which (sf_f + sf_g)) with ((S maxf) * (S maxg) - 1).
             2 : rewrite Eqf Eqg => //.
         unfold nth_carrier.
         rewrite square_bij_sum.
-        pose valfg := val (simpl_fun_plus_aux sf_f sf_g).
+        pose valfg := val (sf_f + sf_g).
             fold valfg.
-            assert (valfg = simpl_fun.val (simpl_fun_plus_aux sf_f sf_g))
+            assert (valfg = simpl_fun.val (sf_f + sf_g))
                 as Eqval by unfold valfg => //.
             clearbody valfg; rewrite Eqf Eqg in Eqval; simpl in Eqval.
             rewrite Eqval; clear Eqval valfg.
-        pose whichfg := which (simpl_fun_plus_aux sf_f sf_g).
+        pose whichfg := which (sf_f + sf_g).
             fold whichfg.
-            assert (whichfg = which (simpl_fun_plus_aux sf_f sf_g))
+            assert (whichfg = which (sf_f + sf_g))
                 as Eqwhich by unfold whichfg => //.
             clearbody whichfg; rewrite Eqf Eqg in Eqwhich; simpl in Eqwhich.
             rewrite Eqwhich; clear Eqwhich whichfg.
@@ -538,4 +541,73 @@ Section Bint_sf_plus.
                 rewrite axg1; do 2 rewrite scal_zero_r => //.
     Qed.
                 
-End Bint_sf_plus.
+End BInt_sf_plus.
+
+Section BInt_sf_scal.
+
+    (* espace de départ *)
+    Context  {X : Set}.
+    (* espace d'arrivé : cette fois c'est nécessairement un R-module
+    (en fait je pense qu'on pourrait prendre un surcorps de R mais je ne vois pas comment
+    formaliser celà simplement) *)
+    Context {E : NormedModule R_AbsRing}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context {μ : measure gen}.
+
+    Open Scope R_scope.
+    Open Scope nat_scope.
+    Open Scope sf_scope.
+
+    Lemma BInt_sf_scal_aux :
+        ∀ a : R_AbsRing, ∀ sf : @simpl_fun _ _ E _ μ,
+            BInt_sf (a ⋅ sf) = scal a (BInt_sf sf).
+    Proof.
+        move => a sf.
+        unfold BInt_sf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqsf; rewrite <-Eqsf.
+        rewrite <-sum_n_scal_l.
+        replace (max_which (a ⋅ sf)) with (max_which sf)
+            by rewrite Eqsf => //.
+        apply sum_n_ext => k.
+        unfold nth_carrier.
+        replace (which (a ⋅ sf)) with (which sf)
+            by rewrite Eqsf => //.
+        replace (val (a ⋅ sf) k) with (scal a (val sf k))
+            by rewrite Eqsf => //.
+        do 2 rewrite scal_assoc.
+        replace mult with Rmult by easy.
+        rewrite Raxioms.Rmult_comm.
+        replace (@mult R_AbsRing) with Rmult by easy.
+        reflexivity.
+    Qed.
+
+End BInt_sf_scal.
+
+Section BInt_linearity.
+
+    (* espace de départ *)
+    Context  {X : Set}.
+    (* espace d'arrivé : cette fois c'est nécessairement un R-module
+    (en fait je pense qu'on pourrait prendre un surcorps de R mais je ne vois pas comment
+    formaliser celà simplement) *)
+    Context {E : NormedModule R_AbsRing}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context {μ : measure gen}.
+
+    Open Scope R_scope.
+    Open Scope nat_scope.
+    Open Scope sf_scope.
+
+    Lemma BInt_sf_lin_aux :
+        ∀ a b : R_AbsRing, ∀ sf sg : @simpl_fun _ _ E _ μ,
+            BInt_sf (a ⋅ sf + b ⋅ sg) 
+            = plus (scal a (BInt_sf sf)) (scal b (BInt_sf sg)).
+    Proof.
+        move => a b sf sg.
+        do 2 rewrite <-BInt_sf_scal_aux.
+        rewrite BInt_sf_plus_aux => //.
+    Qed.
+
+End BInt_linearity.
