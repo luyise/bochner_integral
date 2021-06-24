@@ -39,10 +39,10 @@ Open Scope hy_scope.
 Section simpl_fun_def.
 
     (* espace de départ *)
-    Context  {X : Set}.
+    Context {X : Set}.
     (* espace d'arrivé *)
     Context {A : AbsRing}.
-    Context {E : NormedModule A}.
+    Context {E : ModuleSpace A}.
 
     Definition indic (P : X -> Prop) : X -> A :=
         fun x =>
@@ -56,7 +56,7 @@ Section simpl_fun_def.
     Close Scope R_scope.
     
     (* Un espace mesuré *)
-    Context {gen : (X -> Prop) -> Prop}.
+    Context {gen : (X -> Prop) -> Prop}. 
     Context {μ : measure gen}.
 
     (* la fonction est val ∘ which *)
@@ -77,6 +77,8 @@ Section simpl_fun_def.
                 is_finite (μ (fun x => which x = n))
     }.
 
+    Definition meas_of_sf (sf : simpl_fun) := μ.
+
     Definition nth_carrier (sf : simpl_fun) (n : nat) : (X -> Prop) :=
         (fun x => sf.(which) x = n).
 
@@ -87,6 +89,9 @@ Section simpl_fun_def.
         ∃ sf : simpl_fun, ∀ x : X, fun_sf sf x = f x.
 
 End simpl_fun_def.
+
+Arguments simpl_fun {X A} E {gen} μ.
+Arguments is_simpl {X A} [E] {gen} μ f.
 
 Section simpl_fun_norm.
 
@@ -109,7 +114,7 @@ Section simpl_fun_norm.
 
     Notation "‖ f ‖" := (fun_norm f) (at level 100) : fun_scope.
 
-    Definition sf_norm_aux (sf : @simpl_fun _ _ E _ μ) : @simpl_fun _ _ R_NormedModule _ μ.
+    Definition sf_norm_aux (sf : simpl_fun E μ) : simpl_fun R_ModuleSpace μ.
         case: sf => which val max_which ax1 ax2 ax3 ax4.
         pose nval :=
             fun n => norm (val n).
@@ -127,9 +132,9 @@ Section simpl_fun_norm.
 
     Notation "‖ sf ‖" := (sf_norm_aux sf) (at level 100) : sf_scope.
 
-    Lemma simpl_fun_norm :
-        ∀ f : X -> E, @is_simpl _ _ E _ μ f -> 
-            @is_simpl _ _ _ _ μ (fun_norm f).
+    Lemma sf_norm :
+        ∀ f : X -> E, is_simpl μ f -> 
+            is_simpl μ (fun_norm f).
     Proof.
         move => f.
         case => sf. case_eq sf => which val max_which ax1 ax2 ax3 ax4 Eqsf Eqf.
@@ -172,7 +177,7 @@ Section simpl_fun_plus.
 
     Notation "f + g" := (fun_plus f g) (left associativity, at level 50) : fun_scope. 
 
-    Definition sf_plus_aux (sf sg : @simpl_fun _ _ E _ μ) : @simpl_fun _ _ E _ μ.
+    Definition sf_plus_aux (sf sg : simpl_fun E μ) : simpl_fun E μ.
         case: sf => wf vf maxf axf1 axf2 axf3 axf4.
         case: sg => wg vg maxg axg1 axg2 axg3 axg4.
         pose val := fun m =>
@@ -322,10 +327,10 @@ Section simpl_fun_plus.
 
     Notation "sf + sg" := (sf_plus_aux sf sg) (left associativity, at level 50) : sf_scope.
 
-    Lemma simpl_fun_plus :
+    Lemma sf_plus :
         ∀ f g : X -> E, 
-        @is_simpl _ _ E _ μ f -> @is_simpl _ _ E _ μ g ->
-        @is_simpl _ _ _ _ μ (fun_plus f g).
+        is_simpl μ f -> is_simpl μ g ->
+        is_simpl μ (fun_plus f g).
     Proof.
         move => f g.
         case => sf Eq_sf_f; case => sg Eq_sg_g.
@@ -380,7 +385,7 @@ Section simpl_fun_scal.
 
     Notation "a ⋅ sf" := (sf_scal_aux a sf) (left associativity, at level 45) : sf_scope.
 
-    Lemma simpl_fun_scal :
+    Lemma sf_scal :
         ∀ a : A, ∀ f : X -> E, 
         @is_simpl _ _ E _ μ f ->
         @is_simpl _ _ _ _ μ (fun_scal a f).

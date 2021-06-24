@@ -42,8 +42,8 @@ Section BInt_for_sf.
 
     Open Scope R_scope.
 
-    (* Une définition un peu lourde mais calculable de l'intégrale de Boshner pour une fonction simple *)
-    Definition BInt_sf (sf : @simpl_fun _ _ E _ μ) : E :=
+    (* Une définition calculable de l'intégrale de Bochner d'une fonction simple *)
+    Definition BInt_sf (sf : simpl_fun _ μ) : E :=
         sum_n
             (fun n => scal (real (μ (nth_carrier sf n))) (sf.(val) n))
             (sf.(max_which)).
@@ -62,6 +62,9 @@ Section BInt_for_sf.
     *)
 
 End BInt_for_sf.
+
+Notation "'∫B' sf" := (BInt_sf sf)
+        (only printing, at level 45, format "'[ ' '∫B'  sf ']'") : sf_scope.
 
 Open Scope nat_scope.
 
@@ -166,7 +169,7 @@ Section BInt_sf_plus.
     Open Scope sf_scope.
 
     Lemma BInt_sf_plus_aux :
-        ∀ sf_f sf_g : @simpl_fun _ _ E _ μ,
+        ∀ sf_f sf_g : simpl_fun E μ,
             BInt_sf (sf_f + sf_g) = ((BInt_sf sf_f) + (BInt_sf sf_g))%hy.
     Proof.
         move => sf_f sf_g.
@@ -561,7 +564,7 @@ Section BInt_sf_scal.
     Open Scope sf_scope.
 
     Lemma BInt_sf_scal_aux :
-        ∀ a : R_AbsRing, ∀ sf : @simpl_fun _ _ E _ μ,
+        ∀ a : R_AbsRing, ∀ sf : simpl_fun E μ,
             BInt_sf (a ⋅ sf) = (a ⋅ (BInt_sf sf))%hy.
     Proof.
         move => a sf.
@@ -602,7 +605,7 @@ Section BInt_linearity.
     Open Scope sf_scope.
 
     Lemma BInt_sf_lin_aux :
-        ∀ a b : R_AbsRing, ∀ sf sg : @simpl_fun _ _ E _ μ,
+        ∀ a b : R_AbsRing, ∀ sf sg : simpl_fun E μ,
             BInt_sf (a ⋅ sf + b ⋅ sg) 
             = ((a ⋅ (BInt_sf sf)) + (b ⋅ (BInt_sf sg)))%hy.
     Proof.
