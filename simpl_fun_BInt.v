@@ -23,7 +23,10 @@ From MILC Require Import
 Require Import 
     simpl_fun
     square_bij
+    hierarchy_notations
 .
+
+Open Scope hy_scope.
 
 Section BInt_for_sf.
 
@@ -162,11 +165,9 @@ Section BInt_sf_plus.
     Open Scope nat_scope.
     Open Scope sf_scope.
 
-    Check (_ + _)%sf.
-
     Lemma BInt_sf_plus_aux :
         ∀ sf_f sf_g : @simpl_fun _ _ E _ μ,
-            BInt_sf (sf_f + sf_g) = plus (BInt_sf sf_f) (BInt_sf sf_g).
+            BInt_sf (sf_f + sf_g) = ((BInt_sf sf_f) + (BInt_sf sf_g))%hy.
     Proof.
         move => sf_f sf_g.
         case_eq sf_f => wf vf maxf axf1 axf2 axf3 axf4 Eqf.
@@ -561,7 +562,7 @@ Section BInt_sf_scal.
 
     Lemma BInt_sf_scal_aux :
         ∀ a : R_AbsRing, ∀ sf : @simpl_fun _ _ E _ μ,
-            BInt_sf (a ⋅ sf) = scal a (BInt_sf sf).
+            BInt_sf (a ⋅ sf) = (a ⋅ (BInt_sf sf))%hy.
     Proof.
         move => a sf.
         unfold BInt_sf.
@@ -603,7 +604,7 @@ Section BInt_linearity.
     Lemma BInt_sf_lin_aux :
         ∀ a b : R_AbsRing, ∀ sf sg : @simpl_fun _ _ E _ μ,
             BInt_sf (a ⋅ sf + b ⋅ sg) 
-            = plus (scal a (BInt_sf sf)) (scal b (BInt_sf sg)).
+            = ((a ⋅ (BInt_sf sf)) + (b ⋅ (BInt_sf sg)))%hy.
     Proof.
         move => a b sf sg.
         do 2 rewrite <-BInt_sf_scal_aux.

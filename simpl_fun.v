@@ -25,6 +25,7 @@ From MILC Require Import
 
 Require Import
     square_bij
+    hierarchy_notations
 .
 
 Declare Scope sf_scope.
@@ -32,6 +33,8 @@ Delimit Scope sf_scope with sf.
 
 Declare Scope fun_scope.
 Delimit Scope fun_scope with fn.
+
+Open Scope hy_scope.
 
 Section simpl_fun_def.
 
@@ -104,7 +107,7 @@ Section simpl_fun_norm.
     Definition fun_norm (f : X -> E) :=
         fun x => norm (f x).
 
-    Notation "‖ f ‖" := (fun_norm f) (at level 10) : fun_scope.
+    Notation "‖ f ‖" := (fun_norm f) (at level 100) : fun_scope.
 
     Definition sf_norm_aux (sf : @simpl_fun _ _ E _ μ) : @simpl_fun _ _ R_NormedModule _ μ.
         case: sf => which val max_which ax1 ax2 ax3 ax4.
@@ -122,7 +125,7 @@ Section simpl_fun_norm.
             exact ax4.
     Defined.
 
-    Notation "‖ sf ‖" := (sf_norm_aux sf) (at level 10) : sf_scope.
+    Notation "‖ sf ‖" := (sf_norm_aux sf) (at level 100) : sf_scope.
 
     Lemma simpl_fun_norm :
         ∀ f : X -> E, @is_simpl _ _ E _ μ f -> 
@@ -139,8 +142,8 @@ Section simpl_fun_norm.
 
 End simpl_fun_norm.
 
-Notation "‖ f ‖" := (fun_norm f) (at level 10) : fun_scope.
-Notation "‖ sf ‖" := (sf_norm_aux sf) (at level 10) : sf_scope.
+Notation "‖ f ‖" := (fun_norm f) (at level 100) : fun_scope.
+Notation "‖ sf ‖" := (sf_norm_aux sf) (at level 100) : sf_scope.
 
 Open Scope nat_scope.
 
