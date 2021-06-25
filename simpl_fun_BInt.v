@@ -789,4 +789,16 @@ Section BInt_well_defined.
         pose δ := (sf + (opp one) ⋅ sf')%sf.
         assert (∀ x : X, fun_sf δ x = zero) as δNul.
             move => x; unfold δ.
-            
+            rewrite fun_sf_plus fun_sf_scal.
+            rewrite scal_opp_l scal_one.
+            rewrite <-Hsfsf'; rewrite plus_opp_r => //.
+            assert ((BInt_sf sf) + (opp one) ⋅ (BInt_sf sf') = (BInt_sf sf') + (opp one) ⋅ (BInt_sf sf'))%hy as Subgoal.
+                rewrite <-BInt_sf_scal_aux at 1.
+                rewrite <-BInt_sf_plus_aux at 1.
+                fold δ; rewrite BInt_sf_zero.
+                rewrite scal_opp_l scal_one plus_opp_r => //.
+                assumption.
+            apply plus_reg_r with ((opp one) ⋅ (BInt_sf sf'))%hy => //.
+    Qed.
+
+End BInt_well_defined.
