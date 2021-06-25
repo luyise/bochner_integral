@@ -424,6 +424,18 @@ Section simpl_fun_plus.
             rewrite Eq_sg_g => //.
     Qed.
 
+    Lemma fun_sf_plus :
+        ∀ sf sg : simpl_fun E μ, 
+            (∀ x : X, fun_sf (sf + sg)%sf x = (fun_sf sf x + fun_sf sg x)%hy).
+    Proof.
+        move => sf sg.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        case_eq sg => wg vg maxg axg1 axg2 axg3 axg4 Eqg; rewrite <-Eqg => /=.
+        unfold fun_sf.
+        rewrite Eqf Eqg => x /=.
+        rewrite is_bij_square => //.
+    Qed.
+
 End simpl_fun_plus.
 
 Notation "f + g" := (fun_plus f g) (left associativity, at level 50) : fun_scope. 
@@ -447,7 +459,7 @@ Section simpl_fun_scal.
 
     Notation "a ⋅ g" := (fun_scal a g) (left associativity, at level 45) : fun_scope.
 
-    Definition sf_scal_aux (a : A) (sf : @simpl_fun _ _ E _ μ) : @simpl_fun _ _ E _ μ.
+    Definition sf_scal_aux (a : A) (sf : simpl_fun E μ) : simpl_fun E μ.
         case: sf => wf vf maxf axf1 axf2 axf3 axf4.
         pose val := fun k => scal a (vf k).
         apply (mk_simpl_fun wf val maxf).
@@ -461,14 +473,24 @@ Section simpl_fun_scal.
 
     Lemma sf_scal :
         ∀ a : A, ∀ f : X -> E, 
-        @is_simpl _ _ E _ μ f ->
-        @is_simpl _ _ _ _ μ (fun_scal a f).
+        is_simpl μ f ->
+        is_simpl μ (fun_scal a f).
     Proof.
         move => a f.
         case => sf; case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqsf => /= Eqf.
         exists (sf_scal_aux a sf) => x.
         unfold fun_sf, val, which; rewrite Eqsf => /=.
         unfold fun_scal; rewrite Eqf => //.
+    Qed.
+
+    Lemma fun_sf_scal :
+        ∀ a : A, ∀ sf : simpl_fun E μ, 
+            (∀ x : X, fun_sf (a ⋅ sf) x = (a ⋅ (fun_sf sf x))%hy).
+    Proof.
+        move => a sf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        unfold fun_sf.
+        rewrite Eqf => //.
     Qed.
 
 End simpl_fun_scal.

@@ -20,6 +20,7 @@ From MILC Require Import
     measure
     sigma_algebra
     sum_Rbar_nonneg
+    Rbar_compl
 .
 
 Require Import 
@@ -49,19 +50,6 @@ Section BInt_for_sf.
         sum_n
             (fun n => scal (real (μ (nth_carrier sf n))) (sf.(val) n))
             (sf.(max_which)).
-
-    (*
-    Lemma BInt_sf_indep_of_dec :
-        ∀ f : X -> E, ∀ l l' : list ((X -> Prop) * E),
-        ∀ π : simpl_fun_for μ l f, ∀ π' : simpl_fun_for μ l' f,
-        BInt_sf f l π = BInt_sf f l' π'.
-    *)
-    (* Idées pour s'y prendre avec ce lemme :
-        1. s'en sortir avec un lemme d'extensionnalité (violent)
-            ça doit être faisable avec la définition des fonctions simples
-        2. commencer par montrer que cette définition est un morphisme pour +
-            et remarquer que f - f admet une décomposition triviale donnant une intégrale nulle 
-    *)
 
 End BInt_for_sf.
 
@@ -738,3 +726,67 @@ Section BInt_sf_norm.
     Qed.
 
 End BInt_sf_norm.
+
+Section BInt_well_defined.
+
+    (* espace de départ *)
+    Context  {X : Set}.
+    (* espace d'arrivé : cette fois c'est nécessairement un R-module
+    (en fait je pense qu'on pourrait prendre un surcorps de R mais je ne vois pas comment
+    formaliser celà simplement) *)
+    Context {E : NormedModule R_AbsRing}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context {μ : measure gen}.
+
+    Lemma BInt_sf_zero :
+        ∀ sf : simpl_fun E μ,
+            (∀ x : X, fun_sf sf x = zero)
+            -> BInt_sf sf = zero.
+    Proof.
+        move => sf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf.
+        unfold fun_sf => Hf.
+        unfold BInt_sf.
+        rewrite (sum_n_ext_loc _ (fun (n : nat) => zero)).
+            induction max_which.
+                rewrite sum_O => //.
+                rewrite sum_Sn plus_zero_r; apply IHn.
+        move => n Hn.
+        unfold nth_carrier.
+        replace (which sf) with wf by rewrite Eqf => //.
+        replace (max_which sf) with maxf in Hn
+            by rewrite Eqf => //.
+        case: (le_lt_v_eq n maxf) => // Hn'.
+            pose Hμn := axf4 n Hn'; clearbody Hμn; unfold is_finite in Hμn.
+            pose Le0μn := meas_ge_0 _ μ (λ x : X, wf x = n); clearbody Le0μn.
+            case: (Rbar_le_cases _ Le0μn).
+                (* cas où le support est de mesure nulle *)
+                move => ->.
+                rewrite scal_zero_l => //.
+                (* cas où le support est habité *)
+                case.
+                    case => r [Lt0r Eqr].
+                    assert (Rbar_lt 0%R (μ (λ x : X, wf x = n))) as Lt0μn.
+                        rewrite Eqr.
+                        unfold Rbar_lt => //.
+                    case: (measure_gt_0_exists _ _ _ Lt0μn) => x <-.
+                    replace (which sf) with wf in Hf by rewrite Eqf => //.
+                    rewrite Hf scal_zero_r => //.
+                pose Finμn := axf4 _ Hn'; clearbody Finμn.
+                move => Abs; rewrite Abs in Finμn => //.
+            rewrite Hn'.
+            replace (val sf) with vf by rewrite Eqf => //.
+            rewrite axf1 scal_zero_r => //.
+    Qed.
+
+    Lemma BInt_sf_indep_of_dec :
+        ∀ sf sf' : simpl_fun E μ,
+            (∀ x : X, fun_sf sf x = fun_sf sf' x) ->
+            BInt_sf sf = BInt_sf sf'.
+    Proof.
+        move => sf sf' Hsfsf'.
+        pose δ := (sf + (opp one) ⋅ sf')%sf.
+        assert (∀ x : X, fun_sf δ x = zero) as δNul.
+            move => x; unfold δ.
+            
