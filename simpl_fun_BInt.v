@@ -6,7 +6,9 @@ From Coq Require Import
     Lia
     Utf8
 
+    ClassicalDescription
     Rdefinitions
+    Rbasic_fun
 .
 
 From Coquelicot Require Import
@@ -66,6 +68,38 @@ End BInt_for_sf.
 Notation "'∫B' sf" := (BInt_sf sf)
         (only printing, at level 45, format "'[ ' '∫B'  sf ']'") : sf_scope.
 
+Section BInt_sf_indic.
+
+    (* espace de départ *)
+    Context  {X : Set}.
+    (* espace d'arrivé : R *)
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context {μ : measure gen}.
+
+    Open Scope R_scope.
+    Open Scope fun_scope.
+
+    Lemma BInt_sf_indic (P : X -> Prop) (π_meas : measurable gen P) (π_fin : is_finite (μ P))
+        : BInt_sf (sf_indic_aux μ P π_meas π_fin) = real (μ P).
+    Proof.
+        unfold BInt_sf.
+        replace (max_which (sf_indic_aux μ P π_meas π_fin)) with 1%nat at 1 
+            by unfold sf_indic_aux => //.
+        rewrite sum_Sn sum_O.
+        case_eq (sf_indic_aux μ P π_meas π_fin) => wP vP maxP axP1 axP2 axP3 axP4 EqP;
+            unfold nth_carrier; rewrite <-EqP => /=.
+        rewrite (measure_ext gen μ _ P).
+            all : swap 1 2.
+            move => x; case: (excluded_middle_informative (P x)) => //.
+        rewrite scal_zero_r plus_zero_r.
+        unfold scal => /=.
+        unfold mult => /=.
+        rewrite RIneq.Rmult_1_r => //.
+    Qed.
+
+End BInt_sf_indic.
+
 Open Scope nat_scope.
 
 Lemma sum_n_m_scal_r {A : Ring} {E : ModuleSpace A} :
@@ -123,7 +157,6 @@ Proof.
         unfold is_finite in HuSn, Hsum |- *.
         rewrite <-HuSn, <-Hsum => //.
 Qed.
-        
 
 Lemma sum_n_sum_Rbar :
     ∀ u : nat -> Rbar, ∀ n : nat, (∀ k : nat, k <= n -> is_finite (u k))
@@ -588,7 +621,7 @@ Section BInt_sf_scal.
 
 End BInt_sf_scal.
 
-Section BInt_linearity.
+Section BInt_sf_linearity.
 
     (* espace de départ *)
     Context  {X : Set}.
@@ -614,4 +647,94 @@ Section BInt_linearity.
         rewrite BInt_sf_plus_aux => //.
     Qed.
 
-End BInt_linearity.
+End BInt_sf_linearity.
+
+Lemma norm_scal_eq {E : NormedModule R_AbsRing} :
+    ∀ r : R, ∀ x : E, ‖ r ⋅ x ‖ = | r | ⋅ ‖ x ‖.
+Proof.
+    move => a x.
+    apply RIneq.Rle_antisym.
+        unfold scal at 2 => /=.
+        exact (norm_scal a x).
+        case (RIneq.Req_dec a 0).
+            move => ->.
+            rewrite abs_zero; do 2 rewrite scal_zero_l; rewrite norm_zero.
+            apply RIneq.Rle_refl.
+        (* case (RIneq.Req_dec (‖x‖) 0).
+            move => Hx _.
+            rewrite Hx scal_zero_r.
+            apply norm_ge_0.
+        move => xNeq0 aNeq0. *)
+        move => aNeq0.
+        apply RIneq.Rmult_le_reg_l with (|/a|)%R.
+        apply Rabs_pos_lt.
+        apply RIneq.Rinv_neq_0_compat => //.
+        replace ((| / a |) * ((| a |) ⋅ (‖ x ‖)))%R
+            with ((| / a |) ⋅ ((| a |) ⋅ (‖ x ‖)))%hy
+            by unfold scal at 1 => //.
+        rewrite scal_assoc.
+        unfold abs at 1 2 => /=.
+        rewrite <-Rabs_mult.
+        rewrite <-RIneq.Rinv_l_sym.
+        unfold scal at 1 => /=.
+        unfold mult => /=.
+        rewrite (Rabs_right _ (RIneq.Rle_ge _ _ RIneq.Rle_0_1)).
+        rewrite Raxioms.Rmult_1_l.
+        replace x with (/a ⋅ (a ⋅ x)) at 1.
+            3 : assumption.
+            2 : rewrite scal_assoc.
+            2 : rewrite <-RIneq.Rinv_l_sym => //.
+            2 : rewrite scal_one => //.
+        apply (norm_scal (/a) (a⋅x)).
+Qed.
+
+Section BInt_sf_norm.
+
+    (* espace de départ *)
+    Context  {X : Set}.
+    (* espace d'arrivé : cette fois c'est nécessairement un R-module
+    (en fait je pense qu'on pourrait prendre un surcorps de R mais je ne vois pas comment
+    formaliser celà simplement) *)
+    Context {E : NormedModule R_AbsRing}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context {μ : measure gen}.
+
+    Open Scope R_scope.
+    Open Scope nat_scope.
+    Open Scope sf_scope.
+
+    Lemma norm_Bint_sf_le :
+        ∀ sf : simpl_fun E μ,
+            (‖ BInt_sf sf ‖%hy <= BInt_sf (‖ sf ‖))%R.
+    Proof.
+        move => sf;
+            case_eq sf => vf wf maxf axf1 axf2 axf3 axf4 Eqf;
+            rewrite <-Eqf.
+        unfold BInt_sf.
+        replace (max_which sf) with maxf by rewrite Eqf => //.
+        replace (max_which (‖ sf ‖)) with maxf at 1 by rewrite Eqf => //.
+        rewrite (sum_n_ext_loc _ ((λ n : nat, | real (μ (nth_carrier sf n)) | ⋅ (‖ val sf n ‖)%hy)))%hy.
+            all : swap 1 2.
+            rewrite Eqf => /=.
+            unfold abs => /= n Hn.
+            case: (le_lt_v_eq n maxf) => // Hn'; clear Hn.
+            rewrite Rabs_pos_eq => //.
+            unfold nth_carrier => /=.
+            pose Le0μn := meas_ge_0 _ μ (λ x : X, vf x = n); clearbody Le0μn.
+            pose Fin_μn := axf4 n Hn'; clearbody Fin_μn.
+            case_eq (μ (λ x : X, vf x = n)).
+                move => r Eqr; rewrite Eqr in Le0μn => //.
+                move => Abs; rewrite Abs in Fin_μn => //.
+                move => Abs; rewrite Abs in Fin_μn => //.
+            setoid_rewrite Hn' at 2 4.
+            replace (wf maxf) with (@zero E) at 2 3.
+            rewrite norm_zero; do 2 rewrite scal_zero_r => //.
+        rewrite (sum_n_ext _ (λ n : nat, ‖ (real (μ (nth_carrier sf n))) ⋅ (val sf n) ‖)%hy).
+            all : swap 1 2.
+            move => n.
+            rewrite norm_scal_eq => //.
+        apply: norm_sum_n_m.
+    Qed.
+
+End BInt_sf_norm.
