@@ -200,7 +200,7 @@ Section BInt_sf_plus.
         unfold BInt_sf.
         replace (max_which sf_f) with maxf by rewrite Eqf => //.
         replace (max_which sf_g) with maxg by rewrite Eqg => //.
-        replace (max_which (sf_f + sf_g)) with ((S maxf) * (S maxg) - 1).
+        replace (max_which (sf_f + sf_g)) with ((S maxf) * (S maxg) - 1)%nat.
             2 : rewrite Eqf Eqg => //.
         unfold nth_carrier.
         rewrite square_bij_sum.

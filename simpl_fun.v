@@ -26,6 +26,7 @@ From MILC Require Import
 Require Import
     square_bij
     hierarchy_notations
+    Rmax_n
 .
 
 Declare Scope sf_scope.
@@ -55,7 +56,7 @@ Section simpl_fun_def.
 
     Open Scope core_scope.
     Open Scope type_scope.
-    Close Scope R_scope.
+    Open Scope nat_scope.
     
     (* Un espace mesuré *)
     Context {gen : (X -> Prop) -> Prop}. 
@@ -71,7 +72,7 @@ Section simpl_fun_def.
             val max_which = zero;
         ax_which_max_which :
             ∀ x : X, which x <= max_which;
-        ax_mesurable :
+        ax_measurable :
             ∀ n : nat, n <= max_which ->
                 measurable gen (fun x => which x = n);
         ax_finite :
@@ -87,8 +88,12 @@ Section simpl_fun_def.
     Definition fun_sf (sf : simpl_fun) : X -> E :=
         fun x => sf.(val) (sf.(which) x).
 
+    (* On se donne la possibilité de calculer la "valeur" d'une simpl_fun en l'évaluant en x : *)
+    Coercion fun_sf : simpl_fun >-> Funclass.
+
+    (* Un exemple d'utilisation est fait dans cete définition *)
     Definition is_simpl (f : X -> E) :=
-        ∃ sf : simpl_fun, ∀ x : X, fun_sf sf x = f x.
+        ∃ sf : simpl_fun, ∀ x : X, sf x = f x.
 
 End simpl_fun_def.
 
@@ -497,3 +502,32 @@ End simpl_fun_scal.
 
 Notation "a ⋅ g" := (fun_scal a g) (left associativity, at level 45) : fun_scope.
 Notation "a ⋅ sf" := (sf_scal_aux a sf) (left associativity, at level 45) : sf_scope.
+Notation "- g" := (fun_scal (opp one) g) : fun_scope.
+Notation "- sg" := (sf_scal_aux (opp one) sg) : sf_scope.
+Notation "f - g" := (fun_plus f (- g)) : fun_scope.
+Notation "sf - sg" := (sf_plus_aux sf (- sg)) : sf_scope.
+
+Section simpl_fun_bounded.
+
+    (* espace de départ *)
+    Context  {X : Set}.
+    (* espace d'arrivé *)
+    Context {A : AbsRing}.
+    Context {E : NormedModule A}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context {μ : measure gen}.
+
+    Open Scope hy_scope.
+
+    Definition sf_bounded :
+        ∀ sf : simpl_fun E μ, { M : R | ∀ x : X, ‖ fun_sf sf x ‖ <= M }.
+    (* definition *)
+        move => sf.
+        apply exist with (Rmax_n (fun k => ‖ val sf k ‖) (max_which sf)).
+        move => x; unfold fun_sf.
+        pose Hwx := ax_which_max_which sf x; clearbody Hwx.
+        apply: fo_le_Rmax_n => //.
+    Qed.
+
+End simpl_fun_bounded.
