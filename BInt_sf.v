@@ -123,29 +123,6 @@ Proof.
     apply sum_n_m_scal_r.
 Qed.
 
-Open Scope R_scope.
-Open Scope nat_scope.
-
-Lemma finite_sum_Rbar :
-    ∀ u : nat -> Rbar, ∀ n : nat, (∀ k : nat, k ≤ n -> is_finite (u k))
-    -> is_finite (sum_Rbar n u).
-Proof.
-    move => u; induction n => Hu.
-        unfold sum_Rbar.
-        assert (0 ≤ 0) by lia.
-        apply Hu => //.
-        simpl.
-        assert (S n <= S n) by lia.
-        pose HuSn := (Hu (S n) H); clearbody HuSn.
-        assert (∀ k : nat, k ≤ n -> is_finite (u k)).
-            move => k Hk.
-            assert (k ≤ S n) by lia.
-            apply Hu => //.
-        pose Hsum := IHn H0; clearbody Hsum; clear H0.
-        unfold is_finite in HuSn, Hsum |- *.
-        rewrite <-HuSn, <-Hsum => //.
-Qed.
-
 Lemma sum_n_sum_Rbar :
     ∀ u : nat -> Rbar, ∀ n : nat, (∀ k : nat, k <= n -> is_finite (u k))
     -> sum_n (fun k => real (u k)) n = real (sum_Rbar n u).

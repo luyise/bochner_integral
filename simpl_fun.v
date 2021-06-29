@@ -20,7 +20,9 @@ From Coquelicot Require Import
 
 From MILC Require Import 
     measure
-    sigma_algebra    
+    sigma_algebra
+    sum_Rbar_nonneg
+    Rbar_compl
 .
 
 Require Import
@@ -531,3 +533,196 @@ Section simpl_fun_bounded.
     Qed.
 
 End simpl_fun_bounded.
+
+Open Scope R_scope.
+Open Scope nat_scope.
+
+Lemma finite_sum_Rbar :
+    ∀ u : nat -> Rbar, ∀ n : nat, (∀ k : nat, k ≤ n -> is_finite (u k))
+    -> is_finite (sum_Rbar n u).
+Proof.
+    move => u; induction n => Hu.
+        unfold sum_Rbar.
+        assert (0 ≤ 0) by lia.
+        apply Hu => //.
+        simpl.
+        assert (S n <= S n) by lia.
+        pose HuSn := (Hu (S n) H); clearbody HuSn.
+        assert (∀ k : nat, k ≤ n -> is_finite (u k)).
+            move => k Hk.
+            assert (k ≤ S n) by lia.
+            apply Hu => //.
+        pose Hsum := IHn H0; clearbody Hsum; clear H0.
+        unfold is_finite in HuSn, Hsum |- *.
+        rewrite <-HuSn, <-Hsum => //.
+Qed.
+
+Section simpl_fun_meas.
+
+    (* espace de départ *)
+    Context  {X : Set}.
+    (* espace d'arrivé *)
+    Context {A : AbsRing}.
+    Context {E : NormedModule A}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context {μ : measure gen}.
+
+    Lemma measurable_sf_preim :
+        ∀ sf : simpl_fun E μ, ∀ y : E,
+            measurable gen (fun x : X => sf x = y).
+    Proof.
+        move => sf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        move => y.
+        pose P := fun k => (λ x : X, vf k = y ∧ which sf x = k).
+        apply measurable_ext with (λ x : X, ∃ k : nat, k ≤ maxf ∧ P k x).
+            move => x; split.
+                case => k; case => Hk.
+                unfold P; case => <-; unfold fun_sf => ->.
+                rewrite Eqf => /=; split; auto with arith.
+                move => Eq_sfx_vfn.
+                exists (which sf x); split.
+                    replace (which sf x) with (wf x) by rewrite Eqf => //; apply axf2.
+                    unfold P; split.
+                    unfold fun_sf in Eq_sfx_vfn.
+                    replace (vf (which sf x)) with (val sf (which sf x))
+                        by rewrite Eqf => //.
+                    rewrite Eq_sfx_vfn => //.
+                    reflexivity.
+                apply measurable_union_finite => k Hk.
+                unfold P; apply measurable_inter.
+        apply measurable_Prop.
+        replace (which sf) with (wf) by rewrite Eqf => //.
+        apply axf3 => //.
+    Qed.
+
+    Lemma sf_measurable_preim_le :
+        ∀ sf : simpl_fun E μ, ∀ n : nat, n ≤ max_which sf ->
+            measurable gen (λ x : X, which sf x ≤ n).
+    Proof.
+        move => sf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        move => n Hn.
+        pose B := fun k => (λ x : X, which sf x = k).
+        apply measurable_ext with (fun x => ∃ k : nat, k ≤ n ∧ which sf x = k).
+            move => x; split.
+                case => k [Hk Eqk]; lia.
+                move => Hsfx; exists (which sf x); auto.
+            apply (measurable_union_finite _ ) => k Hk.
+            apply ax_measurable.
+            lia.
+    Qed.
+
+    Lemma sf_measurable_preim_lt :
+        ∀ sf : simpl_fun E μ, ∀ n : nat, n ≤ max_which sf ->
+            measurable gen (λ x : X, which sf x < n).
+    Proof.
+        move => sf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        case.
+            move => _.
+            apply measurable_ext with (fun _ => False).
+            move => x; split => //.
+            lia.
+            apply measurable_Prop.
+            
+            move => n' HSn'.
+            apply measurable_ext with (fun x => which sf x ≤ n').
+            move => x; split; lia.
+            apply sf_measurable_preim_le; lia.
+    Qed.
+
+    Lemma is_finite_sf_preim_lt :
+        ∀ sf : simpl_fun E μ, ∀ n : nat, n ≤ max_which sf ->
+            is_finite (μ (λ x : X, which sf x < n)).
+    Proof.
+        move => sf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        case.
+            move => _.
+            rewrite (measure_ext _ _ _ (fun _ => False)).
+            rewrite meas_False => //.
+            lia.
+        move => n Hn.
+        rewrite (measure_ext _ _ _ (λ x : X, which sf x ≤ n)); swap 1 2.
+            lia.
+        pose B := fun k => (λ x : X, which sf x = k).
+        rewrite (measure_decomp_finite _  μ _ maxf B).
+        assert (n < maxf) as Ltnmaxf.
+        rewrite Eqf in Hn; simpl in Hn.
+        lia.
+        apply finite_sum_Rbar => k Hk; unfold B.
+        case_eq (k <=? n).
+            move => /Nat.leb_le Hk'.
+            rewrite (measure_ext _ _ _ (fun x => which sf x = k)).
+            apply ax_finite; lia.
+            move => x; split; [easy | move => -> //].
+            move => /Nat.leb_gt Hk'.
+            rewrite (measure_ext _ _ _ (fun _ => False)).
+            rewrite meas_False => //.
+            move => x; split => //.
+            lia.
+        apply sf_measurable_preim_le; lia.
+        move => k Hk; unfold B; apply ax_measurable; rewrite Eqf => //.
+        move => x; unfold B; exists (which sf x); split => //.
+        rewrite Eqf => /=; apply axf2.
+
+        move => p q x Hp Hq; unfold B; move => -> //.
+    Qed.
+
+    Lemma sf_decomp_preim_which :
+        ∀ sf : simpl_fun E μ, ∀ y : E,
+            (μ (fun x : X => sf x = y)) 
+            = sum_Rbar (max_which sf) (fun k => (μ (fun x : X => val sf k = y ∧ which sf x = k))).
+    Proof.
+        move => sf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        move => y.
+        pose B := fun k => (λ x : X, which sf x = k).
+            rewrite (measure_decomp_finite _ μ (fun x => sf x = y) maxf B).
+            unfold B; rewrite Eqf => /=.
+            apply sum_Rbar_ext => k Hk.
+            apply measure_ext => x; split.
+                case => Eq_sfx_y Eq_wfx_k.
+                split; [rewrite <-Eq_wfx_k | rewrite Eq_wfx_k] => //.
+                case => Eq_vfk_y Eq_wfx_k.
+                split; [rewrite Eq_wfx_k | ] => //.
+            apply measurable_sf_preim.
+            move => k Hk.
+            unfold B; apply ax_measurable; rewrite Eqf => //.
+            move => x; unfold B; exists (which sf x).
+            split; [rewrite Eqf => /=; apply axf2 | reflexivity].
+            move => p q x Hp Hq; unfold B => -> //.
+    Qed.
+
+    Lemma finite_sf_preim_neq_0 :
+        ∀ sf : simpl_fun E μ, ∀ y : E, y ≠ zero ->
+            is_finite (μ (fun x : X => sf x = y)).
+    Proof.
+        move => sf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        move => y Hy.
+        rewrite sf_decomp_preim_which.
+        apply finite_sum_Rbar => k Hk.
+        case: (le_lt_or_eq k (max_which sf) Hk) => Hkmaxf.
+            apply Rbar_bounded_is_finite with (real 0%R) (μ (λ x : X, which sf x = k)).
+            apply meas_ge_0.
+            apply (measure_le _ μ (λ x : X, val sf k = y ∧ which sf x = k) (fun x => which sf x = k)).
+            apply measurable_inter.
+            apply measurable_Prop.
+            1, 2 : rewrite Eqf => /=; apply axf3; rewrite Eqf in Hk; simpl in Hk => //.
+            move => x; case; auto.
+            easy.
+            apply ax_finite => //.
+        
+            rewrite (measure_ext _ _ _ (fun _ => False)).
+            rewrite meas_False => //.
+            move => x; split => //.
+            case; move => Abs _.
+            rewrite Hkmaxf in Abs.
+            rewrite <-Abs in Hy.
+            rewrite Eqf in Hy; simpl in Hy => //.
+    Qed.
+
+End simpl_fun_meas.
