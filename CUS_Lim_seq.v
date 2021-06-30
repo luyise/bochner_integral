@@ -97,3 +97,38 @@ Section Cauchy_lim_seq_def.
     Qed.
     
 End Cauchy_lim_seq_def.
+
+Definition NM_Cauchy_seq {A : AbsRing} {E : NormedModule A} (u : nat -> E) : Prop :=
+    ∀ ɛ : R, ɛ > 0 -> ∃ n : nat, ∀ p q : nat,
+        p ≥ n -> q ≥ n -> ball_norm (u p) ɛ (u q).
+
+Section NM_Cauchy_lim_seq_def.
+
+    Context {A : AbsRing}.
+    Context {E : CompleteNormedModule A}.
+
+    Definition NM_Cauchy_seq_Cauchy_seq :
+        ∀ u : nat -> E, NM_Cauchy_seq u -> Cauchy_seq u.
+    Proof.
+        move => u.
+        unfold NM_Cauchy_seq, Cauchy_seq.
+        move => Hnorm ɛ Hɛ.
+        case: (Hnorm ɛ Hɛ).
+        move => N Hn.
+        exists N => p q Hp Hq.
+        pose HnormNpq := Hn p q Hp Hq; clearbody HnormNpq.
+        apply: norm_compat1 => //.
+    Defined.
+
+    Definition NM_Cauchy_lim_seq (u : nat -> E) (π : NM_Cauchy_seq u) :=
+        Cauchy_lim_seq u (NM_Cauchy_seq_Cauchy_seq u π).
+    
+    Lemma is_limseq_NM_Cauchy_lim_seq :
+    ∀ (u : nat -> E), ∀ (π : NM_Cauchy_seq u),
+        is_lim_seq u (NM_Cauchy_lim_seq u π).
+    Proof.
+        move => u π.
+        apply: is_filterlim_Cauchy_lim_seq.
+    Qed.
+
+End NM_Cauchy_lim_seq_def.

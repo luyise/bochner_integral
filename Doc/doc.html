@@ -828,6 +828,7 @@
 <span class="id" title="keyword">From</span> <span class="id" title="var">Coquelicot</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="library">Hierarchy</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="library">Rbar</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="library">Lim_seq</span><br/>
 .<br/>
 
 <br/>
@@ -838,6 +839,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="simpl_fun.html#"><span class="id" title="library">simpl_fun</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="BInt_sf.html#"><span class="id" title="library">BInt_sf</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Bsf_Lsf.html#"><span class="id" title="library">Bsf_Lsf</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="CUS_Lim_seq.html#"><span class="id" title="library">CUS_Lim_seq</span></a><br/>
 .<br/>
 
 <br/>
@@ -867,9 +869,9 @@
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Inductive</span> <a id="BIF" class="idref" href="#BIF"><span class="id" title="inductive">BIF</span></a> (<a id="f:5" class="idref" href="#f:5"><span class="id" title="binder">f</span></a> : <a class="idref" href="Bi_fun.html#Boshner_integrable_fun.X"><span class="id" title="variable">X</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="Bi_fun.html#Boshner_integrable_fun.E"><span class="id" title="variable">E</span></a>) : <span class="id" title="keyword">Prop</span> :=<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a id="approximation" class="idref" href="#approximation"><span class="id" title="constructor">approximation</span></a> (<a id="seq:8" class="idref" href="#seq:8"><span class="id" title="binder">seq</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="simpl_fun.html#simpl_fun"><span class="id" title="record">simpl_fun</span></a> <a class="idref" href="Bi_fun.html#Boshner_integrable_fun.E"><span class="id" title="variable">E</span></a> <a class="idref" href="Bi_fun.html#1f77082c271fb8db629016e59683f31b"><span class="id" title="variable">μ</span></a>) :<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8_core.html#e15f3fa8414cf45e36c73a91b3f5f2c2"><span class="id" title="notation">∀</span></a> <a id="x:9" class="idref" href="#x:9"><span class="id" title="binder">x</span></a> : <a class="idref" href="Bi_fun.html#Boshner_integrable_fun.X"><span class="id" title="variable">X</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8_core.html#e15f3fa8414cf45e36c73a91b3f5f2c2"><span class="id" title="notation">,</span></a> <span class="id" title="definition">is_lim_seq</span> (<span class="id" title="keyword">fun</span> <a id="n:11" class="idref" href="#n:11"><span class="id" title="binder">n</span></a> ⇒ <a class="idref" href="Bi_fun.html#seq:8"><span class="id" title="variable">seq</span></a> <a class="idref" href="Bi_fun.html#n:11"><span class="id" title="variable">n</span></a> <a class="idref" href="Bi_fun.html#x:9"><span class="id" title="variable">x</span></a>) (<a class="idref" href="Bi_fun.html#f:5"><span class="id" title="variable">f</span></a> <a class="idref" href="Bi_fun.html#x:9"><span class="id" title="variable">x</span></a>)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <span class="id" title="definition">Lim_seq'</span> (<span class="id" title="keyword">fun</span> <a id="n:10" class="idref" href="#n:10"><span class="id" title="binder">n</span></a> ⇒ <span class="id" title="definition">LInt_p</span> <a class="idref" href="Bi_fun.html#1f77082c271fb8db629016e59683f31b"><span class="id" title="variable">μ</span></a> (<a class="idref" href="simpl_fun.html#f4be14622d47d8940aa3e790650b2fb4"><span class="id" title="notation">‖</span></a> <a class="idref" href="Bi_fun.html#f:5"><span class="id" title="variable">f</span></a> <a class="idref" href="simpl_fun.html#::fun_scope:x_'-'_x"><span class="id" title="notation">-</span></a> <a class="idref" href="simpl_fun.html#::fun_scope:x_'-'_x"><span class="id" title="notation">(</span></a><a class="idref" href="Bi_fun.html#seq:8"><span class="id" title="variable">seq</span></a> <a class="idref" href="Bi_fun.html#n:10"><span class="id" title="variable">n</span></a><a class="idref" href="simpl_fun.html#::fun_scope:x_'-'_x"><span class="id" title="notation">)</span></a> <a class="idref" href="simpl_fun.html#f4be14622d47d8940aa3e790650b2fb4"><span class="id" title="notation">‖</span></a>)%<span class="id" title="var">fn</span>) <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="Bi_fun.html#BIF:6"><span class="id" title="inductive">BIF</span></a> <a class="idref" href="Bi_fun.html#f:5"><span class="id" title="variable">f</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a id="approximation" class="idref" href="#approximation"><span class="id" title="constructor">approximation</span></a> (<a id="s:8" class="idref" href="#s:8"><span class="id" title="binder">s</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="simpl_fun.html#simpl_fun"><span class="id" title="record">simpl_fun</span></a> <a class="idref" href="Bi_fun.html#Boshner_integrable_fun.E"><span class="id" title="variable">E</span></a> <a class="idref" href="Bi_fun.html#1f77082c271fb8db629016e59683f31b"><span class="id" title="variable">μ</span></a>) :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8_core.html#e15f3fa8414cf45e36c73a91b3f5f2c2"><span class="id" title="notation">∀</span></a> <a id="x:9" class="idref" href="#x:9"><span class="id" title="binder">x</span></a> : <a class="idref" href="Bi_fun.html#Boshner_integrable_fun.X"><span class="id" title="variable">X</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8_core.html#e15f3fa8414cf45e36c73a91b3f5f2c2"><span class="id" title="notation">,</span></a> <span class="id" title="definition">is_lim_seq</span> (<span class="id" title="keyword">fun</span> <a id="n:11" class="idref" href="#n:11"><span class="id" title="binder">n</span></a> ⇒ <a class="idref" href="Bi_fun.html#s:8"><span class="id" title="variable">s</span></a> <a class="idref" href="Bi_fun.html#n:11"><span class="id" title="variable">n</span></a> <a class="idref" href="Bi_fun.html#x:9"><span class="id" title="variable">x</span></a>) (<a class="idref" href="Bi_fun.html#f:5"><span class="id" title="variable">f</span></a> <a class="idref" href="Bi_fun.html#x:9"><span class="id" title="variable">x</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <span class="id" title="definition">is_lim_seq'</span> (<span class="id" title="keyword">fun</span> <a id="n:10" class="idref" href="#n:10"><span class="id" title="binder">n</span></a> ⇒ <span class="id" title="definition">LInt_p</span> <a class="idref" href="Bi_fun.html#1f77082c271fb8db629016e59683f31b"><span class="id" title="variable">μ</span></a> (<a class="idref" href="simpl_fun.html#f4be14622d47d8940aa3e790650b2fb4"><span class="id" title="notation">‖</span></a> <a class="idref" href="Bi_fun.html#f:5"><span class="id" title="variable">f</span></a> <a class="idref" href="simpl_fun.html#::fun_scope:x_'-'_x"><span class="id" title="notation">-</span></a> <a class="idref" href="simpl_fun.html#::fun_scope:x_'-'_x"><span class="id" title="notation">(</span></a><a class="idref" href="Bi_fun.html#s:8"><span class="id" title="variable">s</span></a> <a class="idref" href="Bi_fun.html#n:10"><span class="id" title="variable">n</span></a><a class="idref" href="simpl_fun.html#::fun_scope:x_'-'_x"><span class="id" title="notation">)</span></a> <a class="idref" href="simpl_fun.html#f4be14622d47d8940aa3e790650b2fb4"><span class="id" title="notation">‖</span></a>)%<span class="id" title="var">fn</span>) 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="Bi_fun.html#BIF:6"><span class="id" title="inductive">BIF</span></a> <a class="idref" href="Bi_fun.html#f:5"><span class="id" title="variable">f</span></a>.<br/>
 
 <br/>
 <span class="id" title="keyword">End</span> <a class="idref" href="Bi_fun.html#Boshner_integrable_fun"><span class="id" title="section">Boshner_integrable_fun</span></a>.<br/>
@@ -881,6 +883,18 @@
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">format</span> "'[ ' 'L¹(' X ','  μ ','  E ')' ']'").<br/>
 
 <br/>
+<span class="id" title="keyword">Section</span> <a id="Bi_fun_prop" class="idref" href="#Bi_fun_prop"><span class="id" title="section">Bi_fun_prop</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span>  {<a id="X:13" class="idref" href="#X:13"><span class="id" title="binder">X</span></a> : <span class="id" title="keyword">Set</span>}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<a id="E:14" class="idref" href="#E:14"><span class="id" title="binder">E</span></a> : <span class="id" title="abbreviation">NormedModule</span> <span class="id" title="definition">R_AbsRing</span>}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<a id="gen:15" class="idref" href="#gen:15"><span class="id" title="binder">gen</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">(</span></a><a class="idref" href="Bi_fun.html#Bi_fun_prop.X"><span class="id" title="variable">X</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Prop</span><a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Prop</span>}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<a id="92bb74d3932762c48d4871fada859cc7" class="idref" href="#92bb74d3932762c48d4871fada859cc7"><span class="id" title="binder">μ</span></a> : <span class="id" title="record">measure</span> <a class="idref" href="Bi_fun.html#Bi_fun_prop.gen"><span class="id" title="variable">gen</span></a>}.<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="Bi_fun.html#Bi_fun_prop"><span class="id" title="section">Bi_fun_prop</span></a>.<br/>
 </div>
 <h1 class="libtitle">Library Bsf_Lsf</h1>
 
@@ -1093,6 +1107,34 @@
 
 <br/>
 <span class="id" title="keyword">End</span> <a class="idref" href="CUS_Lim_seq.html#Cauchy_lim_seq_def"><span class="id" title="section">Cauchy_lim_seq_def</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="NM_Cauchy_seq" class="idref" href="#NM_Cauchy_seq"><span class="id" title="definition">NM_Cauchy_seq</span></a> {<a id="A:40" class="idref" href="#A:40"><span class="id" title="binder">A</span></a> : <span class="id" title="abbreviation">AbsRing</span>} {<a id="E:41" class="idref" href="#E:41"><span class="id" title="binder">E</span></a> : <span class="id" title="abbreviation">NormedModule</span> <a class="idref" href="CUS_Lim_seq.html#A:40"><span class="id" title="variable">A</span></a>} (<a id="u:42" class="idref" href="#u:42"><span class="id" title="binder">u</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="CUS_Lim_seq.html#E:41"><span class="id" title="variable">E</span></a>) : <span class="id" title="keyword">Prop</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8_core.html#e15f3fa8414cf45e36c73a91b3f5f2c2"><span class="id" title="notation">∀</span></a> <a id="e93474792ce36dc9fcc5d5eb0c37fac5" class="idref" href="#e93474792ce36dc9fcc5d5eb0c37fac5"><span class="id" title="binder">ɛ</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.R"><span class="id" title="axiom">R</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8_core.html#e15f3fa8414cf45e36c73a91b3f5f2c2"><span class="id" title="notation">,</span></a> <a class="idref" href="CUS_Lim_seq.html#e93474792ce36dc9fcc5d5eb0c37fac5"><span class="id" title="variable">ɛ</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Reals.Rdefinitions.html#::R_scope:x_'&gt;'_x"><span class="id" title="notation">&gt;</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8_core.html#94e052c6337a815c52cda44eea9df276"><span class="id" title="notation">∃</span></a> <a id="n:44" class="idref" href="#n:44"><span class="id" title="binder">n</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8_core.html#94e052c6337a815c52cda44eea9df276"><span class="id" title="notation">,</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8_core.html#e15f3fa8414cf45e36c73a91b3f5f2c2"><span class="id" title="notation">∀</span></a> <a id="p:45" class="idref" href="#p:45"><span class="id" title="binder">p</span></a> <a id="q:46" class="idref" href="#q:46"><span class="id" title="binder">q</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8_core.html#e15f3fa8414cf45e36c73a91b3f5f2c2"><span class="id" title="notation">,</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="CUS_Lim_seq.html#p:45"><span class="id" title="variable">p</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8.html#d62fe7eb16bd9315a9b7758d6f907270"><span class="id" title="notation">≥</span></a> <a class="idref" href="CUS_Lim_seq.html#n:44"><span class="id" title="variable">n</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="CUS_Lim_seq.html#q:46"><span class="id" title="variable">q</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8.html#d62fe7eb16bd9315a9b7758d6f907270"><span class="id" title="notation">≥</span></a> <a class="idref" href="CUS_Lim_seq.html#n:44"><span class="id" title="variable">n</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <span class="id" title="definition">ball_norm</span> (<a class="idref" href="CUS_Lim_seq.html#u:42"><span class="id" title="variable">u</span></a> <a class="idref" href="CUS_Lim_seq.html#p:45"><span class="id" title="variable">p</span></a>) <a class="idref" href="CUS_Lim_seq.html#e93474792ce36dc9fcc5d5eb0c37fac5"><span class="id" title="variable">ɛ</span></a> (<a class="idref" href="CUS_Lim_seq.html#u:42"><span class="id" title="variable">u</span></a> <a class="idref" href="CUS_Lim_seq.html#q:46"><span class="id" title="variable">q</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="NM_Cauchy_lim_seq_def" class="idref" href="#NM_Cauchy_lim_seq_def"><span class="id" title="section">NM_Cauchy_lim_seq_def</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<a id="A:47" class="idref" href="#A:47"><span class="id" title="binder">A</span></a> : <span class="id" title="abbreviation">AbsRing</span>}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<a id="E:48" class="idref" href="#E:48"><span class="id" title="binder">E</span></a> : <span class="id" title="abbreviation">CompleteNormedModule</span> <a class="idref" href="CUS_Lim_seq.html#NM_Cauchy_lim_seq_def.A"><span class="id" title="variable">A</span></a>}.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="NM_Cauchy_seq_Cauchy_seq" class="idref" href="#NM_Cauchy_seq_Cauchy_seq"><span class="id" title="definition">NM_Cauchy_seq_Cauchy_seq</span></a> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8_core.html#e15f3fa8414cf45e36c73a91b3f5f2c2"><span class="id" title="notation">∀</span></a> <a id="u:49" class="idref" href="#u:49"><span class="id" title="binder">u</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="CUS_Lim_seq.html#NM_Cauchy_lim_seq_def.E"><span class="id" title="variable">E</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8_core.html#e15f3fa8414cf45e36c73a91b3f5f2c2"><span class="id" title="notation">,</span></a> <a class="idref" href="CUS_Lim_seq.html#NM_Cauchy_seq"><span class="id" title="definition">NM_Cauchy_seq</span></a> <a class="idref" href="CUS_Lim_seq.html#u:49"><span class="id" title="variable">u</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="CUS_Lim_seq.html#Cauchy_seq"><span class="id" title="definition">Cauchy_seq</span></a> <a class="idref" href="CUS_Lim_seq.html#u:49"><span class="id" title="variable">u</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="NM_Cauchy_lim_seq" class="idref" href="#NM_Cauchy_lim_seq"><span class="id" title="definition">NM_Cauchy_lim_seq</span></a> (<a id="u:50" class="idref" href="#u:50"><span class="id" title="binder">u</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="CUS_Lim_seq.html#NM_Cauchy_lim_seq_def.E"><span class="id" title="variable">E</span></a>) (<a id="67691264c9a1932638784efb124aaf6e" class="idref" href="#67691264c9a1932638784efb124aaf6e"><span class="id" title="binder">π</span></a> : <a class="idref" href="CUS_Lim_seq.html#NM_Cauchy_seq"><span class="id" title="definition">NM_Cauchy_seq</span></a> <a class="idref" href="CUS_Lim_seq.html#u:50"><span class="id" title="variable">u</span></a>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="CUS_Lim_seq.html#Cauchy_lim_seq"><span class="id" title="definition">Cauchy_lim_seq</span></a> <a class="idref" href="CUS_Lim_seq.html#u:50"><span class="id" title="variable">u</span></a> (<a class="idref" href="CUS_Lim_seq.html#NM_Cauchy_seq_Cauchy_seq"><span class="id" title="definition">NM_Cauchy_seq_Cauchy_seq</span></a> <a class="idref" href="CUS_Lim_seq.html#u:50"><span class="id" title="variable">u</span></a> <a class="idref" href="CUS_Lim_seq.html#67691264c9a1932638784efb124aaf6e"><span class="id" title="variable">π</span></a>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a id="is_limseq_NM_Cauchy_lim_seq" class="idref" href="#is_limseq_NM_Cauchy_lim_seq"><span class="id" title="lemma">is_limseq_NM_Cauchy_lim_seq</span></a> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8_core.html#e15f3fa8414cf45e36c73a91b3f5f2c2"><span class="id" title="notation">∀</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8_core.html#e15f3fa8414cf45e36c73a91b3f5f2c2"><span class="id" title="notation">(</span></a><a id="u:52" class="idref" href="#u:52"><span class="id" title="binder">u</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="CUS_Lim_seq.html#NM_Cauchy_lim_seq_def.E"><span class="id" title="variable">E</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8_core.html#e15f3fa8414cf45e36c73a91b3f5f2c2"><span class="id" title="notation">),</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8_core.html#e15f3fa8414cf45e36c73a91b3f5f2c2"><span class="id" title="notation">∀</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8_core.html#e15f3fa8414cf45e36c73a91b3f5f2c2"><span class="id" title="notation">(</span></a><a id="6633086beb3839620b133382b70c683c" class="idref" href="#6633086beb3839620b133382b70c683c"><span class="id" title="binder">π</span></a> : <a class="idref" href="CUS_Lim_seq.html#NM_Cauchy_seq"><span class="id" title="definition">NM_Cauchy_seq</span></a> <a class="idref" href="CUS_Lim_seq.html#u:52"><span class="id" title="variable">u</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.12.2/stdlib//Coq.Unicode.Utf8_core.html#e15f3fa8414cf45e36c73a91b3f5f2c2"><span class="id" title="notation">),</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="definition">is_lim_seq</span> <a class="idref" href="CUS_Lim_seq.html#u:52"><span class="id" title="variable">u</span></a> (<a class="idref" href="CUS_Lim_seq.html#NM_Cauchy_lim_seq"><span class="id" title="definition">NM_Cauchy_lim_seq</span></a> <a class="idref" href="CUS_Lim_seq.html#u:52"><span class="id" title="variable">u</span></a> <a class="idref" href="CUS_Lim_seq.html#6633086beb3839620b133382b70c683c"><span class="id" title="variable">π</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="CUS_Lim_seq.html#NM_Cauchy_lim_seq_def"><span class="id" title="section">NM_Cauchy_lim_seq_def</span></a>.<br/>
 </div>
 <table>
 <tr>
@@ -1125,7 +1167,7 @@
 <td>Z</td>
 <td>_</td>
 <td><a href="index.html#global_*">other</a></td>
-<td>(882 entries)</td>
+<td>(906 entries)</td>
 </tr>
 <tr>
 <td>Notation Index</td>
@@ -1189,7 +1231,7 @@
 <td>Z</td>
 <td>_</td>
 <td><a href="index.html#binder_*">other</a></td>
-<td>(743 entries)</td>
+<td>(761 entries)</td>
 </tr>
 <tr>
 <td>Library Index</td>
@@ -1253,7 +1295,7 @@
 <td>Z</td>
 <td>_</td>
 <td>other</td>
-<td>(47 entries)</td>
+<td>(48 entries)</td>
 </tr>
 <tr>
 <td>Constructor Index</td>
@@ -1366,7 +1408,7 @@
 <td>K</td>
 <td>L</td>
 <td>M</td>
-<td>N</td>
+<td><a href="index.html#section_N">N</a></td>
 <td>O</td>
 <td>P</td>
 <td>Q</td>
@@ -1381,7 +1423,7 @@
 <td>Z</td>
 <td>_</td>
 <td>other</td>
-<td>(23 entries)</td>
+<td>(25 entries)</td>
 </tr>
 <tr>
 <td>Definition Index</td>
@@ -1413,7 +1455,7 @@
 <td>Z</td>
 <td>_</td>
 <td>other</td>
-<td>(24 entries)</td>
+<td>(27 entries)</td>
 </tr>
 <tr>
 <td>Record Index</td>
@@ -1478,8 +1520,10 @@
 <a href="BInt_sf.html#a:245">a:245</a> [binder, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="Bsf_Lsf.html#a:36">a:36</a> [binder, in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
 <a href="Bsf_Lsf.html#a:4">a:4</a> [binder, in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
+<a href="CUS_Lim_seq.html#A:40">A:40</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="Bsf_Lsf.html#a:41">a:41</a> [binder, in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
 <a href="simpl_fun.html#A:43">A:43</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
+<a href="CUS_Lim_seq.html#A:47">A:47</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="Bsf_Lsf.html#a:5">a:5</a> [binder, in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
 <a href="simpl_fun.html#A:55">A:55</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="Bsf_Lsf.html#a:6">a:6</a> [binder, in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
@@ -1501,6 +1545,7 @@
 <a href="BInt_sf.html#BInt_for_sf">BInt_for_sf</a> [section, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="Bsf_Lsf.html#BInt_sf_LInt_SFp">BInt_sf_LInt_SFp</a> [lemma, in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
 <a href="BInt_sf.html">BInt_sf</a> [library]<br/>
+<a href="Bi_fun.html#Bi_fun_prop">Bi_fun_prop</a> [section, in <a href="Bi_fun.html">Bi_fun</a>]<br/>
 <a href="Bi_fun.html">Bi_fun</a> [library]<br/>
 <a href="Bsf_Lsf.html#Bochner_sf_Lebesgue_sf">Bochner_sf_Lebesgue_sf</a> [section, in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
 <a href="Bi_fun.html#Boshner_integrable_fun">Boshner_integrable_fun</a> [section, in <a href="Bi_fun.html">Bi_fun</a>]<br/>
@@ -1538,6 +1583,7 @@
 <a href="simpl_fun.html#E:116">E:116</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="simpl_fun.html#E:132">E:132</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="BInt_sf.html#E:14">E:14</a> [binder, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
+<a href="Bi_fun.html#E:14">E:14</a> [binder, in <a href="Bi_fun.html">Bi_fun</a>]<br/>
 <a href="simpl_fun.html#E:147">E:147</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="BInt_sf.html#E:2">E:2</a> [binder, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="Bi_fun.html#E:2">E:2</a> [binder, in <a href="Bi_fun.html">Bi_fun</a>]<br/>
@@ -1549,7 +1595,9 @@
 <a href="BInt_sf.html#E:267">E:267</a> [binder, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="simpl_fun.html#E:3">E:3</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="BInt_sf.html#E:36">E:36</a> [binder, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
+<a href="CUS_Lim_seq.html#E:41">E:41</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="simpl_fun.html#E:44">E:44</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
+<a href="CUS_Lim_seq.html#E:48">E:48</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="simpl_fun.html#E:56">E:56</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <br/><br/><a id="global_F"></a><h2>F </h2>
 <a href="CUS_Lim_seq.html#FF:4">FF:4</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
@@ -1589,6 +1637,7 @@
 <a href="simpl_fun.html#gen:117">gen:117</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="simpl_fun.html#gen:133">gen:133</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="simpl_fun.html#gen:148">gen:148</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
+<a href="Bi_fun.html#gen:15">gen:15</a> [binder, in <a href="Bi_fun.html">Bi_fun</a>]<br/>
 <a href="BInt_sf.html#gen:237">gen:237</a> [binder, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="BInt_sf.html#gen:243">gen:243</a> [binder, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="BInt_sf.html#gen:254">gen:254</a> [binder, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
@@ -1614,6 +1663,7 @@
 <a href="simpl_fun.html#indic">indic</a> [definition, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="simpl_fun.html#is_finite_sf_preim_lt">is_finite_sf_preim_lt</a> [lemma, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="simpl_fun.html#is_simpl">is_simpl</a> [definition, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
+<a href="CUS_Lim_seq.html#is_limseq_NM_Cauchy_lim_seq">is_limseq_NM_Cauchy_lim_seq</a> [lemma, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="CUS_Lim_seq.html#is_filterlim_Cauchy_lim_seq">is_filterlim_Cauchy_lim_seq</a> [lemma, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="square_bij.html#is_bij_square_inv">is_bij_square_inv</a> [lemma, in <a href="square_bij.html">square_bij</a>]<br/>
 <a href="square_bij.html#is_bij_square">is_bij_square</a> [lemma, in <a href="square_bij.html">square_bij</a>]<br/>
@@ -1804,6 +1854,10 @@
 <a href="simpl_fun.html#ng:83">ng:83</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="BInt_sf.html#ng:86">ng:86</a> [binder, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="BInt_sf.html#ng:94">ng:94</a> [binder, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
+<a href="CUS_Lim_seq.html#NM_Cauchy_lim_seq">NM_Cauchy_lim_seq</a> [definition, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#NM_Cauchy_seq_Cauchy_seq">NM_Cauchy_seq_Cauchy_seq</a> [definition, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#NM_Cauchy_lim_seq_def">NM_Cauchy_lim_seq_def</a> [section, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#NM_Cauchy_seq">NM_Cauchy_seq</a> [definition, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="BInt_sf.html#norm_Bint_sf_le">norm_Bint_sf_le</a> [lemma, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="BInt_sf.html#norm_scal_eq">norm_scal_eq</a> [lemma, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="simpl_fun.html#nth_carrier">nth_carrier</a> [definition, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
@@ -1856,6 +1910,7 @@
 <a href="CUS_Lim_seq.html#n:34">n:34</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="simpl_fun.html#n:35">n:35</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="CUS_Lim_seq.html#n:35">n:35</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#n:44">n:44</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="simpl_fun.html#n:50">n:50</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="Bsf_Lsf.html#n:53">n:53</a> [binder, in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
 <a href="Bsf_Lsf.html#n:55">n:55</a> [binder, in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
@@ -1878,10 +1933,12 @@
 <a href="simpl_fun.html#P:33">P:33</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="simpl_fun.html#P:4">P:4</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="simpl_fun.html#P:41">P:41</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
+<a href="CUS_Lim_seq.html#p:45">p:45</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <br/><br/><a id="global_Q"></a><h2>Q </h2>
 <a href="CUS_Lim_seq.html#q:21">q:21</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="CUS_Lim_seq.html#q:28">q:28</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="CUS_Lim_seq.html#q:33">q:33</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#q:46">q:46</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <br/><br/><a id="global_R"></a><h2>R </h2>
 <a href="Rmax_n.html#Rmax_n_prop">Rmax_n_prop</a> [section, in <a href="Rmax_n.html">Rmax_n</a>]<br/>
 <a href="Rmax_n.html#Rmax_n">Rmax_n</a> [definition, in <a href="Rmax_n.html">Rmax_n</a>]<br/>
@@ -1889,7 +1946,6 @@
 <a href="Rmax_n.html">Rmax_n</a> [library]<br/>
 <a href="BInt_sf.html#r:250">r:250</a> [binder, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <br/><br/><a id="global_S"></a><h2>S </h2>
-<a href="Bi_fun.html#seq:8">seq:8</a> [binder, in <a href="Bi_fun.html">Bi_fun</a>]<br/>
 <a href="simpl_fun.html#sf_decomp_preim_which">sf_decomp_preim_which</a> [lemma, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="simpl_fun.html#sf_measurable_preim_lt">sf_measurable_preim_lt</a> [lemma, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="simpl_fun.html#sf_measurable_preim_le">sf_measurable_preim_le</a> [lemma, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
@@ -1969,6 +2025,7 @@
 <a href="Bsf_Lsf.html#sum_Rbar_map_Rbar_plus_finite">sum_Rbar_map_Rbar_plus_finite</a> [lemma, in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
 <a href="CUS_Lim_seq.html#S:16">S:16</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="CUS_Lim_seq.html#S:22">S:22</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="Bi_fun.html#s:8">s:8</a> [binder, in <a href="Bi_fun.html">Bi_fun</a>]<br/>
 <br/><br/><a id="global_T"></a><h2>T </h2>
 <a href="CUS_Lim_seq.html#T:1">T:1</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="Bsf_Lsf.html#T:1">T:1</a> [binder, in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
@@ -1990,6 +2047,10 @@
 <a href="BInt_sf.html#u:29">u:29</a> [binder, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="CUS_Lim_seq.html#u:36">u:36</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="CUS_Lim_seq.html#u:38">u:38</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#u:42">u:42</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#u:49">u:49</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#u:50">u:50</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#u:52">u:52</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="Rmax_n.html#u:7">u:7</a> [binder, in <a href="Rmax_n.html">Rmax_n</a>]<br/>
 <br/><br/><a id="global_V"></a><h2>V </h2>
 <a href="simpl_fun.html#val">val</a> [projection, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
@@ -2078,6 +2139,7 @@
 <a href="simpl_fun.html#x:129">x:129</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="Bsf_Lsf.html#x:129">x:129</a> [binder, in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
 <a href="simpl_fun.html#x:13">x:13</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
+<a href="Bi_fun.html#X:13">X:13</a> [binder, in <a href="Bi_fun.html">Bi_fun</a>]<br/>
 <a href="simpl_fun.html#X:130">X:130</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="BInt_sf.html#x:130">x:130</a> [binder, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="Bsf_Lsf.html#x:131">x:131</a> [binder, in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
@@ -2328,9 +2390,11 @@
 <a href="BInt_sf.html#451401cc4679f9326e2c2e6ccc345436">∫B _ (sf_scope)</a> [notation, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="Bi_fun.html#5d5ec22f1432c151cdb415c0be24a961">L¹( _ , _ , _ )</a> [notation, in <a href="Bi_fun.html">Bi_fun</a>]<br/>
 <a href="CUS_Lim_seq.html#800ff5a95a0be3fab8060710435a1e7d">ɛ:18</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#e93474792ce36dc9fcc5d5eb0c37fac5">ɛ:43</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="simpl_fun.html#fec00a7d9be529c7f63811d0691b5af1">μ:118</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="simpl_fun.html#689a168b0c3fdc58d503df1f0bd71cf8">μ:134</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="simpl_fun.html#16f01cc85a31d992fd4e8826f2e0cc28">μ:149</a> [binder, in <a href="simpl_fun.html">simpl_fun</a>]<br/>
+<a href="Bi_fun.html#92bb74d3932762c48d4871fada859cc7">μ:16</a> [binder, in <a href="Bi_fun.html">Bi_fun</a>]<br/>
 <a href="BInt_sf.html#2ecf116fede8257d8660f9509c42a358">μ:238</a> [binder, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="BInt_sf.html#d7b4753c8f666b746ec9367254b81348">μ:244</a> [binder, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="BInt_sf.html#fb01bc2a39fb80877a4770fb320ce93c">μ:255</a> [binder, in <a href="BInt_sf.html">BInt_sf</a>]<br/>
@@ -2356,6 +2420,8 @@
 <a href="Bsf_Lsf.html#0eea79ee5842a270350105155e96ddab">π:32</a> [binder, in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
 <a href="CUS_Lim_seq.html#468bce56647e9c545a6cdf79e3c60b6d">π:37</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="CUS_Lim_seq.html#ddb4ea338f57554f54e37b449b79eea8">π:39</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#67691264c9a1932638784efb124aaf6e">π:51</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#6633086beb3839620b133382b70c683c">π:53</a> [binder, in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <br/><br/><hr/>
 <h1>Notation Index</h1>
 <a id="notation_S"></a><h2>S </h2>
@@ -2411,8 +2477,10 @@
 <a href="BInt_sf.html#a:245">a:245</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="Bsf_Lsf.html#a:36">a:36</a> [in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
 <a href="Bsf_Lsf.html#a:4">a:4</a> [in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
+<a href="CUS_Lim_seq.html#A:40">A:40</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="Bsf_Lsf.html#a:41">a:41</a> [in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
 <a href="simpl_fun.html#A:43">A:43</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
+<a href="CUS_Lim_seq.html#A:47">A:47</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="Bsf_Lsf.html#a:5">a:5</a> [in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
 <a href="simpl_fun.html#A:55">A:55</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="Bsf_Lsf.html#a:6">a:6</a> [in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
@@ -2440,6 +2508,7 @@
 <a href="simpl_fun.html#E:116">E:116</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="simpl_fun.html#E:132">E:132</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="BInt_sf.html#E:14">E:14</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
+<a href="Bi_fun.html#E:14">E:14</a> [in <a href="Bi_fun.html">Bi_fun</a>]<br/>
 <a href="simpl_fun.html#E:147">E:147</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="BInt_sf.html#E:2">E:2</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="Bi_fun.html#E:2">E:2</a> [in <a href="Bi_fun.html">Bi_fun</a>]<br/>
@@ -2451,7 +2520,9 @@
 <a href="BInt_sf.html#E:267">E:267</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="simpl_fun.html#E:3">E:3</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="BInt_sf.html#E:36">E:36</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
+<a href="CUS_Lim_seq.html#E:41">E:41</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="simpl_fun.html#E:44">E:44</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
+<a href="CUS_Lim_seq.html#E:48">E:48</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="simpl_fun.html#E:56">E:56</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <br/><br/><a id="binder_F"></a><h2>F </h2>
 <a href="CUS_Lim_seq.html#FF:4">FF:4</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
@@ -2478,6 +2549,7 @@
 <a href="simpl_fun.html#gen:117">gen:117</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="simpl_fun.html#gen:133">gen:133</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="simpl_fun.html#gen:148">gen:148</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
+<a href="Bi_fun.html#gen:15">gen:15</a> [in <a href="Bi_fun.html">Bi_fun</a>]<br/>
 <a href="BInt_sf.html#gen:237">gen:237</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="BInt_sf.html#gen:243">gen:243</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="BInt_sf.html#gen:254">gen:254</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
@@ -2725,6 +2797,7 @@
 <a href="CUS_Lim_seq.html#n:34">n:34</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="simpl_fun.html#n:35">n:35</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="CUS_Lim_seq.html#n:35">n:35</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#n:44">n:44</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="simpl_fun.html#n:50">n:50</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="Bsf_Lsf.html#n:53">n:53</a> [in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
 <a href="Bsf_Lsf.html#n:55">n:55</a> [in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
@@ -2747,14 +2820,15 @@
 <a href="simpl_fun.html#P:33">P:33</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="simpl_fun.html#P:4">P:4</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="simpl_fun.html#P:41">P:41</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
+<a href="CUS_Lim_seq.html#p:45">p:45</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <br/><br/><a id="binder_Q"></a><h2>Q </h2>
 <a href="CUS_Lim_seq.html#q:21">q:21</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="CUS_Lim_seq.html#q:28">q:28</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="CUS_Lim_seq.html#q:33">q:33</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#q:46">q:46</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <br/><br/><a id="binder_R"></a><h2>R </h2>
 <a href="BInt_sf.html#r:250">r:250</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <br/><br/><a id="binder_S"></a><h2>S </h2>
-<a href="Bi_fun.html#seq:8">seq:8</a> [in <a href="Bi_fun.html">Bi_fun</a>]<br/>
 <a href="BInt_sf.html#sf_g:40">sf_g:40</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="BInt_sf.html#sf_f:39">sf_f:39</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="BInt_sf.html#sf':279">sf':279</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
@@ -2789,6 +2863,7 @@
 <a href="simpl_fun.html#sg:63">sg:63</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="CUS_Lim_seq.html#S:16">S:16</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="CUS_Lim_seq.html#S:22">S:22</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="Bi_fun.html#s:8">s:8</a> [in <a href="Bi_fun.html">Bi_fun</a>]<br/>
 <br/><br/><a id="binder_T"></a><h2>T </h2>
 <a href="CUS_Lim_seq.html#T:1">T:1</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="Bsf_Lsf.html#T:1">T:1</a> [in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
@@ -2810,6 +2885,10 @@
 <a href="BInt_sf.html#u:29">u:29</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="CUS_Lim_seq.html#u:36">u:36</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="CUS_Lim_seq.html#u:38">u:38</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#u:42">u:42</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#u:49">u:49</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#u:50">u:50</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#u:52">u:52</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="Rmax_n.html#u:7">u:7</a> [in <a href="Rmax_n.html">Rmax_n</a>]<br/>
 <br/><br/><a id="binder_V"></a><h2>V </h2>
 <a href="CUS_Lim_seq.html#v:15">v:15</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
@@ -2895,6 +2974,7 @@
 <a href="simpl_fun.html#x:129">x:129</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="Bsf_Lsf.html#x:129">x:129</a> [in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
 <a href="simpl_fun.html#x:13">x:13</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
+<a href="Bi_fun.html#X:13">X:13</a> [in <a href="Bi_fun.html">Bi_fun</a>]<br/>
 <a href="simpl_fun.html#X:130">X:130</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="BInt_sf.html#x:130">x:130</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="Bsf_Lsf.html#x:131">x:131</a> [in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
@@ -3125,9 +3205,11 @@
 <a href="Bsf_Lsf.html#y:80">y:80</a> [in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
 <br/><br/><a id="binder_*"></a><h2>other </h2>
 <a href="CUS_Lim_seq.html#800ff5a95a0be3fab8060710435a1e7d">ɛ:18</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#e93474792ce36dc9fcc5d5eb0c37fac5">ɛ:43</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="simpl_fun.html#fec00a7d9be529c7f63811d0691b5af1">μ:118</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="simpl_fun.html#689a168b0c3fdc58d503df1f0bd71cf8">μ:134</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <a href="simpl_fun.html#16f01cc85a31d992fd4e8826f2e0cc28">μ:149</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
+<a href="Bi_fun.html#92bb74d3932762c48d4871fada859cc7">μ:16</a> [in <a href="Bi_fun.html">Bi_fun</a>]<br/>
 <a href="BInt_sf.html#2ecf116fede8257d8660f9509c42a358">μ:238</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="BInt_sf.html#d7b4753c8f666b746ec9367254b81348">μ:244</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="BInt_sf.html#fb01bc2a39fb80877a4770fb320ce93c">μ:255</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
@@ -3153,6 +3235,8 @@
 <a href="Bsf_Lsf.html#0eea79ee5842a270350105155e96ddab">π:32</a> [in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
 <a href="CUS_Lim_seq.html#468bce56647e9c545a6cdf79e3c60b6d">π:37</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="CUS_Lim_seq.html#ddb4ea338f57554f54e37b449b79eea8">π:39</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#67691264c9a1932638784efb124aaf6e">π:51</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#6633086beb3839620b133382b70c683c">π:53</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <br/><br/><hr/>
 <h1>Library Index</h1>
 <a id="library_B"></a><h2>B </h2>
@@ -3192,6 +3276,7 @@
 <a href="simpl_fun.html#fun_sf_plus">fun_sf_plus</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <br/><br/><a id="lemma_I"></a><h2>I </h2>
 <a href="simpl_fun.html#is_finite_sf_preim_lt">is_finite_sf_preim_lt</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
+<a href="CUS_Lim_seq.html#is_limseq_NM_Cauchy_lim_seq">is_limseq_NM_Cauchy_lim_seq</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="CUS_Lim_seq.html#is_filterlim_Cauchy_lim_seq">is_filterlim_Cauchy_lim_seq</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="square_bij.html#is_bij_square_inv">is_bij_square_inv</a> [in <a href="square_bij.html">square_bij</a>]<br/>
 <a href="square_bij.html#is_bij_square">is_bij_square</a> [in <a href="square_bij.html">square_bij</a>]<br/>
@@ -3258,12 +3343,15 @@
 <a href="BInt_sf.html#BInt_sf_plus">BInt_sf_plus</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="BInt_sf.html#BInt_sf_indic">BInt_sf_indic</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
 <a href="BInt_sf.html#BInt_for_sf">BInt_for_sf</a> [in <a href="BInt_sf.html">BInt_sf</a>]<br/>
+<a href="Bi_fun.html#Bi_fun_prop">Bi_fun_prop</a> [in <a href="Bi_fun.html">Bi_fun</a>]<br/>
 <a href="Bsf_Lsf.html#Bochner_sf_Lebesgue_sf">Bochner_sf_Lebesgue_sf</a> [in <a href="Bsf_Lsf.html">Bsf_Lsf</a>]<br/>
 <a href="Bi_fun.html#Boshner_integrable_fun">Boshner_integrable_fun</a> [in <a href="Bi_fun.html">Bi_fun</a>]<br/>
 <br/><br/><a id="section_C"></a><h2>C </h2>
 <a href="CUS_Lim_seq.html#Cauchy_lim_seq_def">Cauchy_lim_seq_def</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <br/><br/><a id="section_F"></a><h2>F </h2>
 <a href="CUS_Lim_seq.html#filterlim_complete_constr">filterlim_complete_constr</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<br/><br/><a id="section_N"></a><h2>N </h2>
+<a href="CUS_Lim_seq.html#NM_Cauchy_lim_seq_def">NM_Cauchy_lim_seq_def</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <br/><br/><a id="section_R"></a><h2>R </h2>
 <a href="Rmax_n.html#Rmax_n_prop">Rmax_n_prop</a> [in <a href="Rmax_n.html">Rmax_n</a>]<br/>
 <a href="Rmax_n.html#Rmax_n_def">Rmax_n_def</a> [in <a href="Rmax_n.html">Rmax_n</a>]<br/>
@@ -3301,6 +3389,9 @@
 <br/><br/><a id="definition_M"></a><h2>M </h2>
 <a href="simpl_fun.html#meas_of_sf">meas_of_sf</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <br/><br/><a id="definition_N"></a><h2>N </h2>
+<a href="CUS_Lim_seq.html#NM_Cauchy_lim_seq">NM_Cauchy_lim_seq</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#NM_Cauchy_seq_Cauchy_seq">NM_Cauchy_seq_Cauchy_seq</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
+<a href="CUS_Lim_seq.html#NM_Cauchy_seq">NM_Cauchy_seq</a> [in <a href="CUS_Lim_seq.html">CUS_Lim_seq</a>]<br/>
 <a href="simpl_fun.html#nth_carrier">nth_carrier</a> [in <a href="simpl_fun.html">simpl_fun</a>]<br/>
 <br/><br/><a id="definition_R"></a><h2>R </h2>
 <a href="Rmax_n.html#Rmax_n">Rmax_n</a> [in <a href="Rmax_n.html">Rmax_n</a>]<br/>
@@ -3347,7 +3438,7 @@
 <td>Z</td>
 <td>_</td>
 <td><a href="index.html#global_*">other</a></td>
-<td>(882 entries)</td>
+<td>(906 entries)</td>
 </tr>
 <tr>
 <td>Notation Index</td>
@@ -3411,7 +3502,7 @@
 <td>Z</td>
 <td>_</td>
 <td><a href="index.html#binder_*">other</a></td>
-<td>(743 entries)</td>
+<td>(761 entries)</td>
 </tr>
 <tr>
 <td>Library Index</td>
@@ -3475,7 +3566,7 @@
 <td>Z</td>
 <td>_</td>
 <td>other</td>
-<td>(47 entries)</td>
+<td>(48 entries)</td>
 </tr>
 <tr>
 <td>Constructor Index</td>
@@ -3588,7 +3679,7 @@
 <td>K</td>
 <td>L</td>
 <td>M</td>
-<td>N</td>
+<td><a href="index.html#section_N">N</a></td>
 <td>O</td>
 <td>P</td>
 <td>Q</td>
@@ -3603,7 +3694,7 @@
 <td>Z</td>
 <td>_</td>
 <td>other</td>
-<td>(23 entries)</td>
+<td>(25 entries)</td>
 </tr>
 <tr>
 <td>Definition Index</td>
@@ -3635,7 +3726,7 @@
 <td>Z</td>
 <td>_</td>
 <td>other</td>
-<td>(24 entries)</td>
+<td>(27 entries)</td>
 </tr>
 <tr>
 <td>Record Index</td>
