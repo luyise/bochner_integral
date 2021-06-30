@@ -4,6 +4,7 @@ From Coq Require Import
     ssreflect
     ssrsearch
     List
+    Sorting
     Lia
     Utf8
 
@@ -50,17 +51,191 @@ Proof.
         rewrite <-Ha, <-Hsum => //.
 Qed.
 
-(*
-
 Lemma sum_Rbar_map_Rbar_plus_finite {T : Type} :
     ∀ l : list T, ∀ f g : T -> Rbar, 
         (∀ a : T, In a l -> is_finite (f a) ∧ is_finite (g a))
         -> sum_Rbar_map l (fun a => Rbar_plus (f a) (g a))
             = Rplus (sum_Rbar_map l f) (sum_Rbar_map l g).
 Proof.
-Admitted.
+    induction l => f g.
+        move => _ /=.
+        rewrite Raxioms.Rplus_0_l.
+        unfold sum_Rbar_map => //.
 
-*)
+        move => Hl.
+        unfold sum_Rbar_map => /=.
+        replace (sum_Rbar_l (map (λ a0 : T, Rbar_plus (f a0) (g a0)) l))
+            with (sum_Rbar_map l (λ a0 : T, Rbar_plus (f a0) (g a0)))
+            by unfold sum_Rbar_map => //.
+        replace (sum_Rbar_l (map f l))
+            with (sum_Rbar_map l f)
+            by unfold sum_Rbar_map => //.
+        replace (sum_Rbar_l (map g l))
+            with (sum_Rbar_map l g)
+            by unfold sum_Rbar_map => //.
+        rewrite IHl.
+            all : swap 1 2.
+            move => b Inbl.
+            simpl in Hl.
+            apply Hl; right => //.
+        assert (is_finite (sum_Rbar_map l f)) as Finsumf.
+            apply is_finite_sum_Rbar_map.
+            move => b Inbl.
+            simpl in Hl.
+            apply (fun b π => proj1 (Hl b π)); right => //.
+        assert (is_finite (sum_Rbar_map l g)) as Finsumg.
+            apply is_finite_sum_Rbar_map.
+            move => b Inbl.
+            simpl in Hl.
+            apply (fun b π => proj2 (Hl b π)); right => //.
+        assert (is_finite (f a)) as Finfa.
+            apply (fun b π => proj1 (Hl b π)); left => //.
+        assert (is_finite (g a)) as Finga.
+            apply (fun b π => proj2 (Hl b π)); left => //.
+        rewrite Rbar_plus_real.
+            2, 3 : assumption.
+        rewrite Rbar_plus_real.
+            2, 3 : assumption.
+        replace (Rbar_plus (f a) (g a)) with (Finite ((f a) + (g a))%R).
+            all : swap 1 2.
+            rewrite <-Rbar_plus_real => //.
+            unfold is_finite in Finfa, Finga.
+            rewrite <-Finfa, <-Finga => //.
+        replace (Rbar_plus (f a + g a)%R (sum_Rbar_map l f + sum_Rbar_map l g)%R)
+            with (Finite (((f a) + (g a)) + ((sum_Rbar_map l f) + (sum_Rbar_map l g)))).
+            all : swap 1 2.
+            unfold is_finite in Finfa, Finga, Finsumf, Finsumg.
+            rewrite <-Finsumf, <-Finsumg, <-Finfa, <-Finga => //.
+        congr Finite.
+        rewrite Raxioms.Rplus_assoc.
+        setoid_rewrite Raxioms.Rplus_comm at 2.
+        rewrite Raxioms.Rplus_assoc.
+        setoid_rewrite Raxioms.Rplus_comm at 3.
+        rewrite Raxioms.Rplus_assoc => //.
+Qed.
+
+Lemma sum_Rbar_map_NoDup_NotIn {T : Type} :
+    ∀ l : list T, ∀ f : T -> Rbar, ∀ a : T,
+        (∀ b : T, In b l -> b ≠ a -> f b = 0%R)
+        -> ¬ (In a l)
+        -> sum_Rbar_map l f = 0%R.
+Proof.
+    induction l => f.
+        easy.
+        rename a into b.
+        move => a Hbl HNotIn.
+        unfold sum_Rbar_map => /=.
+        replace (sum_Rbar_l (map f l)) with (sum_Rbar_map l f)
+            by unfold sum_Rbar_map => //.
+        assert (f b = 0%R) as Nulfb.
+        apply Hbl. 
+        left => //.
+        simpl in HNotIn.
+        move => Abs; apply HNotIn; left => //.
+        rewrite Nulfb Rbar_plus_0_l.
+        apply IHl with a.
+            move => c Incl Neqca.
+            apply (Hbl c).
+            simpl; right => //.
+            exact Neqca.
+        simpl in HNotIn.
+        move => Abs; apply HNotIn; right => //.
+Qed.
+
+Lemma sum_Rbar_map_NoDup_In {T : Type} :
+    ∀ l : list T, ∀ f : T -> Rbar, ∀ a : T,
+        (∀ b : T, In b l -> b ≠ a -> f b = 0%R)
+        -> NoDup l -> In a l
+        -> sum_Rbar_map l f = f a.
+Proof.
+    induction l => f.
+        move => a Hl HNoDup HIn.
+        apply False_ind.
+        simpl in HIn => //.
+        rename a into b.
+        move => a Hbl HNoDup HIna.
+        unfold sum_Rbar_map => /=.
+        replace (sum_Rbar_l (map f l)) with (sum_Rbar_map l f)
+            by unfold sum_Rbar_map => //.
+        simpl in HIna; case HIna.
+            move => Eqab.
+            assert (¬ (In a l)).
+            inversion HNoDup; clear H0 H x l0.
+            rewrite <-Eqab => //.
+            rewrite (sum_Rbar_map_NoDup_NotIn _ _ a).
+            rewrite Rbar_plus_0_r Eqab => //.
+            move => c Hc. apply Hbl; right => //.
+            assumption.
+            
+            move => HInal.
+            rewrite (IHl f a).
+            assert (b ≠ a).
+            inversion HNoDup; clear H H0 x.
+            move => Abs; rewrite Abs in H1 => //.
+            assert (f b = 0%R) as Nulfb.
+            apply Hbl.
+            left => //.
+            assumption.
+            rewrite Nulfb Rbar_plus_0_l => //.
+            move => c Hc; apply Hbl; right => //.
+            inversion HNoDup => //.
+            assumption.
+Qed.
+
+Export Permutation.
+
+Lemma sum_Rbar_Permutation :
+    ∀ l l' : list R, Permutation l l'
+        -> ∀ f : R -> Rbar, 
+        (∀ x : R, In x l -> is_finite (f x)) 
+        -> sum_Rbar_map l f = sum_Rbar_map l' f.
+Proof.
+    apply: Permutation_ind => //.
+        move => x l l' Hll' IHll' f Hfin.
+        unfold sum_Rbar_map => /=.
+        replace (sum_Rbar_l (map f l)) with (sum_Rbar_map l f) 
+            by unfold sum_Rbar_map => //.
+        replace (sum_Rbar_l (map f l')) with (sum_Rbar_map l' f) 
+            by unfold sum_Rbar_map => //.
+        rewrite IHll' => //.
+            move => y Hyin; apply Hfin; right => //.
+        move => x y l f Hfin.
+        unfold sum_Rbar_map => /=.
+        replace (sum_Rbar_l (map f l)) with (sum_Rbar_map l f) 
+            by unfold sum_Rbar_map => //.
+        assert (is_finite (f x)) as Finfx.
+            apply Hfin; right; left => //.
+        assert (is_finite (f y)) as Finfy.
+            apply Hfin; left => //.
+        assert (is_finite (sum_Rbar_map l f)) as Finsumf.
+            apply is_finite_sum_Rbar_map.
+            move => z Hz; apply Hfin; right; right => //.
+        unfold is_finite in Finfx, Finfy, Finsumf.
+        rewrite <-Finfx, <-Finfy, <-Finsumf.
+        rewrite Rbar_finite_plus.
+        rewrite Rbar_finite_plus.
+        rewrite <-Raxioms.Rplus_assoc.
+        setoid_rewrite Raxioms.Rplus_comm at 2.
+        rewrite Raxioms.Rplus_assoc.
+        do 2 rewrite Rbar_finite_plus => //.
+        move => l l' l'' Pll' Hll' Pl'l'' Hl'l'' f Hfin.
+        rewrite Hll'.
+            2 : assumption.
+        rewrite Hl'l'' => //.
+        pose Pl'l := Permutation_sym Pll'; clearbody Pl'l.
+        move => x HInx.
+        pose Hinx' := (@Permutation_in _ l' l x Pl'l HInx); clearbody Hinx'; clear HInx.
+        apply Hfin => //.
+Qed. 
+
+Lemma sum_Rbar_map_sort :
+    ∀ l : list R, ∀ f : R -> Rbar, (∀ y : R, In y l -> is_finite (f y)) ->
+        (sum_Rbar_map (sort_compl.sort Rle l) f) = (sum_Rbar_map l f).
+Proof.
+    move => l f Hfin.
+    rewrite (sum_Rbar_Permutation l (sort_compl.sort Rle l)) => //.
+    apply sort_compl.corr_sort.
+Qed.
 
 Section Bochner_sf_Lebesgue_sf.
 
@@ -77,17 +252,15 @@ Section Bochner_sf_Lebesgue_sf.
     Lemma le_zero {n : nat} : n ≤ O -> n = O.
     Proof. lia. Qed.
 
-    (*
-
     (* Une fonction qui parcours les valeurs prises par une simpl_fun R μ 
     et qui en fait une liste de valeur utiles *)
-    Definition Bsf_to_Lsf_list_aux (sf : simpl_fun (R_NormedModule) μ) (n : nat) 
+    Lemma Bsf_to_Lsf_list_aux (sf : simpl_fun (R_NormedModule) μ) (n : nat) 
     : { l : list R | 
         (∀ x : X, sf.(which) x < n -> List.In (sf x) l) ∧ (NoDup l)
         ∧ ( match n with O => zero | S n' => sum_n (λ k : nat, (real (μ (nth_carrier sf k))) ⋅ val sf k) n' end
             = sum_Rbar_map l
             ( λ y : R, Rbar_mult y (μ (λ x : X, sf x = y ∧ sf.(which) x < n)) ) ) }.
-    (* Definition *)
+    Proof.
         case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
         induction n.
             apply: (exist _ (nil)); split.
@@ -113,7 +286,6 @@ Section Bochner_sf_Lebesgue_sf.
                         rewrite scal_zero_l plus_zero_r.
                         rewrite Eqn in Psum.
                         rewrite Psum.
-                        Print Implicit sum_Rbar_map_ext_f.
                         rewrite (sum_Rbar_map_ext_f _ _ (λ y : R, Rbar_mult y (μ (λ x : X, sf x = y ∧ which sf x < S (S n'))))) => //.
                         move => y Inyl; congr Rbar_mult.
                         apply measure_ext => x; split; case.
@@ -275,6 +447,7 @@ Section Bochner_sf_Lebesgue_sf.
                             move => Eq_sfx_y Heq; split.
                             unfold fun_sf; rewrite Heq; assumption.
                             lia.
+
                     rewrite sum_Rbar_map_Rbar_plus_finite.
                         all : swap 1 2.
                         move => y Inyl; split.
@@ -330,24 +503,136 @@ Section Bochner_sf_Lebesgue_sf.
                     rewrite plus_comm; congr plus.
                     unfold nth_carrier.
                     unfold scal => /=; unfold mult => /=; rewrite Raxioms.Rmult_comm.
+                    rewrite (sum_Rbar_map_NoDup_In l _ (vf n)).
+                        all : swap 1 2.
+                        move => b Inbl Hb.
+                        rewrite (measure_ext _ _ _ (fun _ => False)).
+                        rewrite meas_False Rbar_mult_0_r => //.
+                        move => x; split.
+                            rewrite Eqf => /=.
+                            move => [Abs _]; rewrite Abs in Hb => //.
+                            apply False_ind.
+                        2, 3 : assumption.
+                    case: (le_lt_or_eq n maxf Lenmaxf).
+                        move => Ltnmaxf.
+                        rewrite Rbar_mult_comm Rbar_mult_finite_real.
+                            all : swap 1 2.
+                            apply Rbar_bounded_is_finite with 0%R (μ (λ x : X, which sf x = n)).
+                            apply meas_ge_0.
+                            apply measure_le.
+                            apply measurable_inter.
+                            apply measurable_Prop.
+                            1, 2 : apply ax_measurable; rewrite Eqf => //.
+                            move => x [_ H] => //.
+                            easy.
+                            apply ax_finite; rewrite Eqf => //.
+                        rewrite Raxioms.Rmult_comm.
+                        congr Rmult.
+                        congr real.
+                        apply measure_ext.
+                        move => x; split.
+                            move => H; split; [rewrite Eqf => // | exact H].
+                            move => [_ H] => //.
+                        rewrite Eqf => //.
 
-    *)
-
-    (*
+                        move => ->.
+                        rewrite Eqf => /=.
+                        rewrite axf1.
+                        rewrite RIneq.Rmult_0_l.
+                        rewrite Rbar_mult_0_l => //.
+    Qed.
                 
-    Definition Bsf_to_Lsf_list (sf : simpl_fun (R_NormedModule) μ)
-    : { l : list R | finite_vals_canonic sf l }.
+    Lemma Bsf_to_Lsf_list (sf : simpl_fun (R_NormedModule) μ)
+    : { l : list R | 
+        (finite_vals_canonic sf l)
+        ∧ sum_n (λ n : nat, (real (μ (nth_carrier sf n)) ⋅ val sf n)) (max_which sf) = sum_Rbar_map l
+            (λ x : R, Rbar_mult x (μ (λ x0 : X, sf x0 = x))) }.
+    Proof.
         case: (Bsf_to_Lsf_list_aux sf (S (max_which sf))) => l Pl.
-        pose l_can := canonizer sf l; apply: (exist _ l_can).
+        pose l_can := canonizer sf l; apply: (exist _ l_can); split.
         unfold l_can; apply finite_vals_canonizer => x.
         pose Hx := ax_which_max_which sf x; clearbody Hx.
         apply Pl, le_n_S => //.
-    Defined.
+        assert (l_can = canonizer sf l) as Hlcan by unfold l_can => //.
+        unfold canonizer in Hlcan; clearbody l_can.
+        rewrite nodup_fixed_point in Hlcan.
+            2 : case: Pl => _ [H _] => //.
+
+        assert ((sum_Rbar_map l_can (λ x : R, Rbar_mult x (μ (λ x0 : X, sf x0 = x))))
+            = (sum_Rbar_map (list_compl.RemoveUseless sf l) (λ x : R, Rbar_mult x (μ (λ x0 : X, sf x0 = x))))) as Hrwrt.
+        rewrite Hlcan sum_Rbar_map_sort => //.
+            move => y Hy.
+            case: (RIneq.Req_EM_T y 0%R).
+                move => ->; rewrite Rbar_mult_0_l //.
+                move => Neq0y.
+                unfold fun_sf.
+                rewrite Rbar_mult_comm.
+                apply is_finite_Rbar_mult_finite_real.
+                apply finite_sf_preim_neq_0 => //.
+
+        rewrite Hrwrt; clear Hrwrt.
+
+        assert ((sum_Rbar_map (list_compl.RemoveUseless sf l) (λ x : R, Rbar_mult x (μ (λ x0 : X, sf x0 = x))))
+            = (sum_Rbar_map l (λ x : R, Rbar_mult x (μ (λ x0 : X, sf x0 = x))))) as Hrwrt.
+            clear Pl; clear Hlcan; clear l_can.
+            induction l => //.
+            pose s := (list_compl.RemoveUseless sf (a :: l)).
+            assert (s = list_compl.RemoveUseless sf (a :: l)) as Eqs by unfold s => //.
+            simpl in Eqs.
+            case_eq (excluded_middle_informative (∃ x : X, sf x = a)).
+                case => x Eq_sfx_a H.
+                rewrite H in Eqs; clear H.
+                replace (list_compl.RemoveUseless sf (a :: l)) with s at 1 by unfold s => //.
+                rewrite Eqs.
+                unfold sum_Rbar_map => /=.
+                replace ((sum_Rbar_l
+                    (map (λ x0 : R, Rbar_mult x0 (μ (λ x1 : X, sf x1 = x0)))
+                   (list_compl.RemoveUseless sf l)))) 
+                   with 
+                   (sum_Rbar_map (list_compl.RemoveUseless sf l)
+                    (λ x0 : R, Rbar_mult x0 (μ (λ x1 : X, sf x1 = x0))
+                    ))
+                    at 1 by unfold sum_Rbar_map => //.
+                replace (sum_Rbar_l (map (λ x0 : R, Rbar_mult x0 (μ (λ x1 : X, sf x1 = x0))) l))
+                    with (sum_Rbar_map l (λ x0 : R, Rbar_mult x0 (μ (λ x1 : X, sf x1 = x0)))) 
+                    at 1 by unfold sum_Rbar_map => //.
+                congr Rbar_plus.
+                rewrite IHl => //.
+
+                move => Hypempty.
+                move => H; rewrite H in Eqs.
+                replace (list_compl.RemoveUseless sf (a :: l)) with s by unfold s => //.
+                rewrite Eqs => /=.
+                rewrite IHl.
+                unfold sum_Rbar_map at 2 => /=.
+                replace (sum_Rbar_l (map (λ x0 : R, Rbar_mult x0 (μ (λ x1 : X, sf x1 = x0))) l))
+                    with (sum_Rbar_map l (λ x0 : R, Rbar_mult x0 (μ (λ x1 : X, sf x1 = x0)))) 
+                    at 1 by unfold sum_Rbar_map => //.
+                rewrite (measure_ext _ _ _ (fun _ => False)).
+                    all : swap 1 2.
+                    move => x; split => //.
+                        move => Eq_sfx_a.
+                        apply Hypempty; exists x => //.
+                rewrite meas_False Rbar_mult_0_r Rbar_plus_0_l.
+                unfold sum_Rbar_map => //.
+        rewrite Hrwrt.
+        rewrite (sum_Rbar_map_ext_f l _ (fun y : R => Rbar_mult y (μ (λ x : X, sf x = y ∧ which sf x < S (max_which sf))))).
+        case: Pl => [_ [_ H]] => //.
+        move => y Inyl.
+        congr Rbar_mult.
+        apply measure_ext.
+        move => x; split.
+            move => H; split => //.
+            apply le_n_S.
+            apply ax_which_max_which.
+            move => [H _] => //.
+    Qed.
 
     Definition is_SF_Bsf (sf : simpl_fun (R_NormedModule) μ) : SF gen sf.
     (* Definition *)
         case: (Bsf_to_Lsf_list sf) => l Hl.
         apply (exist _ l); split => //.
+        case : Hl => //.
         move => y.  unfold fun_sf.
         pose A := fun n => (λ x : X, which sf x = n ∧ val sf n = y).
         assert (∀ n : nat, n ≤ max_which sf -> measurable gen (A n)).
@@ -371,7 +656,18 @@ Section Bochner_sf_Lebesgue_sf.
         case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
         unfold BInt_sf, LInt_SFp.
         unfold af1.
-
-    *)
+        unfold is_SF_Bsf.
+        case: (Bsf_to_Lsf_list sf) => l Hl /=.
+        case: Hl => _ H.
+        rewrite H.
+        congr real.
+        apply sum_Rbar_map_ext_f.
+        move => y Inyl.
+        congr Rbar_mult.
+        apply measure_ext.
+        move => x; split.
+        move => -> //.
+        congruence.
+    Qed.
 
 End Bochner_sf_Lebesgue_sf.
