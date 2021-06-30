@@ -26,6 +26,7 @@ Require Import
     hierarchy_notations
     simpl_fun
     BInt_sf
+    Bsf_Lsf
 .
 
 From CMS Require Import
@@ -66,3 +67,5 @@ Arguments BIF {X E gen} μ f.
 (* On note L¹(X,μ,E) l'espace des fonction Boshner integrable de X vers E *)
 Notation "'L¹(' X ',' μ ',' E ')'" := { f : X -> E | BIF μ f }
     (format "'[ ' 'L¹(' X ','  μ ','  E ')' ']'").
+
+
