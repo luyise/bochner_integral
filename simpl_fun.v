@@ -226,6 +226,16 @@ Section simpl_fun_norm.
         rewrite Eqf => //.
     Qed.
 
+    Lemma fun_sf_norm :
+        ∀ sf : simpl_fun E μ, 
+            (∀ x : X, fun_sf (‖sf‖) x = (‖ fun_sf sf x ‖)%hy).
+    Proof.
+        move => sf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        unfold fun_sf.
+        rewrite Eqf => //.
+    Qed.
+
 End simpl_fun_norm.
 
 Notation "‖ f ‖" := (fun_norm f) (at level 100) : fun_scope.

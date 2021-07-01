@@ -29,30 +29,29 @@ Section filterlim_complete_constr.
     Context {T : Type}.
     Context {U : CompleteSpace}.
 
-    Definition filterlim_locally_closely_constr :
+    Lemma filterlim_locally_closely_correct :
         forall {F} {FF : ProperFilter F} (f : T -> U),
             filterlim (fun x => (f (fst x), f (snd x))) (filter_prod F F) closely ->
-            { y | filterlim f F (locally y) }.
-    (* Definition *)
+            filterlim f F (locally (lim (filtermap f F))).
+    Proof.
         intros F FF f H.
-        apply (exist _ (lim (filtermap f F))).
         intros P [eps HP].
         refine (_ (complete_cauchy (filtermap f F) _ _ eps)).
         + now apply filter_imp.
         + apply cauchy_distance'.
         apply filter_le_trans with (2 := H).
         apply prod_filtermap_le.
-    Defined.
+    Qed.
 
-    Definition filterlim_locally_cauchy_constr :
+    Lemma filterlim_locally_cauchy_correct :
         forall {F} {FF : ProperFilter F} (f : T -> U),
             (forall eps : posreal, exists P, F P /\ forall u v : T, P u -> P v -> ball (f u) eps (f v)) ->
-            { y | filterlim f F (locally y) }.
-    (* Definition *)
+            filterlim f F (locally (lim (filtermap f F))).
+    Proof.
         intros F FF f H.
-        apply (filterlim_locally_closely_constr f).
+        apply (filterlim_locally_closely_correct f).
         apply filterlim_closely => //.
-    Defined.
+    Qed.
 
 End filterlim_complete_constr.
 
@@ -63,19 +62,22 @@ Definition Cauchy_seq {S : UniformSpace} (u : nat -> S) : Prop :=
 Section Cauchy_lim_seq_def.
 
     Context {S : CompleteSpace}.
+
+    Definition lim_seq (u : nat -> S) :=
+        lim (filtermap u eventually).
     
-    Definition filterlim_cauchy_seq_constr_aux :
+    Lemma filterlim_cauchy_seq_correct :
         ∀ u : nat → S,
             (∀ eps : posreal, ∃ P, eventually P ∧ ∀ p q : nat, P p → P q → ball (u p) eps (u q))
-            -> { y : S | filterlim u eventually (locally y) }.
-    (* Definition *)
+            -> filterlim u eventually (locally (lim_seq u)).
+    Proof.
         move => u Hu.
-        apply filterlim_locally_cauchy_constr => //.
+        apply filterlim_locally_cauchy_correct => //.
     Qed.
 
-    Definition Cauchy_seq_eventually {u : nat -> S} :
+    Lemma Cauchy_seq_eventually {u : nat -> S} :
         Cauchy_seq u -> (∀ eps : posreal, ∃ P, eventually P ∧ ∀ p q : nat, P p → P q → ball (u p) eps (u q)).
-    (* Definition *)
+    Proof.
         unfold Cauchy_seq => Hu ɛ.
         case: ɛ => ɛ Pɛ.
         pose Pɛ' := Rlt_gt _ _ Pɛ; clearbody Pɛ'.
@@ -83,17 +85,13 @@ Section Cauchy_lim_seq_def.
         exists (fun n => n ≥ N); split => //.
         exists N => //.
     Qed.
-
-    Definition Cauchy_lim_seq (u : nat -> S) (π : Cauchy_seq u) :=
-        proj1_sig (filterlim_cauchy_seq_constr_aux u (Cauchy_seq_eventually π)).
         
     Lemma is_filterlim_Cauchy_lim_seq :
-        ∀ (u : nat -> S), ∀ (π : Cauchy_seq u),
-            filterlim u eventually (locally (Cauchy_lim_seq u π)).
+        ∀ (u : nat -> S), Cauchy_seq u ->
+            filterlim u eventually (locally (lim_seq u)).
     Proof.
-        move => u π.
-        unfold Cauchy_lim_seq.
-        case: ((filterlim_cauchy_seq_constr_aux u (Cauchy_seq_eventually π))) => l Pl => //.
+        move => u /Cauchy_seq_eventually π.
+        apply (filterlim_cauchy_seq_correct u π).
     Qed.
     
 End Cauchy_lim_seq_def.
@@ -107,7 +105,7 @@ Section NM_Cauchy_lim_seq_def.
     Context {A : AbsRing}.
     Context {E : CompleteNormedModule A}.
 
-    Definition NM_Cauchy_seq_Cauchy_seq :
+    Lemma NM_Cauchy_seq_Cauchy_seq :
         ∀ u : nat -> E, NM_Cauchy_seq u -> Cauchy_seq u.
     Proof.
         move => u.
@@ -118,17 +116,14 @@ Section NM_Cauchy_lim_seq_def.
         exists N => p q Hp Hq.
         pose HnormNpq := Hn p q Hp Hq; clearbody HnormNpq.
         apply: norm_compat1 => //.
-    Defined.
-
-    Definition NM_Cauchy_lim_seq (u : nat -> E) (π : NM_Cauchy_seq u) :=
-        Cauchy_lim_seq u (NM_Cauchy_seq_Cauchy_seq u π).
+    Qed.
     
-    Lemma is_limseq_NM_Cauchy_lim_seq :
+    Lemma NM_Cauchy_seq_lim_seq_correct :
     ∀ (u : nat -> E), ∀ (π : NM_Cauchy_seq u),
-        is_lim_seq u (NM_Cauchy_lim_seq u π).
+        is_lim_seq u (lim_seq u).
     Proof.
-        move => u π.
-        apply: is_filterlim_Cauchy_lim_seq.
+        move => u /NM_Cauchy_seq_Cauchy_seq π.
+        apply: is_filterlim_Cauchy_lim_seq => //.
     Qed.
 
 End NM_Cauchy_lim_seq_def.
