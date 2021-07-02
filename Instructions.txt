@@ -1,0 +1,20 @@
+Pour rajouter un fichier :
+
+0. Se placer dans cerpan/.../Sobolev
+1. Rajouter le nom du nouveau fichier à _CoqProject
+2. taper "coq_makefile -f _CoqProject -o makefile"
+
+Lorsqu'on veut compiler :
+3. taper "make"
+
+Pour génerer ma doc :
+
+0. Se placer dans cerpan/.../Sobolev
+1. taper :
+"coqdoc bochner_integral/*.v -o bochner_integral/Doc/doc.html --utf8 -g"
+
+
+Notes :
+En général, pour générer un _CoqProject :
+taper :
+"ls [tous les fichiers .v] > _CoqProject"

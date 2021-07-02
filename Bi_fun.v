@@ -1,5 +1,6 @@
 
-Add LoadPath "~/Documents/CoqNotGit/LInt/LInt_p" as MILC.
+(*Add LoadPath "~/Documents/CoqNotGit/LInt/LInt_p" as MILC.*)
+(* Add LoadPath ".." as MILC. *)
 Add LoadPath "~/Documents/CoqGit/completeModuleSummation" as CMS.
 
 From Coq Require Import 
@@ -34,10 +35,9 @@ Require Import
 
 From CMS Require Import
     series
-    complete_normed_module_series
 .
 
-From MILC Require Import
+Require Import
     measure
     LInt_p
     Rbar_compl
@@ -60,9 +60,9 @@ Section Boshner_integrable_fun.
     Open Scope fun_scope.
 
     (* Bochner Integrable Functions *)
-    Inductive BIF (f : X -> E) : Prop :=
+    Inductive BIF (f : X -> E) : Type :=
         | approximation (s : nat -> simpl_fun E μ) :
-            ∀ x : X, is_lim_seq (fun n => s n x) (f x)
+            (∀ x : X, is_lim_seq (fun n => s n x) (f x))
             -> is_LimSup_seq' (fun n => LInt_p μ (‖ f - (s n) ‖)%fn) 0 -> BIF f.
 
 End Boshner_integrable_fun.
@@ -84,14 +84,14 @@ Section Bi_fun_prop.
     Context {E : NormedModule R_AbsRing}.
     (* Un espace mesuré *)
     Context {gen : (X -> Prop) -> Prop}.
-    Context {gen_im : (E -> Prop) -> Prop}.
     Context {μ : measure gen}.
 
-    Theorem Cauchy_seq_approx :
-        ∀ f : X -> E, measurable_fun gen gen_im f -> ∀ s : nat -> simpl_fun E μ,
-            is_LimSup_seq' (fun n => LInt_p μ (‖ f - (s n) ‖)%fn) 0 -> NM_Cauchy_seq (fun n => BInt_sf (s n)).
+    Lemma Cauchy_seq_approx :
+        ∀ f : X -> E, ∀ s : nat -> simpl_fun E μ,
+            (∀ x : X, is_lim_seq (fun n => s n x) (f x)) -> is_LimSup_seq' (fun n => LInt_p μ (‖ f - (s n) ‖)%fn) 0 
+            -> NM_Cauchy_seq (fun n => BInt_sf (s n)).
     Proof.
-        move => f meas_f s Hs.
+        move => f s Hspointwise Hs.
         unfold Cauchy_seq => ɛ Hɛ.
         unfold is_LimSup_seq' in Hs.
         pose sighalfɛ := RIneq.mkposreal (ɛ * /2) (R_compl.Rmult_lt_pos_pos_pos _ _ (RIneq.Rgt_lt _ _ Hɛ) RIneq.pos_half_prf).
@@ -154,6 +154,107 @@ Section Bi_fun_prop.
                                     (LInt_p μ (λ x : X, (‖ f + (- s p)%sf ‖)%fn x)) (ɛ*/2)).
             1, 2 :apply HsN => //.
             simpl; rewrite Rlimit.eps2 => //.
-    Admitted.
+        all : swap 1 3.
+        pose Lint_p_Bint_sf :=
+            Finite_BInt_sf_LInt_SFp (‖ s q - s p ‖)%sf.
+            rewrite <-LInt_p_SFp_eq in Lint_p_Bint_sf.
+            2 : exact π.
+            2 : unfold sum_Rbar_nonneg.non_neg => x.
+            2 : simpl; rewrite fun_sf_norm.
+            2 : apply norm_ge_0.
+            rewrite <-Lint_p_Bint_sf => //.
+
+        assert
+            (∀ x : X, is_lim_seq (fun n => (‖ s n + (- s p)%sf ‖)%fn x) ((‖ f + (- s p)%sf ‖)%fn x)) as Limseqnorm.
+            move => x; unfold fun_norm.
+            apply lim_seq_norm.
+            apply lim_seq_plus.
+            apply Hspointwise.
+            apply lim_seq_cte.
+        apply measurable_fun_ext with (fun x : X => (Lim_seq' (λ n : nat, (‖ s n + (- s p)%sf ‖)%fn x))).
+            move => x; rewrite <-Lim_seq_seq'.
+            apply is_lim_seq_unique.
+            apply Limseqnorm.
+        apply measurable_fun_Lim_seq'.
+        move => n; unfold sum_Rbar_nonneg.non_neg => x; apply norm_ge_0.
+        move => n; apply measurable_fun_R_Rbar.
+
+        case: (is_SF_Bsf (‖ s n + (- s p)%sf ‖)%sf) => l Hl.
+        apply measurable_fun_ext with (‖ s n - s p ‖)%sf.
+        move => x; rewrite fun_sf_norm; unfold fun_norm;
+            rewrite fun_sf_plus; unfold fun_plus => //.
+        apply SF_aux_measurable_fun with l => //.
+        
+        (*
+        apply: (measurable_fun_composition _ open).
+        apply measurable_fun_ext with ((s n + (- s p)%sf))%sf.
+            move => x.
+            rewrite fun_sf_plus => //.
+        apply (measurable_fun_sf (s n - s p)%sf).
+        move => P. move /sigma_algebra_R_Rbar_new.measurable_R_equiv_oo.
+        apply measurable_fun_continuous.
+        apply filterlim_norm.
+        *)
+
+        assert
+            (∀ x : X, is_lim_seq (fun n => (‖ s n + (- s q)%sf ‖)%fn x) ((‖ f + (- s q)%sf ‖)%fn x)) as Limseqnorm.
+            move => x; unfold fun_norm.
+            apply lim_seq_norm.
+            apply lim_seq_plus.
+            apply Hspointwise.
+            apply lim_seq_cte.
+        apply measurable_fun_ext with (fun x : X => (Lim_seq' (λ n : nat, (‖ s n + (- s q)%sf ‖)%fn x))).
+            move => x; rewrite <-Lim_seq_seq'.
+            apply is_lim_seq_unique.
+            apply Limseqnorm.
+        apply measurable_fun_Lim_seq'.
+        move => n; unfold sum_Rbar_nonneg.non_neg => x; apply norm_ge_0.
+        move => n; apply measurable_fun_R_Rbar.
+
+        case: (is_SF_Bsf (‖ s n + (- s q)%sf ‖)%sf) => l Hl.
+        apply measurable_fun_ext with (‖ s n - s q ‖)%sf.
+        move => x; rewrite fun_sf_norm; unfold fun_norm;
+            rewrite fun_sf_plus; unfold fun_plus => //.
+        apply SF_aux_measurable_fun with l => //.
+        (*
+        apply: (measurable_fun_composition _ open).
+        apply measurable_fun_ext with ((s n + (- s q)%sf))%sf.
+            move => x.
+            rewrite fun_sf_plus => //.
+        apply (measurable_fun_sf (s n - s q)%sf).
+        move => P. move /sigma_algebra_R_Rbar_new.measurable_R_equiv_oo.
+        apply measurable_fun_continuous.
+        apply filterlim_norm.
+        *)
+    Qed.
         
 End Bi_fun_prop.
+
+Section BInt_BIF_def.
+
+    (* espace de départ *)
+    Context {X : Set}.
+    Context (ι : inhabited X).
+    (* espace d'arrivé *)
+    Context {E : CompleteNormedModule R_AbsRing}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context {gen_im : (E -> Prop) -> Prop}.
+    Context {μ : measure gen}.
+
+    Definition BInt_BIF (f : X -> E) (π : BIF μ f) :=
+        match π return E with (approximation s Hspw Hsl1) =>
+            lim_seq (fun n => BInt_sf (s n))
+        end.
+
+    Theorem is_lim_seq_BInt_BIF (f : X -> E) (π : BIF μ f) :
+        match π return Prop with (approximation s Hspw Hsl1) =>
+            is_lim_seq (fun n => BInt_sf (s n)) (BInt_BIF f π)
+        end.
+    Proof.
+        case: π => s Hspw Hsl1.
+        apply NM_Cauchy_seq_lim_seq_correct.
+        apply Cauchy_seq_approx with f => //.
+    Qed.
+
+End BInt_BIF_def.

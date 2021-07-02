@@ -1,4 +1,5 @@
-Add LoadPath "~/Documents/CoqNotGit/LInt/LInt_p" as MILC.
+(* Add LoadPath "~/Documents/CoqNotGit/LInt/LInt_p" as MILC. *)
+(* Add LoadPath ".." as MILC. *)
 
 From Coq Require Import 
     ssreflect
@@ -18,7 +19,7 @@ From Coquelicot Require Import
     Rbar
 .
 
-From MILC Require Import 
+Require Import 
     measure
     sigma_algebra
     sum_Rbar_nonneg
@@ -661,6 +662,40 @@ Section Bochner_sf_Lebesgue_sf.
         case: Hl => _ H.
         rewrite H.
         congr real.
+        apply sum_Rbar_map_ext_f.
+        move => y Inyl.
+        congr Rbar_mult.
+        apply measure_ext.
+        move => x; split.
+        move => -> //.
+        congruence.
+    Qed.
+
+    Lemma Finite_BInt_sf_LInt_SFp :
+        ∀ sf : simpl_fun R_NormedModule μ, Finite (BInt_sf sf) = LInt_SFp μ sf (is_SF_Bsf sf).
+    Proof.
+        move => sf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        unfold BInt_sf, LInt_SFp.
+        unfold af1.
+        unfold is_SF_Bsf.
+        case: (Bsf_to_Lsf_list sf) => l Hl /=.
+        case: Hl => _ H.
+        rewrite H.
+        assert 
+            (is_finite
+                (sum_Rbar_map l
+                (λ x : R, Rbar_mult x (μ (λ x0 : X, sf x0 = x)))))
+            as Finsum.
+            apply is_finite_sum_Rbar_map => y Inyl.
+            case: (RIneq.Req_EM_T y 0%R).
+            move => ->; rewrite Rbar_mult_0_l => //.
+            move => Hy.
+            rewrite Rbar_mult_comm.
+            apply is_finite_Rbar_mult_finite_real.
+            apply finite_sf_preim_neq_0 => //.
+            unfold is_finite in Finsum.
+            rewrite Finsum.
         apply sum_Rbar_map_ext_f.
         move => y Inyl.
         congr Rbar_mult.

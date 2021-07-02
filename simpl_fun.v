@@ -1,5 +1,6 @@
 
-Add LoadPath "~/Documents/CoqNotGit/LInt/LInt_p" as MILC.
+(* Add LoadPath "~/Documents/CoqNotGit/LInt/LInt_p" as MILC. *)
+(* Add LoadPath ".." as MILC. *)
 
 From Coq Require Import 
     ssreflect
@@ -18,11 +19,12 @@ From Coquelicot Require Import
     Rbar
 .
 
-From MILC Require Import 
+Require Import 
     measure
     sigma_algebra
     sum_Rbar_nonneg
     Rbar_compl
+    measurable_fun
 .
 
 Require Import
@@ -734,5 +736,12 @@ Section simpl_fun_meas.
             rewrite <-Abs in Hy.
             rewrite Eqf in Hy; simpl in Hy => //.
     Qed.
+
+    (*
+    Lemma measurable_fun_sf :
+        ∀ s : simpl_fun E μ,
+            measurable_fun gen open s.
+    Admitted.
+    *)
 
 End simpl_fun_meas.

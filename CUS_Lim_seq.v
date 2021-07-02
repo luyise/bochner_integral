@@ -16,6 +16,11 @@ From CMS Require Import
     series
 .
 
+Require Import
+    hierarchy_notations
+    simpl_fun
+.
+
 Open Scope nat_scope.
 Open Scope R_scope.
 
@@ -96,6 +101,41 @@ Section Cauchy_lim_seq_def.
     
 End Cauchy_lim_seq_def.
 
+Section lim_seq_prop.
+
+    Context {S : UniformSpace}.
+    Context {T : UniformSpace}.
+
+    Lemma lim_seq_cte :
+        ∀ s : S,
+        filterlim (fun _ : nat => s) eventually (locally s).
+    Proof.
+        move => s.
+        apply filterlim_const.
+    Qed.
+    
+    Lemma lim_seq_continuity :
+        ∀ f : S -> T, ∀ s : S,
+        filterlim f (locally s) (locally (f s))
+            -> ∀ u : nat -> S,
+            filterlim u eventually (locally s) -> filterlim (fun n => f (u n)) eventually (locally (f s)).
+    Proof.
+        move => f s Hf u Hu.
+        apply filterlim_comp with (locally s) => //.
+    Qed.
+
+    Lemma lim_seq_pair :
+        ∀ u : nat -> S, ∀ v : nat -> T, ∀ lu : S, ∀ lv : T,
+            filterlim u eventually (locally lu) ->
+            filterlim v eventually (locally lv) ->
+            filterlim (fun n => (u n, v n)) eventually (filter_prod (locally lu) (locally lv)).
+    Proof.
+        move => u v lu lv Hu Hv.
+        apply filterlim_pair => //.
+    Qed.
+
+End lim_seq_prop.
+
 Definition NM_Cauchy_seq {A : AbsRing} {E : NormedModule A} (u : nat -> E) : Prop :=
     ∀ ɛ : R, ɛ > 0 -> ∃ n : nat, ∀ p q : nat,
         p ≥ n -> q ≥ n -> ball_norm (u p) ɛ (u q).
@@ -127,3 +167,116 @@ Section NM_Cauchy_lim_seq_def.
     Qed.
 
 End NM_Cauchy_lim_seq_def.
+
+Section NM_lim_seq_prop.
+
+    Context {A : AbsRing}.
+    Context {E : NormedModule A}.
+    Open Scope hy_scope.
+    Open Scope fun_scope.
+
+    Lemma lim_seq_plus :
+        ∀ u v : nat -> E, ∀ lu lv : E,
+            is_lim_seq u lu -> is_lim_seq v lv ->
+                is_lim_seq (u + v) (lu + lv)%hy.
+    Proof.
+        move => u v lu lv Hu Hv.
+        apply 
+            (filterlim_comp 
+                nat (E * E) E 
+                (fun n : nat => (u n, v n)) (fun c : E * E => fst c + snd c)%hy
+                eventually (filter_prod (locally lu) (locally lv)) (locally (lu + lv)%hy) 
+            ).
+        apply lim_seq_pair => //.
+        apply filterlim_plus.
+    Qed.
+
+    Lemma lim_seq_scal :
+        ∀ a : nat -> A, ∀ u : nat -> E, ∀ la : A, ∀ lu : E,
+            is_lim_seq a la -> is_lim_seq u lu ->
+                is_lim_seq (fun n : nat => (a n) ⋅ (u n))%hy (la ⋅ lu)%hy.
+    Proof.
+        move => a u la lu Ha Hu.
+        apply 
+            (filterlim_comp 
+                nat (A * E) E 
+                (fun n : nat => (a n, u n)) (fun c : A * E => (fst c) ⋅ (snd c))%hy
+                eventually (filter_prod (locally la) (locally lu)) (locally (la ⋅ lu)%hy) 
+            ).
+        apply lim_seq_pair => //.
+        apply filterlim_scal.
+    Qed.
+
+    Lemma lim_seq_scal_r :
+        ∀ a : A, ∀ u : nat -> E, ∀ lu : E,
+            is_lim_seq u lu ->
+                is_lim_seq (a ⋅ u) (a ⋅ lu)%hy.
+    Proof.
+        move => a u lu Hu.
+        apply (lim_seq_continuity (fun x : E => a ⋅ x)%hy) => //.
+        apply filterlim_scal_r.
+    Qed.
+
+    Lemma lim_seq_scal_l :
+        ∀ a : nat -> A, ∀ u : E, ∀ la : A,
+            is_lim_seq a la ->
+                is_lim_seq (fun n => a n ⋅ u)%hy (la ⋅ u)%hy.
+    Proof.
+        move => a u la Ha.
+        apply (lim_seq_continuity (fun b : A => b ⋅ u)%hy) => //.
+        apply filterlim_scal_l.
+    Qed.
+
+    Lemma lim_seq_opp :
+        ∀ u : nat -> E, ∀ lu : E,
+            is_lim_seq u lu ->
+                is_lim_seq (fun n : nat => opp (u n)) (opp lu).
+    Proof.
+        move => u lu Hu.
+        apply (lim_seq_continuity (fun x : E => opp x)) => //.
+        apply filterlim_opp.
+    Qed.
+    
+    Lemma lim_seq_mult :
+        ∀ a b : nat -> A, ∀ la lb : A,
+        is_lim_seq a la -> is_lim_seq b lb ->
+            is_lim_seq (fun n => (a n) * (b n)) (la * lb)%hy.
+    Proof.
+        move => a b la lb Ha Hb.
+        apply 
+            (filterlim_comp 
+                nat (A * A) A 
+                (fun n : nat => (a n, b n)) (fun c : A * A => fst c * snd c)%hy
+                eventually (filter_prod (locally la) (locally lb)) (locally (la * lb)%hy) 
+            ).
+        apply lim_seq_pair => //.
+        apply filterlim_mult.
+    Qed.
+
+    Lemma lim_seq_norm :
+        ∀ u : nat -> E, ∀ lu : E,
+        is_lim_seq u lu -> is_lim_seq (‖ u ‖)%fn (‖ lu ‖)%hy.
+    Proof.
+        move => u lu Hu.
+        apply (lim_seq_continuity (fun x : E => norm x)) => //.
+        apply filterlim_norm.
+    Qed.
+
+    Lemma lim_seq_norm_zero :
+        ∀ u : nat -> E,
+        is_lim_seq (‖u‖)%fn 0 -> is_lim_seq u zero.
+    Proof.
+        move => u Hu.
+        apply filterlim_norm_zero => //.
+    Qed.
+
+    Lemma lim_seq_bounded :
+        ∀ u : nat -> E,
+            (∃ lu : E, is_lim_seq u lu)
+            -> { M : R | ∀ n : nat, (‖ u n ‖)%hy <= M }.
+    Proof.
+        move => u Hu.
+        apply filterlim_bounded => //.
+    Qed.
+
+End NM_lim_seq_prop.
