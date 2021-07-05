@@ -178,14 +178,7 @@ Section Bi_fun_prop.
         apply measurable_fun_Lim_seq'.
         move => n; unfold sum_Rbar_nonneg.non_neg => x; apply norm_ge_0.
         move => n; apply measurable_fun_R_Rbar.
-
-        case: (is_SF_Bsf (‖ s n + (- s p)%sf ‖)%sf) => l Hl.
-        apply measurable_fun_ext with (‖ s n - s p ‖)%sf.
-        move => x; rewrite fun_sf_norm; unfold fun_norm;
-            rewrite fun_sf_plus; unfold fun_plus => //.
-        apply SF_aux_measurable_fun with l => //.
         
-        (*
         apply: (measurable_fun_composition _ open).
         apply measurable_fun_ext with ((s n + (- s p)%sf))%sf.
             move => x.
@@ -194,7 +187,6 @@ Section Bi_fun_prop.
         move => P. move /sigma_algebra_R_Rbar_new.measurable_R_equiv_oo.
         apply measurable_fun_continuous.
         apply filterlim_norm.
-        *)
 
         assert
             (∀ x : X, is_lim_seq (fun n => (‖ s n + (- s q)%sf ‖)%fn x) ((‖ f + (- s q)%sf ‖)%fn x)) as Limseqnorm.
@@ -211,12 +203,6 @@ Section Bi_fun_prop.
         move => n; unfold sum_Rbar_nonneg.non_neg => x; apply norm_ge_0.
         move => n; apply measurable_fun_R_Rbar.
 
-        case: (is_SF_Bsf (‖ s n + (- s q)%sf ‖)%sf) => l Hl.
-        apply measurable_fun_ext with (‖ s n - s q ‖)%sf.
-        move => x; rewrite fun_sf_norm; unfold fun_norm;
-            rewrite fun_sf_plus; unfold fun_plus => //.
-        apply SF_aux_measurable_fun with l => //.
-        (*
         apply: (measurable_fun_composition _ open).
         apply measurable_fun_ext with ((s n + (- s q)%sf))%sf.
             move => x.
@@ -225,7 +211,6 @@ Section Bi_fun_prop.
         move => P. move /sigma_algebra_R_Rbar_new.measurable_R_equiv_oo.
         apply measurable_fun_continuous.
         apply filterlim_norm.
-        *)
     Qed.
         
 End Bi_fun_prop.
