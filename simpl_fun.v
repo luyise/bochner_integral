@@ -737,11 +737,73 @@ Section simpl_fun_meas.
             rewrite Eqf in Hy; simpl in Hy => //.
     Qed.
 
+
     (*
-    Lemma measurable_fun_sf :
-        ∀ s : simpl_fun E μ,
-            measurable_fun gen open s.
-    Admitted.
+    
+    Lemma measurable_fun_induction :
+        ∀ n : nat, ∀ sf : simpl_fun E μ,
+            (∀ P : E -> Prop, measurable open P -> 
+            measurable gen (fun x : X => P (sf x))).
+    Proof.
+        induction n;
+            move => sf;
+            case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=;
+            move => P HP Hw.
+
+            apply measurable_ext with (λ _ : X, P (val sf 0)).
+            move => x; assert (which sf x = 0); unfold fun_sf.
+            pose Hwx := Hw x; lia.
+            rewrite H => //.
+            apply measurable_Prop.
+            assert
+            
     *)
+
+    Lemma measurable_fun_sf_aux :
+        ∀ sf : simpl_fun E μ,
+            (∀ P : E -> Prop, measurable open P -> measurable gen (fun x : X => P (sf x))).
+    Proof.
+        move => sf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+
+        move => P HP.
+        pose B := fun (n : nat) => (fun x : X => (which sf x = n) ∧ (P (val sf n))).
+        apply measurable_ext with (λ x : X, ∃ n : nat, n ≤ max_which sf ∧ B n x).
+        move => x; split.
+            case => n [Hn Bnx]; unfold B in Bnx.
+            case: Bnx => [Eqwsfx Pvsfn]; unfold fun_sf.
+            rewrite Eqwsfx => //.
+            move => Psfx; exists (which sf x).
+            split; 
+                [apply ax_which_max_which 
+                | unfold B; split; 
+                    [reflexivity | assumption]].
+        apply measurable_union_finite => n Hn.
+        apply measurable_inter.
+        apply ax_measurable => //.
+        apply measurable_Prop.
+    Qed.
+
+    Lemma measurable_fun_sf :
+        ∀ sf : simpl_fun E μ,
+            measurable_fun gen open sf.
+    Proof.
+        move => sf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+
+        move => P HP; inversion HP.
+            clear A0 H0.
+            apply measurable_fun_sf_aux => //.
+
+            clear H HP P.
+            constructor 2.
+
+            clear H0 A0.
+            apply measurable_fun_sf_aux => //.
+
+            clear H0 HP.
+            constructor 4.
+            move => n; apply measurable_fun_sf_aux => //.
+    Qed.
 
 End simpl_fun_meas.
