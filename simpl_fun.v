@@ -1,7 +1,4 @@
 
-(* Add LoadPath "~/Documents/CoqNotGit/LInt/LInt_p" as MILC. *)
-(* Add LoadPath ".." as MILC. *)
-
 From Coq Require Import 
     ssreflect
     ssrsearch

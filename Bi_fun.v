@@ -1,6 +1,4 @@
 
-(*Add LoadPath "~/Documents/CoqNotGit/LInt/LInt_p" as MILC.*)
-(* Add LoadPath ".." as MILC. *)
 Add LoadPath "~/Documents/CoqGit/completeModuleSummation" as CMS.
 
 From Coq Require Import 
