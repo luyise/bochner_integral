@@ -348,4 +348,47 @@ Section BInt_Bif_op.
             assumption.
     Qed.
 
+    Lemma BInt_Bif_scal :
+        ∀ (bf : Bif μ f), ∀ (a : R_AbsRing),
+            BInt_Bif (Bif_scal ι a bf) = (a ⋅ (BInt_Bif bf))%hy.
+    Proof.
+        move => bf a.
+        case: bf => sf Hfpw Hfl1.
+        unfold BInt_Bif, Bif_scal.
+        apply lim_seq_eq.
+        apply (lim_seq_ext (fun n : nat => a ⋅ (BInt_sf (sf n)))%hy).
+            move => n; rewrite BInt_sf_scal_aux => //.
+            apply: lim_seq_scal_r.
+            pose H := is_lim_seq_BInt_Bif ι (approximation f sf Hfpw Hfl1);
+                clearbody H; simpl in H.
+            assumption.
+    Qed.
+
 End BInt_Bif_op.
+
+Section BInt_Bif_linearity.
+
+    (* espace de départ *)
+    Context {X : Set}.
+    Context (ι : inhabited X).
+    (* espace d'arrivé *)
+    Context {E : CompleteNormedModule R_AbsRing}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context {μ : measure gen}.
+    Context {f g : X -> E}.
+
+    Open Scope hy_scope.
+    Open Scope Bif_scope.
+    
+    Lemma BInt_sf_linearity :
+        ∀ (bf : Bif μ f) (bg : Bif μ g), ∀ a b : R,
+            BInt_Bif (Bif_plus ι (Bif_scal ι a bf) (Bif_scal ι b bg))
+            = (a ⋅ (BInt_Bif bf) + (b ⋅ (BInt_Bif bg)))%hy.
+    Proof.
+        move => bf bg a b.
+        rewrite BInt_Bif_plus.
+        do 2 rewrite BInt_Bif_scal => //.
+    Qed.
+
+End BInt_Bif_linearity.

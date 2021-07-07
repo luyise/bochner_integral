@@ -535,7 +535,7 @@ Section Bif_op.
             apply is_LimSup_seq'_scal_l.
             apply abs_ge_0.
             assumption.
-    Qed.
+    Defined.
 
 End Bif_op.
 
