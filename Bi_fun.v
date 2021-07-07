@@ -37,6 +37,11 @@ Require Import
     sigma_algebra
 .
 
+Lemma is_LimSup_seq'_scal_l :
+  forall u : nat -> Rbar, forall a : R, forall l : R,
+    is_LimSup_seq' (fun n => Rbar_mult a (u n)) (Rbar_mult a l).
+Admitted.
+
 Section Boshner_integrable_fun.
 
     (* espace de départ *)
@@ -383,6 +388,62 @@ Section Bif_op.
         apply measurable_fun_continuous.
         apply filterlim_norm.
     Defined.
+
+    Definition Bif_scal (a : R_AbsRing) (bf : Bif μ f) : Bif μ (a ⋅ f)%fn.
+    (* Definition *)
+        case_eq bf => sf Hfpw Hfl1 Eqf.
+        apply: (approximation (a ⋅ f)%fn (fun n : nat => a ⋅ sf n)%sf).
+            move => x; unfold fun_scal.
+            apply (lim_seq_ext (fun n => a ⋅ sf n x)%hy).
+                move => n; rewrite fun_sf_scal => //.
+            apply: lim_seq_scal_r => //.
+
+        apply is_LimSup_seq'_ext with (fun n => Rbar_mult (| a |)%hy (LInt_p μ (‖ f - sf n ‖)%fn)).
+            move => n; unfold fun_norm, fun_plus, fun_scal.
+            rewrite <-LInt_p_scal => //.
+                all : swap 1 2.
+                unfold sum_Rbar_nonneg.non_neg => x; apply norm_ge_0.
+            apply LInt_p_ext => x; do 2 rewrite fun_sf_scal.
+            do 2 rewrite scal_opp_one; rewrite fun_sf_scal; rewrite <-scal_opp_r.
+            replace (a ⋅ f x + a ⋅ opp (sf n x))%hy with
+                (a ⋅ (f x + opp (sf n x)))%hy at 1
+                by rewrite scal_distr_l => //.
+            rewrite norm_scal_eq => //.
+            2 : apply Rabs_pos.
+            assert
+                (∀ x : X, is_lim_seq (fun k => (‖ sf k + (- sf n)%sf ‖)%fn x) ((‖ f + (- sf n)%sf ‖)%fn x)) as Limseqnorm.
+                move => x; unfold fun_norm.
+                apply lim_seq_norm.
+                apply lim_seq_plus.
+                apply Hfpw.
+                apply lim_seq_cte.
+            apply measurable_fun_ext with (fun x : X => (Lim_seq' (λ k : nat, (‖ sf k + (- sf n)%sf ‖)%fn x))).
+                move => x; rewrite <-Lim_seq_seq'.
+                apply is_lim_seq_unique.
+                unfold Lim_seq.is_lim_seq.
+                unfold Rbar_locally => /=.
+                apply: Limseqnorm.
+            apply measurable_fun_Lim_seq'.
+            move => k; unfold sum_Rbar_nonneg.non_neg => x; apply norm_ge_0.
+            move => k; apply measurable_fun_R_Rbar.
+            
+            apply: (measurable_fun_composition _ open).
+            apply measurable_fun_ext with ((sf k + (- sf n)%sf))%sf.
+                move => x.
+                rewrite fun_sf_plus => //.
+            apply (measurable_fun_sf (sf k - sf n)%sf).
+            move => P; move /sigma_algebra_R_Rbar_new.measurable_R_equiv_oo.
+            apply measurable_fun_continuous.
+            apply filterlim_norm.
+
+            assert (Rbar_mult (|a|)%hy 0 = 0).
+            unfold Rbar_mult => /=.
+            rewrite RIneq.Rmult_0_r => //.
+
+            rewrite <-H.
+            apply is_LimSup_seq'_scal_l.
+        
+    Qed.
 
 End Bif_op.
 
