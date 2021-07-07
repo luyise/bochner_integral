@@ -188,6 +188,25 @@ Section NM_Cauchy_lim_seq_def.
         apply H' => //.
     Qed.
 
+    Lemma lim_seq_eq :
+        ∀ u : nat -> E, ∀ l : E,
+            is_lim_seq u l -> lim_seq u = l.
+    Proof.
+        move => u l Hl.
+        assert (is_lim_seq u (lim_seq u)).
+            apply NM_Cauchy_seq_lim_seq_correct.
+            unfold NM_Cauchy_seq => ɛ Hɛ.
+            move: Hl => /filterlim_locally_ball_norm => Hl.
+            pose sighalfɛ := RIneq.mkposreal (ɛ * /2) (R_compl.Rmult_lt_pos_pos_pos _ _ (RIneq.Rgt_lt _ _ Hɛ) RIneq.pos_half_prf).
+            case: (Hl sighalfɛ) => N /= HN; clear Hl.
+            exists N => p q Hp Hq; replace ɛ with (ɛ*/2 + ɛ*/2)
+                by rewrite Rlimit.eps2 => //.
+            apply ball_norm_triangle with l.
+            apply (ball_norm_sym l (u p) sighalfɛ) => /=.
+            1, 2 : apply HN => //.
+        apply (NM_is_lim_seq_unique u) => //.
+    Qed.
+
 End NM_Cauchy_lim_seq_def.
 
 Section NM_lim_seq_prop.
