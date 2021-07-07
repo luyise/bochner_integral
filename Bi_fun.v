@@ -537,6 +537,49 @@ Section Bif_op.
             assumption.
     Defined.
 
+    Definition Bif_norm (bf : Bif μ f) : Bif μ (‖f‖)%fn.
+    (* Definition *)
+        case_eq bf => sf Hfpw Hfl1 Eqf.
+        apply: (approximation (‖f‖)%fn (fun n : nat => ‖ sf n ‖)%sf).
+            move => x; unfold fun_norm.
+            apply (lim_seq_ext (fun n => ‖ sf n x ‖ )%hy).
+                move => n; rewrite fun_sf_norm => //.
+            apply: lim_seq_norm => //.
+        
+        unfold is_LimSup_seq'; move => [ɛ Hɛ]; split; swap 1 2.
+        simpl; rewrite Raxioms.Rplus_0_l.
+
+        2 : move => N0.
+        2 : exists N0; split => //.
+        2 : unfold Rminus.
+        2 : replace (RIneq.pos {| RIneq.pos := ɛ; RIneq.cond_pos := Hɛ |}) with ɛ by move => //.
+        2 : setoid_rewrite Raxioms.Rplus_0_l.
+        2 : apply Rbar_lt_le_trans with 0%R.
+        2 : apply RIneq.Ropp_lt_gt_0_contravar => //.
+        2 : apply LInt_p_ge_0 => //; unfold sum_Rbar_nonneg.non_neg.
+        2 : move => x; apply norm_ge_0.
+
+        case: (Hfl1 (RIneq.mkposreal ɛ Hɛ)) => Hɛ1 Hɛ2.
+        case: Hɛ2 => N HN.
+        exists N => n Hn.
+        apply Rbar_le_lt_trans with (LInt_p μ (λ x : X, (‖ f + (- sf n)%sf ‖)%fn x)); swap 1 2.
+            simpl in HN; rewrite Raxioms.Rplus_0_l in HN.
+            apply HN => //.
+        apply LInt_p_monotone => x.
+        unfold fun_norm at 1.
+        unfold norm at 1 => /=.
+        unfold fun_plus.
+        unfold fun_norm.
+        rewrite fun_sf_scal scal_opp_one.
+        rewrite fun_sf_norm.
+        rewrite fun_sf_scal scal_opp_one.
+        replace ((‖ f x ‖) + opp (‖ sf n x ‖))%hy with (minus (‖ f x ‖)%hy (‖ sf n x ‖)%hy) at 1
+            by unfold minus => //.
+        replace (f x + opp (sf n x))%hy with (minus (f x) (sf n x))%hy at 1
+            by unfold minus => //.
+        apply: norm_triangle_inv.
+    Qed.
+
 End Bif_op.
 
 (*
