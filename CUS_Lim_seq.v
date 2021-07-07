@@ -70,6 +70,15 @@ Section Cauchy_lim_seq_def.
 
     Definition lim_seq (u : nat -> S) :=
         lim (filtermap u eventually).
+
+    Lemma lim_seq_ext :
+        ∀ u u' : nat -> S,
+            (∀ n : nat, u n = u' n) -> ∀ l : S,
+            filterlim u eventually (locally l) -> filterlim u' eventually (locally l).
+    Proof.
+        move => u u' Huu' l Hl.
+        apply filterlim_ext with u => //.
+    Qed.
     
     Lemma filterlim_cauchy_seq_correct :
         ∀ u : nat → S,
@@ -159,11 +168,24 @@ Section NM_Cauchy_lim_seq_def.
     Qed.
     
     Lemma NM_Cauchy_seq_lim_seq_correct :
-    ∀ (u : nat -> E), ∀ (π : NM_Cauchy_seq u),
-        is_lim_seq u (lim_seq u).
+        ∀ (u : nat -> E), ∀ (π : NM_Cauchy_seq u),
+            is_lim_seq u (lim_seq u).
     Proof.
         move => u /NM_Cauchy_seq_Cauchy_seq π.
         apply: is_filterlim_Cauchy_lim_seq => //.
+    Qed.
+
+    Lemma NM_is_lim_seq_unique :
+        ∀ u : nat -> E, ∀ l l' : E,
+            is_lim_seq u l -> is_lim_seq u l' -> l = l'.
+    Proof.
+        move => u l l' Hl Hl';
+            unfold is_lim_seq in Hl;
+            unfold is_lim_seq in Hl'.
+        pose H := filterlim_locally_unique u l l'.
+        pose H' := H eventually (Proper_StrongProper _ eventually_filter);
+            clearbody H'.
+        apply H' => //.
     Qed.
 
 End NM_Cauchy_lim_seq_def.

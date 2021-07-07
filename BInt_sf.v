@@ -757,7 +757,7 @@ Section BInt_well_defined.
             rewrite axf1 scal_zero_r => //.
     Qed.
 
-    Lemma BInt_sf_indep_of_dec :
+    Lemma BInt_sf_ext :
         ∀ sf sf' : simpl_fun E μ,
             (∀ x : X, fun_sf sf x = fun_sf sf' x) ->
             BInt_sf sf = BInt_sf sf'.

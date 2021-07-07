@@ -734,28 +734,6 @@ Section simpl_fun_meas.
             rewrite Eqf in Hy; simpl in Hy => //.
     Qed.
 
-
-    (*
-    
-    Lemma measurable_fun_induction :
-        ∀ n : nat, ∀ sf : simpl_fun E μ,
-            (∀ P : E -> Prop, measurable open P -> 
-            measurable gen (fun x : X => P (sf x))).
-    Proof.
-        induction n;
-            move => sf;
-            case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=;
-            move => P HP Hw.
-
-            apply measurable_ext with (λ _ : X, P (val sf 0)).
-            move => x; assert (which sf x = 0); unfold fun_sf.
-            pose Hwx := Hw x; lia.
-            rewrite H => //.
-            apply measurable_Prop.
-            assert
-            
-    *)
-
     Lemma measurable_fun_sf_aux :
         ∀ sf : simpl_fun E μ,
             (∀ P : E -> Prop, measurable open P -> measurable gen (fun x : X => P (sf x))).
