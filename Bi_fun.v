@@ -38,9 +38,100 @@ Require Import
 .
 
 Lemma is_LimSup_seq'_scal_l :
-  forall u : nat -> Rbar, forall a : R, forall l : R,
+  forall u : nat -> Rbar, forall a : R, 0%R <= a -> forall l : R, is_LimSup_seq' u l ->
     is_LimSup_seq' (fun n => Rbar_mult a (u n)) (Rbar_mult a l).
-Admitted.
+Proof.
+    move => u a Ha l Hl;
+        unfold is_LimSup_seq' in Hl.
+        (*case: (Hl RIneq.posreal_one) => Hl11 Hl12.
+        case: Hl12 => N' HN'.
+        simpl in Hl11, HN'.*)
+      
+    unfold is_LimSup_seq' => /=; move => [ɛ Hɛ]; split.
+    case: (RIneq.Req_EM_T a 0).
+        move => -> /= N; exists N; split.
+        apply Nat.le_refl.
+        rewrite Rbar_mult_0_l.
+        rewrite RIneq.Rmult_0_l.
+        unfold Rminus; rewrite Raxioms.Rplus_0_l.
+        apply RIneq.Ropp_lt_gt_0_contravar => //.
+
+        move => NEqa0 /= N.
+        replace ɛ with (a * /a * ɛ).
+        2 : rewrite RIneq.Rinv_r.
+        2 : rewrite Raxioms.Rmult_1_l => //.
+        2 : assumption.
+        replace (a * l - a * / a * ɛ) with (a * (l - /a * ɛ)).
+            2 : rewrite Raxioms.Rmult_plus_distr_l.
+            2 : rewrite RIneq.Ropp_mult_distr_r_reverse.
+            2 : rewrite Raxioms.Rmult_assoc => //.
+
+        assert (0 < /a * ɛ).
+        replace 0 with (/a * 0)%R.
+        2 : rewrite RIneq.Rmult_0_r => //.
+        apply Raxioms.Rmult_lt_compat_l.
+        apply RIneq.Rinv_0_lt_compat.
+        case: Ha => //.
+        move => Abs; rewrite Abs in NEqa0 => //.
+        assumption.
+        pose sigɛ' := RIneq.mkposreal (/a * ɛ) H.
+        case: (Hl sigɛ') => Hɛ'1 Hɛ'2.
+        case: Hɛ'2 => N' HN'.
+        assert (N' ≤ max N N') by apply Max.le_max_r.
+        case: (Hɛ'1 (max N N')) => N'' [HN'' HN''lt].
+        assert (N' ≤ N'').
+            apply Nat.le_trans with (max N N') => //.
+        pose Ineq := (HN' N'' H1); clearbody Ineq; simpl in Ineq.
+        clear HN' H0; simpl in HN''lt.
+        exists N''; split; [apply Max.max_lub_l with N' => // | ].
+        assert (N' ≤ N'') by apply Max.max_lub_r with N => //.
+        case_eq (u N'').
+        all : swap 1 2.
+        move => Abs.
+        rewrite Abs in Ineq => //.
+        all : swap 1 2.
+        move => Abs.
+        rewrite Abs in HN''lt => //.
+        move => uN'' EquN'' => /=.
+        apply Raxioms.Rmult_lt_compat_l.
+        case: Ha => //.
+        move => Abs; rewrite Abs in NEqa0 => //.
+        rewrite EquN'' in HN''lt => //.
+
+    case: (RIneq.Req_EM_T a 0).
+        move => ->; exists O => n _.
+        rewrite Rbar_mult_0_l.
+        rewrite RIneq.Rmult_0_l.
+        unfold Rminus; rewrite Raxioms.Rplus_0_l => //.
+
+        move => NEqa0.
+        assert (0 < /a * ɛ).
+        replace 0 with (/a * 0)%R.
+        2 : rewrite RIneq.Rmult_0_r => //.
+        apply Raxioms.Rmult_lt_compat_l.
+        apply RIneq.Rinv_0_lt_compat.
+        case: Ha => //.
+        move => Abs; rewrite Abs in NEqa0 => //.
+        assumption.
+        pose sigɛ' := RIneq.mkposreal (/a * ɛ) H.
+        case: (Hl sigɛ') => Hɛ'1 Hɛ'2.
+        case: Hɛ'2 => N' HN' => /=; simpl in HN', Hɛ'1.
+        exists N' => n Hn.
+        pose Ineq := HN' n Hn; clearbody Ineq.
+
+        replace ɛ with (a * /a * ɛ).
+        2 : rewrite RIneq.Rinv_r.
+        2 : rewrite Raxioms.Rmult_1_l => //.
+        2 : assumption.
+        replace (a * l + a * / a * ɛ) with (a * (l + /a * ɛ)).
+            2 : rewrite Raxioms.Rmult_plus_distr_l.
+            2 : rewrite Raxioms.Rmult_assoc => //.
+        rewrite <-Rbar_finite_mult.
+        apply Rbar_mult_lt_compat_l.
+        case: Ha => //.
+        move => Abs; rewrite Abs in NEqa0 => //.
+        assumption.
+Qed.
 
 Section Boshner_integrable_fun.
 
@@ -442,7 +533,8 @@ Section Bif_op.
 
             rewrite <-H.
             apply is_LimSup_seq'_scal_l.
-        
+            apply abs_ge_0.
+            assumption.
     Qed.
 
 End Bif_op.
