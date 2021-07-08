@@ -581,9 +581,10 @@ Section Bif_op.
         replace (f x + opp (sf n x))%hy with (minus (f x) (sf n x))%hy at 1
             by unfold minus => //.
         apply: norm_triangle_inv.
-    Qed.
+    Defined.
 
 End Bif_op.
 
 Notation "bf + bg" := (Bif_plus bf bg) : Bif_scope.
 Notation "a ⋅ bf" := (Bif_scal a bf) : Bif_scope.
+Notation "‖ bf ‖" := (Bif_norm bf) : Bif_scope.

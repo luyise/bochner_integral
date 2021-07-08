@@ -78,6 +78,8 @@ Section BInt_Bif_prop.
     Context {gen : (X -> Prop) -> Prop}.
     Context {μ : measure gen}.
 
+    Open Scope Bif_scope.
+
     Lemma BInt_Bif_ext :
         ∀ f : X -> E, ∀ bf bf' : Bif μ f,
             BInt_Bif bf = BInt_Bif bf'.
@@ -357,6 +359,26 @@ Section BInt_Bif_op.
             move => n; rewrite BInt_sf_scal_aux => //.
             apply: lim_seq_scal_r.
             pose H := is_lim_seq_BInt_Bif (approximation f sf ι Hfpw Hfl1);
+                clearbody H; simpl in H.
+            assumption.
+    Qed.
+
+    Lemma norm_BInt_Bif_le :
+        ∀ (bf : Bif μ f),
+            ‖ BInt_Bif bf ‖%hy <= BInt_Bif (‖bf‖)%Bif.
+    Proof.
+        move => bf.
+        case: bf => sf ι Hfpw Hfl1.
+        unfold BInt_Bif, Bif_norm.
+        suff: (Rbar_le (‖ lim_seq (λ n : nat, BInt_sf (sf n)) ‖)%hy (lim_seq (λ n : nat, BInt_sf (‖ sf n ‖)%sf)))
+            by simpl => //.
+        apply is_lim_seq_le with (λ n : nat, ‖ BInt_sf (sf n) ‖)%hy (λ n : nat, BInt_sf (‖ sf n ‖%sf)).
+            move => n; apply norm_Bint_sf_le.
+            apply lim_seq_norm.
+            pose H := is_lim_seq_BInt_Bif (approximation f sf ι Hfpw Hfl1);
+                clearbody H; simpl in H.
+            assumption.
+            pose H := is_lim_seq_BInt_Bif (Bif_norm (approximation f sf ι Hfpw Hfl1));
                 clearbody H; simpl in H.
             assumption.
     Qed.
