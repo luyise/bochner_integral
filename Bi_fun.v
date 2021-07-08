@@ -150,6 +150,7 @@ Section Boshner_integrable_fun.
     (* Bochner Integrable Functions *)
     Inductive Bif (f : X -> E) : Type :=
         | approximation (s : nat -> simpl_fun E μ) :
+            inhabited X ->
             (∀ x : X, is_lim_seq (fun n => s n x) (f x))
             -> is_LimSup_seq' (fun n => LInt_p μ (‖ f - (s n) ‖)%fn) 0 -> Bif f.
 
@@ -165,7 +166,6 @@ Section Bi_fun_prop.
 
     (* espace de départ *)
     Context {X : Set}.
-    Context (π : inhabited X).
     (* espace d'arrivé : cette fois c'est nécessairement un R-module
     (en fait je pense qu'on pourrait prendre un surcorps de R mais je ne vois pas comment
     formaliser celà simplement) *)
@@ -175,11 +175,11 @@ Section Bi_fun_prop.
     Context {μ : measure gen}.
 
     Lemma Cauchy_seq_approx :
-        ∀ f : X -> E, ∀ s : nat -> simpl_fun E μ,
+        ∀ f : X -> E, ∀ s : nat -> simpl_fun E μ, inhabited X ->
             (∀ x : X, is_lim_seq (fun n => s n x) (f x)) -> is_LimSup_seq' (fun n => LInt_p μ (‖ f - (s n) ‖)%fn) 0 
             -> NM_Cauchy_seq (fun n => BInt_sf (s n)).
     Proof.
-        move => f s Hspointwise Hs.
+        move => f s ι Hspointwise Hs.
         unfold Cauchy_seq => ɛ Hɛ.
         unfold is_LimSup_seq' in Hs.
         pose sighalfɛ := RIneq.mkposreal (ɛ * /2) (R_compl.Rmult_lt_pos_pos_pos _ _ (RIneq.Rgt_lt _ _ Hɛ) RIneq.pos_half_prf).
@@ -195,7 +195,7 @@ Section Bi_fun_prop.
             apply norm_Bint_sf_le.
         rewrite (BInt_sf_LInt_SFp).
         rewrite <-LInt_p_SFp_eq.
-            2 : exact π.
+            2 : exact ι.
             all : swap 1 2.
             unfold sum_Rbar_nonneg.non_neg => x /=.
             rewrite fun_sf_norm.
@@ -230,7 +230,7 @@ Section Bi_fun_prop.
         rewrite (LInt_p_ext _ _ (λ x : X, Rbar_plus ((‖ f + (- s q)%sf ‖)%fn x) ((‖ f + (- s p)%sf ‖)%fn x)%hy)).
             2 : by [].
         rewrite LInt_p_plus.
-            2 : exact π.
+            2 : exact ι.
             2, 4 : unfold sum_Rbar_nonneg.non_neg => x.
             2, 3 : unfold fun_norm; apply norm_ge_0.
         replace ɛ with (real (Rbar_plus (ɛ*/2) (ɛ*/2))).
@@ -246,7 +246,7 @@ Section Bi_fun_prop.
         pose Lint_p_Bint_sf :=
             Finite_BInt_sf_LInt_SFp (‖ s q - s p ‖)%sf.
             rewrite <-LInt_p_SFp_eq in Lint_p_Bint_sf.
-            2 : exact π.
+            2 : exact ι.
             2 : unfold sum_Rbar_nonneg.non_neg => x.
             2 : simpl; rewrite fun_sf_norm.
             2 : apply norm_ge_0.
@@ -321,6 +321,7 @@ Section Bif_sf.
     (* Definition *)
         pose s' := fun _ : nat => s.
         apply (approximation s s').
+            exact ι.
             move => x; apply lim_seq_cte.
             unfold s'; unfold fun_norm;
             unfold fun_plus.
@@ -339,7 +340,6 @@ Section Bif_op.
 
     (* espace de départ *)
     Context {X : Set}.
-    Context (ι : inhabited X).
     (* espace d'arrivé *)
     Context {E : CompleteNormedModule R_AbsRing}.
     (* Un espace mesuré *)
@@ -348,9 +348,10 @@ Section Bif_op.
     Context {f g : X -> E}.
 
     Definition Bif_plus (bf : Bif μ f) (bg : Bif μ g) : Bif μ (f + g)%fn.
-        case: bf => sf Hfpw Hfl1;
-        case: bg => sg Hgpw Hgl1.
+        case: bf => sf ι Hfpw Hfl1;
+        case: bg => sg _ Hgpw Hgl1.
         apply: (approximation (f + g)%fn (fun n : nat => sf n + sg n)%sf).
+            exact ι.
             move => x; unfold fun_plus.
             apply (lim_seq_ext (fun n => sf n x + sg n x)%hy).
                 move => n; rewrite fun_sf_plus => //.
@@ -482,8 +483,9 @@ Section Bif_op.
 
     Definition Bif_scal (a : R_AbsRing) (bf : Bif μ f) : Bif μ (a ⋅ f)%fn.
     (* Definition *)
-        case_eq bf => sf Hfpw Hfl1 Eqf.
+        case_eq bf => sf ι Hfpw Hfl1 Eqf.
         apply: (approximation (a ⋅ f)%fn (fun n : nat => a ⋅ sf n)%sf).
+            exact ι.
             move => x; unfold fun_scal.
             apply (lim_seq_ext (fun n => a ⋅ sf n x)%hy).
                 move => n; rewrite fun_sf_scal => //.
@@ -539,8 +541,9 @@ Section Bif_op.
 
     Definition Bif_norm (bf : Bif μ f) : Bif μ (‖f‖)%fn.
     (* Definition *)
-        case_eq bf => sf Hfpw Hfl1 Eqf.
+        case_eq bf => sf ι Hfpw Hfl1 Eqf.
         apply: (approximation (‖f‖)%fn (fun n : nat => ‖ sf n ‖)%sf).
+            exact ι.
             move => x; unfold fun_norm.
             apply (lim_seq_ext (fun n => ‖ sf n x ‖ )%hy).
                 move => n; rewrite fun_sf_norm => //.
@@ -582,6 +585,5 @@ Section Bif_op.
 
 End Bif_op.
 
-(*
-Notation "bf + bg" := (Bif_plus ι bf bg) : Bif_scope.
-*)
+Notation "bf + bg" := (Bif_plus bf bg) : Bif_scope.
+Notation "a ⋅ bf" := (Bif_scal a bf) : Bif_scope.
