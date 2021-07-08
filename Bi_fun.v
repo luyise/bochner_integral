@@ -588,3 +588,18 @@ End Bif_op.
 Notation "bf + bg" := (Bif_plus bf bg) : Bif_scope.
 Notation "a ⋅ bf" := (Bif_scal a bf) : Bif_scope.
 Notation "‖ bf ‖" := (Bif_norm bf) : Bif_scope.
+
+Section Bif_adapted_seq.
+
+    (* espace de départ *)
+    Context {X : Set}.
+    (* espace d'arrivé *)
+    Context {E : CompleteNormedModule R_AbsRing}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context {μ : measure gen}.
+    Context {f : X -> E}.
+
+    
+
+End Bif_adapted_seq.
