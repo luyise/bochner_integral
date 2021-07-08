@@ -17,11 +17,7 @@ From Coquelicot Require Import
 
 Require Import
     CUS_Lim_seq
-    injQN
-.
-
-From ZornsLemma Require Import
-    CountableTypes
+    countable_sets
 .
 
 Section open_subspaces.
@@ -169,20 +165,20 @@ Section denseQR.
     Qed.
 
     Definition separableR_fn : ∀ x : R_UniformSpace, True -> posreal -> nat :=
-        fun x π sigɛ => Q2N
+        fun x π sigɛ => bij_QN
             match sigɛ with mkposreal ɛ _ =>
                 let q := up (/ɛ) in
                 (Qmake (up (x*IZR q)) (Z.to_pos q))
             end.
 
-    Theorem fun_separableR : fun_separable (fun n => Q2R (N2Q n)) (fun _ => True) separableR_fn.
+    Theorem fun_separableR : fun_separable (fun n => Q2R (bij_NQ n)) (fun _ => True) separableR_fn.
     Proof.
         split => //.
         unfold separableR_fn => x _ ɛ.
         case: fun_denseQR => [_ H].
         case: (H x I ɛ) => [{}H _].
         unfold denseQR_fn in H.
-        rewrite Q2N2Q => //.
+        rewrite bij_NQN => //.
     Qed.
 
 End denseQR.
