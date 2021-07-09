@@ -5,15 +5,19 @@ From Coq Require Import
     ssreflect
     ssrsearch
     Utf8
+    Lia
+    Lra
 
     Rdefinitions
     Rbasic_fun
+    Raxioms
 .
 
 From Coquelicot Require Import
     Hierarchy
     Rbar
     Lim_seq
+    Markov
 .
     
 Require Import
@@ -22,6 +26,7 @@ Require Import
     BInt_sf
     Bsf_Lsf
     CUS_Lim_seq
+    topology_compl
 .
 
 From CMS Require Import
@@ -589,17 +594,245 @@ Notation "bf + bg" := (Bif_plus bf bg) : Bif_scope.
 Notation "a ⋅ bf" := (Bif_scal a bf) : Bif_scope.
 Notation "‖ bf ‖" := (Bif_norm bf) : Bif_scope.
 
-Section Bif_adapted_seq.
+Definition inRange 
+    {X : Set} {A : AbsRing} {E : NormedModule A}
+    (g : X -> E) : E -> Prop :=
+        fun y => ∃ x : X, g x = y.
 
-    (* espace de départ *)
-    Context {X : Set}.
-    (* espace d'arrivé *)
-    Context {E : CompleteNormedModule R_AbsRing}.
-    (* Un espace mesuré *)
-    Context {gen : (X -> Prop) -> Prop}.
-    Context {μ : measure gen}.
-    Context {f : X -> E}.
+Lemma iRR {X : Set} {A : AbsRing} {E : NormedModule A} 
+    : ∀ g : X -> E, ∀ x : X, inRange g (g x).
+Proof.
+    move => g x; exists x => //.
+Qed.
 
-    
+Module Bif_adapted_seq.
+
+    Section construction_of_seq.
+
+        (* espace de départ *)
+        Context {X : Set}.
+        (* espace d'arrivé *)
+        Context {E : CompleteNormedModule R_AbsRing}.
+        (* Un espace mesuré *)
+        Context {gen : (X -> Prop) -> Prop}.
+        Context {μ : measure gen}.
+        Context {f : X -> E}.
+        
+        Context {u : nat -> E}.
+        Context {φ : ∀ x : E, inRange f x -> RIneq.posreal -> nat}.
+        Context (Hsep : fun_separable u (inRange f) φ).
+
+        Definition B (m : nat) (j : nat) :=
+            ball_norm (u j) (/ (INR m + 1)).
+        
+        Definition A (n : nat) := fun x =>
+            ∃ j : nat, (j < n)%nat ∧ B n j x.
+
+        Lemma measB : ∀ m j, measurable open (B m j).
+        Proof.
+            move => m j; unfold B.
+            assert (0 < (/ (INR m + 1)))
+                by apply RiemannInt.RinvN_pos.
+            constructor 1; apply NM_open_ball_norm => //.
+        Qed.
+
+        Lemma measA : ∀ n, measurable open (A n).
+        Proof.
+            Print Implicit measurable_union_finite'.
+            unfold A => n; apply: measurable_union_finite'.
+            move => j _; apply measB.
+        Qed.
+
+        Lemma decB (m j : nat) (x : E) :
+            {B m j x} + {¬ B m j x}.
+        Proof.
+            unfold B.
+            assert (0 < (/ (INR m + 1)))
+                by apply RiemannInt.RinvN_pos.
+            pose ɛ := RIneq.mkposreal (/ (INR m + 1)) H.
+            pose Hdec := (ball_norm_dec (u j) x ɛ).
+            simpl in Hdec => //.
+        Qed.
+
+        Close Scope R_scope.
+
+        Lemma LPO_min_finite :
+            ∀ m : nat, ∀ P : nat -> Prop,
+                (∀ j : nat, (j < m) -> {P j} + {¬ P j})
+                ->  { j : nat 
+                        | (j < m) 
+                        ∧ P j 
+                        ∧ (∀ i : nat, (i < j) -> ¬ P i) 
+                    } 
+                    + 
+                    { ∀ j : nat, (j < m) -> ¬ P j }.
+        Proof.
+            move => m P HP.
+            pose Q := (fun i => (i < m)%nat ∧ P i).
+            assert ({j : nat | Q j ∧ ∀ i, (i < j)%nat → ¬ Q i} + {∀ j, ¬ Q j}).
+            apply LPO_min => j; unfold Q.
+            case_eq (j <? m).
+                move => /Nat.ltb_lt Hj.
+                case: (HP j Hj).
+                    move => Pj; left; split => //.
+                    move => NPj; right; case => _ /NPj//.
+                move => /Nat.ltb_ge Hj; right; case; lia.
+            case: H.
+                case => j; unfold Q; case; move => [Ltjm Pj] HQ; left.
+                exists j; repeat split => //.
+                move => i Hi Pi.
+                assert (i < m)%nat by lia.
+                apply HQ with i => //.
+            move => H; right; unfold Q in H.
+            move => j Hj Pj.
+            apply H with j => //.
+        Qed.
+
+        Lemma LPO_min_finite_decr :
+            ∀ m : nat, ∀ P : nat -> Prop,
+                (∀ j : nat, (j < m) -> {P j} + {¬ P j})
+                ->  { j : nat 
+                        | (j < m) 
+                        ∧ P j 
+                        ∧ (∀ i : nat, (i > j) -> (i < m) -> ¬ P i) 
+                    } 
+                    + 
+                    { ∀ j : nat, (j < m) -> ¬ P j }.
+        Proof.
+            move => m P HP.
+            pose Q := (fun i => (i < m)%nat ∧ P (m - (S i))%nat).
+            assert ({j : nat | Q j ∧ ∀ i, (i < j)%nat → ¬ Q i} + {∀ j, ¬ Q j}).
+            apply LPO_min => j; unfold Q.
+            case_eq (j <? m).
+                move => /Nat.ltb_lt Hj.
+                assert (m - S j < m)%nat as Hj' by lia.
+                case: (HP (m - S j)%nat Hj').
+                    move => Pj; left; split => //.
+                    move => NPj; right; case => _ /NPj//.
+                move => /Nat.ltb_ge Hj; right; case; lia.
+            case: H.
+                case => j; unfold Q; case; move => [Ltjm Pm1j] HQ; left.
+                exists (m - S j)%nat; repeat split => //.
+                lia.
+                move => i Hi1 Hi2 Pi.
+                assert (m - S i < m)%nat by lia.
+                apply HQ with (m - S i)%nat => //.
+                lia.
+                split. 
+                lia.
+                replace (m - S (m - S i))%nat with i by lia.
+                assumption.
+            move => H; right; unfold Q in H.
+            move => j Hj Pj.
+            apply H with (m - S j)%nat; split.
+            lia.
+            replace (m - S (m - S j))%nat with j by lia.
+            assumption.
+        Qed.
+
+        Lemma decA (n : nat) (x : E) :
+            {A n x} + {¬ A n x}.
+        Proof.
+            assert (∀ j : nat,
+                (j < n)%nat → {(λ j0 : nat, B n j0 x) j} + {¬ (λ j0 : nat, B n j0 x) j}).
+                move => j _; apply decB.
+            unfold A; case : (LPO_min_finite n (fun j => B n j x) H).
+            case => j [Hj [Bnjx HB]]; left; exists j; split => //.
+            move => Hj; right; case => j; case; move => /Hj//.
+        Qed.
+
+        Lemma decA_aux (max : nat) (x : E) : ∀ j : nat,
+            (j < max) -> {A j x} + {¬ A j x}.
+        Proof.
+            move => j _; apply decA.
+        Qed.
+
+        Definition biggestA (max : nat) (x : E) : nat :=
+            match LPO_min_finite_decr max (fun j => A j x) (decA_aux max x) with
+                | inleft e => proj1_sig e
+                | inright _ => max
+            end.
+
+        Lemma decB_aux (m : nat) (x : E) : ∀ j : nat,
+            (j < m) -> {B m j x} + {¬ B m j x}.
+        Proof.
+            move => j _; apply decB.
+        Qed.
+
+        Definition smallestB (max : nat) (m : nat) (x : E) : nat :=
+            match LPO_min_finite m (fun j => B m j x) (decB_aux m x) with
+                | inleft e => proj1_sig e
+                | inright _ => max
+            end.
+
+        Definition whichn (n : nat) := fun x =>
+            let m := biggestA n x in
+            smallestB n m x.
+
+    End construction_of_seq.
+
+    (*
+    Definition Bif_adapted_seq : 
+        (fun_separable u (inRange f) φ) -> (measurable_fun gen open f)
+        -> (is_finite (LInt_p μ (‖f‖)%fn))
+            -> (nat -> simpl_fun E μ).
+    (* Definition *)
+        move => Hsep Hmeasurable Hintegrable n.
+        induction n.
+            (* cas initial : la fonction nulle *)
+            pose which0 := fun (_ : X) => O.
+            pose val0 := fun (_ : nat) => (zero : E).
+            pose max_which0 := O.
+            apply (mk_simpl_fun which0 val0 max_which0) => //.
+                move => n Hn; unfold which0; apply measurable_Prop.
+                lia.
+            (* induction *)
+            case: IHn => whichn valn max_whichn axn1 axn2 axn3 axn4.
+            assert (0 < (/ (INR max_whichn + 1)))
+                by apply RiemannInt.RinvN_pos.
+            pose ɛ := RIneq.mkposreal (/ (INR max_whichn + 1)) H.
+            assert (∀ x : X, inRange f (f x)) as IRff.
+                move => x; exists x => //.
+            pose k := (fun x : X => φ (f x) (IRff x) ɛ).
+            pose (max_whichSn := S max_whichn).
+            pose 
+                (
+                    valSn := fun (j : nat) =>
+                        if j <=? max_whichn then u j else zero
+                ).
+            pose 
+                (
+                    whichSn := fun (x : X) =>
+                        match RIneq.Rle_dec (‖f x‖) (/ (INR max_whichn + 1)) with
+                            | left _ => max_whichSn
+                            | right _ =>
+                                if (k x) <=? max_whichSn then
+                                    (k x)
+                                else whichn x
+                        end
+                ).
+            apply (mk_simpl_fun whichSn valSn max_whichSn).
+                unfold valSn, max_whichSn.
+                assert ((S max_whichn <=? max_whichn) = false) as R.
+                    rewrite Nat.leb_gt => //.
+                rewrite R; clear R => //.
+                move => x; unfold max_whichSn, whichSn.
+                case (RIneq.Rle_dec (‖ f x ‖) (/ (INR max_whichn + 1))) => //.
+                    move => _; case_eq (k x <=? max_whichSn) => //.
+                    move /Nat.leb_le => //.
+                    move => _; constructor 2; apply axn2.
+                move => j Hj.
+                unfold whichSn.
+
+    Definition prop_Bif_adapted_seq_aux :
+        (fun_separable u (inRange f) φ) ->
+            { s : nat -> simpl_fun E μ
+                | (∀ x : X, is_lim_seq (fun n => s n x) (f x))
+                ∧ (∀ n : nat, ∀ x : X, ‖ s n x ‖ <= 2 * ‖ f x ‖)
+            }.
+    (* Definition *)
+    case => inRangefu Hdense.
+    apply 
+    *)
 
 End Bif_adapted_seq.

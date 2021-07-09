@@ -18,6 +18,7 @@ From Coquelicot Require Import
 Require Import
     CUS_Lim_seq
     countable_sets
+    hierarchy_notations
 .
 
 Section open_subspaces.
@@ -36,6 +37,35 @@ Section open_subspaces.
         move => ɛ Hɛ.
         exists ɛ => y Bxɛy.
         exists i; apply Hɛ => //.
+    Qed.
+
+    Context {A : AbsRing}.
+    Context {E : NormedModule A}.
+    Open Scope hy_scope.
+
+    Lemma NM_open_ball_norm : forall (a : E) (ɛ : R), 0 < ɛ -> open (ball_norm a ɛ).
+    Proof.
+        move => a ɛ Hɛ; unfold open => x Hx.
+        suff: locally_norm x (ball_norm a ɛ)
+            by apply locally_le_locally_norm.
+        unfold locally_norm, ball_norm in Hx |- *.
+        pose η := ɛ - (norm (minus x a)).
+        assert (0 < η); unfold η.
+        apply Rgt_lt, (Rgt_minus ɛ (norm (minus x a))) => //.
+        pose sigη := mkposreal η H.
+        exists sigη => y /= Hη.
+        apply Rle_lt_trans with (norm (minus y x) + (norm (minus x a))).
+        replace (minus y a) with (minus y x + minus x a)
+            by rewrite <-(minus_trans x) => //.
+        apply norm_triangle.
+        clear sigη; clear H.
+        replace ɛ with ((ɛ - ‖ minus x a ‖) + ‖ minus x a ‖) at 1.
+        unfold plus => /=.
+        apply (Rplus_lt_compat_r (‖ minus x a ‖) (‖ minus y x ‖) (ɛ - (‖ minus x a ‖))).
+        unfold η in Hη.
+        unfold plus => //.
+        setoid_rewrite Rplus_assoc.
+        rewrite Rplus_opp_l; apply Rplus_ne.
     Qed.
 
 End open_subspaces.
@@ -81,13 +111,27 @@ Section density.
     Definition dense (P : S -> Prop) (Q : S -> Prop) : Prop :=
         ∃ f, fun_dense P Q f.
 
+    Lemma fun_dense_dense {P Q : S -> Prop} {f : ∀ x : S, Q x -> posreal -> S} : 
+        fun_dense P Q f -> dense P Q.
+    Proof.
+        exists f => //.
+    Qed.
+
     Definition fun_separable (u : nat -> S) (P : S -> Prop) (f : ∀ x : S, P x -> posreal -> nat) : Prop :=
         (∀ n : nat, P (u n)) ∧
         (∀ x : S, ∀ π : P x,
             ∀ ɛ : posreal, ball x ɛ (u (f x π ɛ))).
     
     Definition separable (P : S -> Prop) : Prop :=
-        ∃ u f, fun_separable u P f.
+        ∃ u : nat -> S, ∀ x : S, P x ->
+            ∀ ɛ : posreal, ∃ n : nat, ball x ɛ (u n).
+
+    Lemma fun_separable_separable {u : nat -> S} {P : S -> Prop} {f : (∀ x : S, P x -> posreal -> nat)} :
+        fun_separable u P f -> separable P.
+    Proof.
+        move => H; exists u => x Px ɛ.
+        exists (f x Px ɛ); apply H.
+    Qed.
 
 End density.
 
@@ -179,6 +223,11 @@ Section denseQR.
         case: (H x I ɛ) => [{}H _].
         unfold denseQR_fn in H.
         rewrite bij_NQN => //.
+    Qed.
+
+    Theorem separableR : separable (fun _ : R_UniformSpace => True).
+    Proof.
+        exact (fun_separable_separable fun_separableR).
     Qed.
 
 End denseQR.
