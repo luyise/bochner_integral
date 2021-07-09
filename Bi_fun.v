@@ -753,6 +753,17 @@ Module Bif_adapted_seq.
                 | inright _ => max
             end.
 
+        Lemma biggestA_le_max (max : nat) (x : E) :
+            biggestA max x ≤ max.
+        Proof.
+            unfold biggestA.
+            case_eq (LPO_min_finite_decr max (λ j : nat, A j x) (decA_aux max x)).
+                move => s EqLPO.
+                case_eq s => j [Ltjmax H] => /=.
+                lia.
+                easy.
+        Qed.
+
         Lemma decB_aux (m : nat) (x : E) : ∀ j : nat,
             (j < m) -> {B m j x} + {¬ B m j x}.
         Proof.
@@ -765,9 +776,188 @@ Module Bif_adapted_seq.
                 | inright _ => max
             end.
 
+        Lemma smallestB_le_n (max : nat) (m : nat) (x : E) :
+            m ≤ max -> smallestB max m x ≤ max.
+        Proof.
+            move => Lemmax.
+            unfold smallestB.
+            case (LPO_min_finite m (λ j : nat, B m j x) (decB_aux m x)).
+            case => j /=; lia.
+            easy.
+        Qed.
+
         Definition whichn (n : nat) := fun x =>
             let m := biggestA n x in
-            smallestB n m x.
+            if (m =? n) then n else
+                smallestB n m x.
+
+        Lemma whichn_le_n (n : nat) (x : E) :
+            whichn n x ≤ n.
+        Proof.
+            unfold whichn.
+            case (biggestA n x =? n) => //.
+            apply smallestB_le_n.
+            apply biggestA_le_max.
+        Qed.
+
+        Lemma biggestA_lt_max_spec (n : nat) (m : nat) : (m < n) ->
+            ∀ x : E,
+            biggestA n x = m <-> (A m x ∧ (∀ j : nat, j > m -> j < n -> ¬ A j x)).
+        Proof.
+            move => Ltmn x; split.
+            move => Eqwnxm; rewrite <-Eqwnxm in Ltmn.
+            unfold whichn in Ltmn, Eqwnxm.
+            unfold biggestA in Ltmn, Eqwnxm.
+            case_eq (LPO_min_finite_decr n (λ j : nat, A j x) (decA_aux n x)).
+                move => s EqLPO; rewrite EqLPO in Ltmn, Eqwnxm.
+                case_eq s => j [Hj1 [Hj2 Hj3]] Eqs.
+                rewrite Eqs in Ltmn, Eqwnxm.
+                simpl in Ltmn, Eqwnxm.
+                rewrite <-Eqwnxm.
+                repeat split => //.
+                move => HNA EqLPO; rewrite EqLPO in Ltmn, Eqwnxm.
+                lia.
+            case => Amx HNA.
+            unfold biggestA.
+            case (LPO_min_finite_decr n (λ j : nat, A j x) (decA_aux n x)).
+                case => j [Hj1 [Hj2 Hj3]] => /=.
+                case: (lt_eq_lt_dec j m).
+                case => //.
+                move =>/(Hj3 _) Hj.
+                move: Ltmn => /Hj Abs.
+                apply False_ind, Abs => //.
+                move => /HNA Hj.
+                move: Hj1 => /Hj Abs.
+                apply False_ind, Abs => //.
+                move => Abs.
+                apply False_ind.
+                pose Absm := Abs m Ltmn => //.
+        Qed.
+
+        Lemma biggestA_eq_max_spec (n : nat) :
+            ∀ x : E,
+            biggestA n x = n <-> (∀ j : nat, j < n -> ¬ A j x).
+        Proof.
+            move => x; split.
+                move => HbigA.
+                unfold biggestA in HbigA.
+                case_eq (LPO_min_finite_decr n (λ j : nat, A j x) (decA_aux n x)).
+                    move => s EqLPO.
+                    rewrite EqLPO in HbigA.
+                    case_eq s.
+                    move => j [Hj1 [Hj2 Hj3]] Eqs.
+                    rewrite Eqs in HbigA.
+                    simpl in HbigA.
+                    lia.
+                    move => HNA.
+                    easy.
+                move => HNA.
+                unfold biggestA.
+                case: (LPO_min_finite_decr n (λ j : nat, A j x) (decA_aux n x)).
+                    case => j [Hj1 [Hj2 Hj3]] => /=.
+                    apply False_ind.
+                    pose Abs := HNA j Hj1.
+                    apply Abs => //.
+                    easy.
+        Qed.
+
+        Lemma smallestB_lt_max_spec (max : nat) (m : nat) (j : nat) : (m ≤ max) -> (j < m) ->
+            ∀ x : E,
+            smallestB max m x = j <-> (B m j x ∧ (∀ i : nat, i < j -> ¬ B m i x)).
+        Proof.
+            move => Lemmax Ltjm x; split.
+                move => HsmallB.
+                unfold smallestB in HsmallB.
+                case_eq (LPO_min_finite m (λ j : nat, B m j x) (decB_aux m x)).
+                    move => s EqLPO.
+                    case_eq s => i [Hi1 [Hi2 Hi3]] Eqs.
+                    rewrite EqLPO in HsmallB.
+                    rewrite Eqs in HsmallB.
+                    simpl in HsmallB.
+                    rewrite <-HsmallB.
+                    repeat split => //.
+                    move => Hj EqLPO.
+                    rewrite EqLPO in HsmallB.
+                    lia.
+                case => Bmjx Hj.
+                unfold smallestB.
+                case: (LPO_min_finite m (λ j0 : nat, B m j0 x) (decB_aux m x)).
+                    case => /= j' [Hj'1 [Hj'2 Hj'3]].
+                    case: (lt_eq_lt_dec j j').
+                    case => //.
+                    move => /Hj'3//.
+                    move => /Hj//.
+                    move => Hj'.
+                    apply False_ind.
+                    apply (Hj' j Ltjm) => //.
+        Qed.
+
+        Lemma smallestB_eq_max_spec (max : nat) (m : nat) : (m ≤ max) ->
+            ∀ x : E,
+            smallestB max m x = max <-> (∀ j : nat, j < m -> ¬ B m j x).
+        Proof.
+            move => Lemmax x; split.
+                move => HsmallB.
+                unfold smallestB in HsmallB.
+                case_eq (LPO_min_finite m (λ j : nat, B m j x) (decB_aux m x)).
+                    move => s EqLPO.
+                    case_eq s.
+                    move => j [Hj1 [Hj2 Hj3]] Eqs.
+                    rewrite EqLPO in HsmallB.
+                    rewrite Eqs in HsmallB.
+                    simpl in HsmallB.
+                    lia.
+                    easy.
+                move => HNB.
+                unfold smallestB.
+                case: (LPO_min_finite m (λ j : nat, B m j x) (decB_aux m x)).
+                    case => j [Hj1 [Hj2 Hj3]] /=.
+                    apply False_ind.
+                    move: Hj1 => /HNB//.
+                    easy.
+        Qed.
+
+        Lemma whichn_spec_lt_n (n : nat) (m : nat) : (m < n) ->
+            ∀ x : E,
+            whichn n x = m <-> (A m x ∧ (∀ j : nat, j > m -> j < n -> ¬ A m x)).
+        Proof.
+        Admitted.
+
+        Lemma whichn_spec_eq_n (n : nat) :
+            ∀ x : E, 
+            whichn n x = n <-> (∀ m : nat, m < n -> ¬ A m x).
+        Proof.
+            move => x; split.
+                move => Hwnx.
+                unfold whichn in Hwnx.
+                case_eq (biggestA n x =? n).
+                    move => /Nat.eqb_eq HbigA.
+                    clear Hwnx.
+                    unfold biggestA in HbigA.
+                    case_eq (LPO_min_finite_decr n (λ j : nat, A j x) (decA_aux n x)).
+                        2 : easy.
+                        move => s EqLPO.
+                        rewrite EqLPO in HbigA.
+                        case_eq s => j [Abs H] Eqs.
+                        rewrite Eqs in HbigA.
+                        simpl in HbigA.
+                        lia.
+                    move => HbigA; rewrite HbigA in Hwnx.
+                    move: HbigA => /Nat.eqb_neq HbigA.
+                    unfold smallestB in Hwnx.
+                    case_eq (LPO_min_finite (biggestA n x) (λ j : nat, B (biggestA n x) j x)
+                        (decB_aux (biggestA n x) x)).
+                        move => s EqLPO.
+                        rewrite EqLPO in Hwnx.
+                        case_eq s => j [Abs H] Eqs.
+                        rewrite Eqs in Hwnx.
+                        simpl in Hwnx.
+                        apply False_ind.
+                        unfold biggestA in HbigA.
+                        assert (biggestA n x ≤ n) by apply biggestA_le_max.
+                        lia.
+                        move => HA /= EqLPO; clear Hwnx.
+        Admitted.
 
     End construction_of_seq.
 
