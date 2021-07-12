@@ -777,26 +777,42 @@ Module Bif_adapted_seq.
             end.
 
         Lemma smallestB_le_n (max : nat) (m : nat) (x : E) :
-            m ≤ max -> smallestB max m x ≤ max.
+            m ≤ max -> smallestB max m x = max ∨ smallestB max m x < m.
         Proof.
             move => Lemmax.
             unfold smallestB.
             case (LPO_min_finite m (λ j : nat, B m j x) (decB_aux m x)).
             case => j /=; lia.
-            easy.
+            left; easy.
         Qed.
 
-        Definition whichn (n : nat) := fun x =>
+        Lemma smallestB_le_n_weak (max : nat) (m : nat) (x : E) :
+            m ≤ max -> smallestB max m x ≤ max.
+        Proof.
+            move => Lemmax.
+            case: (smallestB_le_n max m x) => //.
+            1, 2 : lia.
+        Qed.
+
+        Lemma smallestB_le_n_strong (max : nat) (m : nat) (x : E) :
+            m ≤ max -> smallestB max m x < max -> smallestB max m x < m.
+        Proof.
+            move => Lemmax HsmallB.
+            pose H := smallestB_le_n max m x Lemmax; clearbody H.
+            lia.
+        Qed.
+
+        Definition whichn' (n : nat) := fun x =>
             let m := biggestA n x in
             if (m =? n) then n else
                 smallestB n m x.
 
-        Lemma whichn_le_n (n : nat) (x : E) :
-            whichn n x ≤ n.
+        Lemma whichn'_le_n (n : nat) (x : E) :
+            whichn' n x ≤ n.
         Proof.
-            unfold whichn.
+            unfold whichn'.
             case (biggestA n x =? n) => //.
-            apply smallestB_le_n.
+            apply smallestB_le_n_weak.
             apply biggestA_le_max.
         Qed.
 
@@ -806,7 +822,7 @@ Module Bif_adapted_seq.
         Proof.
             move => Ltmn x; split.
             move => Eqwnxm; rewrite <-Eqwnxm in Ltmn.
-            unfold whichn in Ltmn, Eqwnxm.
+            unfold whichn' in Ltmn, Eqwnxm.
             unfold biggestA in Ltmn, Eqwnxm.
             case_eq (LPO_min_finite_decr n (λ j : nat, A j x) (decA_aux n x)).
                 move => s EqLPO; rewrite EqLPO in Ltmn, Eqwnxm.
@@ -917,25 +933,95 @@ Module Bif_adapted_seq.
                     easy.
         Qed.
 
-        Lemma whichn_spec_lt_n (n : nat) (m : nat) : (m < n) ->
+        Lemma whichn'_spec_lt_n (n : nat) (j : nat) : (j < n) ->
             ∀ x : E,
-            whichn n x = m <-> (A m x ∧ (∀ j : nat, j > m -> j < n -> ¬ A m x)).
+            whichn' n x = j <->
+            ∃ m : nat, m < n ∧
+            (
+                (A m x ∧ ¬ (∃ k : nat, k > m ∧ k < n ∧ A k x)) ∧
+                ((B m j x) ∧ ¬ (∃ i : nat, i < j ∧ B m i x))
+            ).
         Proof.
-        Admitted.
+            pose LebigAn := biggestA_le_max n; clearbody LebigAn.
+            move => Ltjn x; split.
+                unfold whichn'.
+                case_eq (biggestA n x =? n).
+                lia.
+                move => /Nat.eqb_neq.
+                move => HbigA.
+                pose HbigA' := LebigAn x; clearbody HbigA'.
+                assert (biggestA n x < n) as LtbigA by lia.
+                move => HsmallB.
+                assert (smallestB n (biggestA n x) x < n) by lia.
+                pose H' := (smallestB_le_n_strong n (biggestA n x) x HbigA' H); clearbody H'.
+                rewrite HsmallB in H'.
+                pose specB := smallestB_lt_max_spec n (biggestA n x) j HbigA' H' x.
+                case: specB => [specB _].
+                move: HsmallB => /specB [specB1 specB2].
+                exists (biggestA n x).
+                repeat split => //.
+                1, 2 : case: (biggestA_lt_max_spec _ _ LtbigA x) => [HA _].
+                1, 2 : assert (biggestA n x = biggestA n x) by easy.
+                1, 2 : move: H0 => /HA.
+                case => //.
+                case => _ HNA.
+                case => i [Hi1 [Hi2 Hi3]].
+                apply HNA with i => //.
+                case => i [Hi1 Hi2].
+                apply specB2 with i => //.
 
-        Lemma whichn_spec_eq_n (n : nat) :
-            ∀ x : E, 
-            whichn n x = n <-> (∀ m : nat, m < n -> ¬ A m x).
+                case => m [Ltmn [[Amx HNA] [Bmjx HNB]]].
+                unfold whichn'.
+                assert (biggestA n x < n) as LtbigA.
+                pose LebigAnx := LebigAn x; clearbody LebigAnx; clear LebigAn.
+                case: (le_lt_or_eq _ _ LebigAnx) => //.
+                move /biggestA_eq_max_spec => Abs.
+                pose Absm := Abs m Ltmn; clearbody Absm => //.
+                assert (biggestA n x ≠ n) as NeqbigA by lia.
+                move: NeqbigA => /Nat.eqb_neq ->.
+                assert (m ≤ n) as Lemn by lia.
+                assert (smallestB n m x < n).
+                case: (smallestB_le_n _ _ x Lemn).
+                    2 : lia.
+                move => /(smallestB_eq_max_spec n m Lemn) Abs; apply False_ind.
+                assert (j < m) as Ltjm.
+                assert (j < m ∨ j ≥ m) by lia.
+                case: H => //.
+                move => Lemj; apply False_ind.
+                case: Amx => i; case => /(Abs i)//.
+                apply: (Abs j) => //.
+                move: H => /(smallestB_le_n_strong n m x Lemn) LtsmallBm.
+                assert (smallestB n m x = smallestB n m x) by easy.
+                move: H => /(smallestB_lt_max_spec n m (smallestB n m x) Lemn LtsmallBm x) [Bmsx HNB'].
+                assert (biggestA n x = m) as Eqm.
+                assert (biggestA n x = biggestA n x) as H by easy.
+                move: H => /((biggestA_lt_max_spec) n _ LtbigA x); move => [AbigAx HNA'].
+                case (lt_eq_lt_dec (biggestA n x) m).
+                case => //.
+                move => /(fun k => HNA' m k Ltmn)//.
+                move => Abs; apply False_ind, HNA.
+                exists (biggestA n x); repeat split => //.
+                rewrite Eqm.
+                case (lt_eq_lt_dec (smallestB n m x) j).
+                case => //.
+                move => Abs; apply False_ind, HNB.
+                exists (smallestB n m x); repeat split => //.
+                move => /(HNB' j)//.
+        Qed.
+
+        Lemma whichn'_spec_eq_n (n : nat) :
+            ∀ x : E,
+            whichn' n x = n <-> (¬ ∃ m : nat, m < n ∧ A m x).
         Proof.
             move => x; split.
                 move => Hwnx.
-                unfold whichn in Hwnx.
+                unfold whichn' in Hwnx.
                 case_eq (biggestA n x =? n).
                     move => /Nat.eqb_eq HbigA.
                     clear Hwnx.
                     unfold biggestA in HbigA.
                     case_eq (LPO_min_finite_decr n (λ j : nat, A j x) (decA_aux n x)).
-                        2 : easy.
+                        2 : move => HNA _; case => j; case => /HNA//.
                         move => s EqLPO.
                         rewrite EqLPO in HbigA.
                         case_eq s => j [Abs H] Eqs.
@@ -956,7 +1042,50 @@ Module Bif_adapted_seq.
                         unfold biggestA in HbigA.
                         assert (biggestA n x ≤ n) by apply biggestA_le_max.
                         lia.
-                        move => HA /= EqLPO; clear Hwnx.
+                        move => HA /= _; clear Hwnx.
+                        assert (biggestA n x < n).
+                            pose H := biggestA_le_max n x; clearbody H.
+                            lia.
+                        move => Abs.
+                        move: H => /(fun H => biggestA_lt_max_spec n _ H x); case => H _.
+                        assert (biggestA n x = biggestA n x) as TrivEq by easy.
+                        move: TrivEq => /H; clear H; case => [AbigAx HNA].
+                        case: AbigAx => j [LtjbigAx BbigAxjx].
+                        apply HA with j => //.
+
+                move => NHA.
+                case: (le_lt_or_eq _ _ (whichn'_le_n n x)) => //.
+                move => Abs; apply False_ind.
+                assert (whichn' n x = whichn' n x) as TrivEq by easy.
+                move: TrivEq => / (whichn'_spec_lt_n n (whichn' n x) Abs x); case => j [Ltjn [[Ajx _] _]].
+                apply: NHA; exists j; split => //.
+        Qed.
+
+        Open Scope R_scope.
+        Print Implicit RiemannInt.RinvN_pos.
+
+        Definition whichn (n : nat) (x : X) : nat :=
+            let ɛ := (RIneq.mkposreal (/(INR n + 1)) (RiemannInt.RinvN_pos n)) in
+            match ball_norm_dec zero (f x) ɛ with
+                | left _ => n
+                | right _ => whichn' n (f x)
+            end.
+
+        Lemma whichn_spec_lt_n (n : nat) (j : nat) : (j < n)%nat ->
+            ∀ x : X,
+            whichn n x = j <->
+            ∃ m : nat, (m < n)%nat ∧
+            (
+                (A m (f x) ∧ ¬ (∃ k : nat, (k > m)%nat ∧ (k < n)%nat ∧ A k (f x))) ∧
+                ((B m j (f x)) ∧ ¬ (∃ i : nat, (i < j)%nat ∧ B m i (f x)))
+            ).
+        Proof.
+        Admitted.
+
+        Lemma whichn_spec_eq_n (n : nat) :
+            ∀ x : X,
+            whichn n x = n <-> ((¬ ∃ m : nat, (m < n)%nat ∧ A m (f x)) ∨ (ball_norm zero (/(INR n + 1)) (f x))).
+        Proof.
         Admitted.
 
     End construction_of_seq.

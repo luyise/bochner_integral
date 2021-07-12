@@ -399,7 +399,7 @@ Section BInt_Bif_linearity.
     Open Scope hy_scope.
     Open Scope Bif_scope.
     
-    Lemma BInt_sf_linearity :
+    Lemma BInt_Bif_linearity :
         ∀ (bf : Bif μ f) (bg : Bif μ g), ∀ a b : R,
             BInt_Bif (a ⋅ bf + b ⋅ bg)
             = (a ⋅ (BInt_Bif bf) + (b ⋅ (BInt_Bif bg)))%hy.
