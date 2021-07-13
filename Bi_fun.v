@@ -361,10 +361,10 @@ Section Bif_op.
             apply (lim_seq_ext (fun n => sf n x + sg n x)%hy).
                 move => n; rewrite fun_sf_plus => //.
             apply: lim_seq_plus => //.
-
+        (**)
         unfold is_LimSup_seq' => ɛ; split; swap 1 2.
         simpl; rewrite Raxioms.Rplus_0_l.
-
+        (**)
         2 : move => N0.
         2 : exists N0; split => //.
         2 : case: ɛ => [ɛ Hɛ].
@@ -375,7 +375,7 @@ Section Bif_op.
         2 : apply RIneq.Ropp_lt_gt_0_contravar => //.
         2 : apply LInt_p_ge_0 => //; unfold sum_Rbar_nonneg.non_neg.
         2 : move => x; apply norm_ge_0.
-        
+        (**)  
         case: ɛ => [ɛ Hɛ].
         pose sighalfɛ := RIneq.mkposreal (ɛ * /2) (R_compl.Rmult_lt_pos_pos_pos _ _ (RIneq.Rgt_lt _ _ Hɛ) RIneq.pos_half_prf).
         case: (Hfl1 sighalfɛ) => [HfMaj {}Hf].
@@ -385,7 +385,7 @@ Section Bif_op.
         exists (max N N').
         move => n Hn => /=.
         unfold minus.
-
+        (**)
         assert (∀ x : X,
                     Rbar_le
                     ((λ x0 : X, (‖ f + g + (- (sf n + sg n))%sf ‖)%fn x0) x)
@@ -406,7 +406,7 @@ Section Bif_op.
             rewrite <-plus_assoc;
             rewrite plus_comm.
             apply norm_triangle.
-
+        (**)
         pose Ineq := (LInt_p_monotone μ (λ x : X, (‖ f + g + (- (sf n + sg n))%sf ‖)%fn x) ((‖ f - sf n ‖) + (‖ g - sg n ‖))%fn H);
             clearbody Ineq.
         replace ɛ with (real ɛ).
@@ -431,7 +431,7 @@ Section Bif_op.
             apply HgN'; apply Max.max_lub_r with N => //.
             simpl; rewrite Rlimit.eps2 => //.
         all : swap 1 3.
-
+        (**)
         clear Ineq.
         assert
             (∀ x : X, is_lim_seq (fun k => (‖ sf k + (- sf n)%sf ‖)%fn x) ((‖ f + (- sf n)%sf ‖)%fn x)) as Limseqnorm.
@@ -449,7 +449,7 @@ Section Bif_op.
         apply measurable_fun_Lim_seq'.
         move => k; unfold sum_Rbar_nonneg.non_neg => x; apply norm_ge_0.
         move => k; apply measurable_fun_R_Rbar.
-        
+        (**) 
         apply: (measurable_fun_composition _ open).
         apply measurable_fun_ext with ((sf k + (- sf n)%sf))%sf.
             move => x.
@@ -458,7 +458,7 @@ Section Bif_op.
         move => P; move /sigma_algebra_R_Rbar_new.measurable_R_equiv_oo.
         apply measurable_fun_continuous.
         apply filterlim_norm.
-
+        (**)
         assert
             (∀ x : X, is_lim_seq (fun k => (‖ sg k + (- sg n)%sf ‖)%fn x) ((‖ g + (- sg n)%sf ‖)%fn x)) as Limseqnorm.
             move => x; unfold fun_norm.
@@ -475,7 +475,7 @@ Section Bif_op.
         apply measurable_fun_Lim_seq'.
         move => k; unfold sum_Rbar_nonneg.non_neg => x; apply norm_ge_0.
         move => k; apply measurable_fun_R_Rbar.
-        
+        (**) 
         apply: (measurable_fun_composition _ open).
         apply measurable_fun_ext with ((sg k + (- sg n)%sf))%sf.
             move => x.
@@ -495,7 +495,7 @@ Section Bif_op.
             apply (lim_seq_ext (fun n => a ⋅ sf n x)%hy).
                 move => n; rewrite fun_sf_scal => //.
             apply: lim_seq_scal_r => //.
-
+        (**)
         apply is_LimSup_seq'_ext with (fun n => Rbar_mult (| a |)%hy (LInt_p μ (‖ f - sf n ‖)%fn)).
             move => n; unfold fun_norm, fun_plus, fun_scal.
             rewrite <-LInt_p_scal => //.
@@ -524,7 +524,7 @@ Section Bif_op.
             apply measurable_fun_Lim_seq'.
             move => k; unfold sum_Rbar_nonneg.non_neg => x; apply norm_ge_0.
             move => k; apply measurable_fun_R_Rbar.
-            
+            (**)     
             apply: (measurable_fun_composition _ open).
             apply measurable_fun_ext with ((sf k + (- sf n)%sf))%sf.
                 move => x.
@@ -533,11 +533,11 @@ Section Bif_op.
             move => P; move /sigma_algebra_R_Rbar_new.measurable_R_equiv_oo.
             apply measurable_fun_continuous.
             apply filterlim_norm.
-
+            (**)
             assert (Rbar_mult (|a|)%hy 0 = 0).
             unfold Rbar_mult => /=.
             rewrite RIneq.Rmult_0_r => //.
-
+            (**)
             rewrite <-H.
             apply is_LimSup_seq'_scal_l.
             apply abs_ge_0.
@@ -553,10 +553,10 @@ Section Bif_op.
             apply (lim_seq_ext (fun n => ‖ sf n x ‖ )%hy).
                 move => n; rewrite fun_sf_norm => //.
             apply: lim_seq_norm => //.
-        
+        (* *)     
         unfold is_LimSup_seq'; move => [ɛ Hɛ]; split; swap 1 2.
         simpl; rewrite Raxioms.Rplus_0_l.
-
+        (**)
         2 : move => N0.
         2 : exists N0; split => //.
         2 : unfold Rminus.
@@ -566,7 +566,7 @@ Section Bif_op.
         2 : apply RIneq.Ropp_lt_gt_0_contravar => //.
         2 : apply LInt_p_ge_0 => //; unfold sum_Rbar_nonneg.non_neg.
         2 : move => x; apply norm_ge_0.
-
+        (**)
         case: (Hfl1 (RIneq.mkposreal ɛ Hɛ)) => Hɛ1 Hɛ2.
         case: Hɛ2 => N HN.
         exists N => n Hn.
@@ -1073,20 +1073,68 @@ Module Bif_adapted_seq.
 
         Lemma whichn_spec_lt_n (n : nat) (j : nat) : (j < n)%nat ->
             ∀ x : X,
-            whichn n x = j <->
+            whichn n x = j <-> (¬ (ball_norm zero (/(INR n + 1)) (f x))) ∧
             ∃ m : nat, (m < n)%nat ∧
             (
                 (A m (f x) ∧ ¬ (∃ k : nat, (k > m)%nat ∧ (k < n)%nat ∧ A k (f x))) ∧
                 ((B m j (f x)) ∧ ¬ (∃ i : nat, (i < j)%nat ∧ B m i (f x)))
             ).
         Proof.
-        Admitted.
+            move => Ltjn x; split.
+                move => Hwhichn; split.
+                move => Abs.
+                unfold whichn in Hwhichn.
+                case_eq (ball_norm_dec zero (f x)  {|
+                    RIneq.pos := / (INR n + 1);
+                    RIneq.cond_pos := RiemannInt.RinvN_pos n |}).
+                    move => H Eqball.
+                    rewrite Eqball in Hwhichn.
+                    lia.
+                case_eq (ball_norm_dec zero (f x)  {|
+                    RIneq.pos := / (INR n + 1);
+                    RIneq.cond_pos := RiemannInt.RinvN_pos n |}).
+                    move => H Eqball NH //.
+                    move => NH Eqball NH'.
+                    simpl in NH.
+                    apply False_ind; apply NH => //.
+                case_eq (ball_norm_dec zero (f x)  {|
+                    RIneq.pos := / (INR n + 1);
+                    RIneq.cond_pos := RiemannInt.RinvN_pos n |}).
+                    move => H Eqball.
+                    unfold whichn in Hwhichn.
+                    rewrite Eqball in Hwhichn.
+                    lia.
+                move => NH Eqball.
+                unfold whichn in Hwhichn.
+                rewrite Eqball in Hwhichn.
+                move: Hwhichn => /(whichn'_spec_lt_n _ _ Ltjn)//.
+
+                unfold whichn.
+                move => [Nball /(whichn'_spec_lt_n _ _ Ltjn) ->].
+                case: (ball_norm_dec zero (f x) {|
+                    RIneq.pos := / (INR n + 1);
+                    RIneq.cond_pos := RiemannInt.RinvN_pos n |}) => //.
+        Qed.
 
         Lemma whichn_spec_eq_n (n : nat) :
             ∀ x : X,
             whichn n x = n <-> ((¬ ∃ m : nat, (m < n)%nat ∧ A m (f x)) ∨ (ball_norm zero (/(INR n + 1)) (f x))).
         Proof.
-        Admitted.
+            move => x; split.
+                unfold whichn.
+                case: (ball_norm_dec zero (f x)
+                    {|
+                    RIneq.pos := / (INR n + 1);
+                    RIneq.cond_pos := RiemannInt.RinvN_pos n |}) => /=.
+                move => ball_zero; right => //.
+                move => _ /(whichn'_spec_eq_n) Hwhichn; left => //.
+                case.
+                move => /(whichn'_spec_eq_n).
+                1, 2 : unfold whichn; case: (ball_norm_dec zero (f x)
+                    {|
+                    RIneq.pos := / (INR n + 1);
+                    RIneq.cond_pos := RiemannInt.RinvN_pos n |}) => //.
+        Qed.
 
     End construction_of_seq.
 
