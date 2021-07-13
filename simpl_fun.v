@@ -61,7 +61,7 @@ Section simpl_fun_def.
     
     (* Un espace mesuré *)
     Context {gen : (X -> Prop) -> Prop}. 
-    Context {μ : measure gen}.
+    Context (μ : measure gen).
 
     (* la fonction est val ∘ which *)
     Record simpl_fun := mk_simpl_fun {
@@ -76,12 +76,11 @@ Section simpl_fun_def.
         ax_measurable :
             ∀ n : nat, n <= max_which ->
                 measurable gen (fun x => which x = n);
-        ax_finite :
-            ∀ n : nat, n < max_which ->
-                is_finite (μ (fun x => which x = n))
     }.
 
-    Definition meas_of_sf (sf : simpl_fun) := μ.
+    Definition integrable_sf (sf : simpl_fun) :=
+        ∀ n : nat, n < max_which sf ->
+            is_finite (μ (fun x => which sf x = n)).
 
     Definition nth_carrier (sf : simpl_fun) (n : nat) : (X -> Prop) :=
         (fun x => sf.(which) x = n).
@@ -98,8 +97,9 @@ Section simpl_fun_def.
 
 End simpl_fun_def.
 
-Arguments simpl_fun {X A} E {gen} μ.
-Arguments is_simpl {X A} [E] {gen} μ f.
+Arguments simpl_fun {X A} E gen.
+Arguments is_simpl {X A} [E] gen f.
+Arguments integrable_sf {X A} [E] {gen} μ sf.
 
 Notation "'χ(' P ')'" := (indic P) (at level 0) : fun_scope.
 
@@ -108,16 +108,15 @@ Section simpl_fun_indic.
     (* espace de départ *)
     Context  {X : Set}.
     (* Un espace mesuré *)
-    Context {gen : (X -> Prop) -> Prop}.
-    Context (μ : measure gen).
+    Context (gen : (X -> Prop) -> Prop).
 
     Open Scope nat_scope.
     Open Scope R_scope.
 
     Definition sf_indic_aux (P : X -> Prop) :
-        measurable gen P -> is_finite (μ P) -> simpl_fun R_ModuleSpace μ.
+        measurable gen P -> simpl_fun R_ModuleSpace gen.
     (* définition *)
-        move => Pmeas Pfin.
+        move => Pmeas.
         pose w := fun x =>
             match (excluded_middle_informative (P x)) return nat with
                 | left _ => O
@@ -154,26 +153,35 @@ Section simpl_fun_indic.
                 move => NPx NNPx; apply False_ind.
                 exact (NNPx NPx).
             exact Pmeas.
-            move => n Hn.
-            assert (n = O) by lia.
-            rewrite H; clear H Hn; clear n.
-            rewrite <-(measure_ext gen _ P).
-            exact Pfin.
-            move => x; unfold w.
-                case (excluded_middle_informative (P x)) => //.
     Defined.
-
+            
     Lemma sf_indic :
-        ∀ P : X -> Prop, measurable gen P -> is_finite (μ P)
-            -> is_simpl μ (χ(P): X -> R).
+        ∀ P : X -> Prop, measurable gen P
+            -> is_simpl gen (χ(P): X -> R).
     Proof.
-        move => P Pmeas Pfin.
-        exists (sf_indic_aux P Pmeas Pfin) => x.
+        move => P Pmeas.
+        exists (sf_indic_aux P Pmeas) => x.
         unfold fun_sf, "χ( _ )" => /=.
         case: (excluded_middle_informative (P x)) => //.
     Qed.
 
+    Context (μ : measure gen).
+
+    Lemma integrable_sf_indic (P : X -> Prop) (π : measurable gen P) :
+        is_finite (μ P) -> integrable_sf μ (sf_indic_aux P π).
+    Proof.
+        move => Pfin n Hn; simpl in *.
+            assert (n = O) by lia.
+            rewrite H; clear H Hn; clear n.
+            rewrite <-(measure_ext gen _ P).
+            exact Pfin.
+            move => x.
+            case (excluded_middle_informative (P x)) => //.
+    Qed.
+
 End simpl_fun_indic.
+
+Arguments integrable_sf_indic {X gen μ P} π.
 
 Section simpl_fun_norm.
 
@@ -184,7 +192,6 @@ Section simpl_fun_norm.
     Context {E : NormedModule A}.
     (* Un espace mesuré *)
     Context {gen : (X -> Prop) -> Prop}.
-    Context {μ : measure gen}.
 
     Open Scope R_scope.
     Open Scope nat_scope.
@@ -194,8 +201,8 @@ Section simpl_fun_norm.
 
     Notation "‖ f ‖" := (fun_norm f) (at level 100) : fun_scope.
 
-    Definition sf_norm_aux (sf : simpl_fun E μ) : simpl_fun R_ModuleSpace μ.
-        case: sf => which val max_which ax1 ax2 ax3 ax4.
+    Definition sf_norm_aux (sf : simpl_fun E gen) : simpl_fun R_ModuleSpace gen.
+        case: sf => which val max_which ax1 ax2 ax3.
         pose nval :=
             fun n => norm (val n).
         apply (mk_simpl_fun which nval max_which).
@@ -206,18 +213,26 @@ Section simpl_fun_norm.
             exact ax2.
             (* ax_measurable *)
             exact ax3.
-            (* ax_finite *)
-            exact ax4.
     Defined.
+
+    Context {μ : measure gen}.
+
+    Lemma integrable_sf_norm {sf : simpl_fun E gen} (isf : integrable_sf μ sf) :
+        integrable_sf μ (sf_norm_aux sf).
+    Proof.
+        unfold integrable_sf in *.
+        case_eq sf => wf vf mawf axf1 axf2 axf3 Eqf => /=.
+        rewrite Eqf in isf; simpl in isf => //.
+    Qed.
 
     Notation "‖ sf ‖" := (sf_norm_aux sf) (at level 100) : sf_scope.
 
     Lemma sf_norm :
-        ∀ f : X -> E, is_simpl μ f -> 
-            is_simpl μ (fun_norm f).
+        ∀ f : X -> E, is_simpl gen f -> 
+            is_simpl gen (fun_norm f).
     Proof.
         move => f.
-        case => sf. case_eq sf => which val max_which ax1 ax2 ax3 ax4 Eqsf Eqf.
+        case => sf. case_eq sf => which val max_which ax1 ax2 ax3 Eqsf Eqf.
         exists (sf_norm_aux sf).
         rewrite Eqsf.
         move => x; unfold fun_sf, sf_norm_aux => /=.
@@ -226,11 +241,11 @@ Section simpl_fun_norm.
     Qed.
 
     Lemma fun_sf_norm :
-        ∀ sf : simpl_fun E μ, 
+        ∀ sf : simpl_fun E gen, 
             (∀ x : X, fun_sf (‖sf‖) x = (‖ fun_sf sf x ‖)%hy).
     Proof.
         move => sf.
-        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf; rewrite <-Eqf => /=.
         unfold fun_sf.
         rewrite Eqf => //.
     Qed.
@@ -241,11 +256,6 @@ Notation "‖ f ‖" := (fun_norm f) (at level 100) : fun_scope.
 Notation "‖ sf ‖" := (sf_norm_aux sf) (at level 100) : sf_scope.
 
 Open Scope nat_scope.
-
-Lemma le_lt_v_eq :
-    ∀ k1 k2 : nat, k1 <= k2 ->
-        k1 < k2 ∨ k1 = k2.
-Proof. lia. Qed.
 
 Close Scope nat_scope.
 
@@ -258,7 +268,6 @@ Section simpl_fun_plus.
     Context {E : NormedModule A}.
     (* Un espace mesuré *)
     Context {gen : (X -> Prop) -> Prop}.
-    Context {μ : measure gen}.
 
     Open Scope nat_scope.
 
@@ -267,9 +276,9 @@ Section simpl_fun_plus.
 
     Notation "f + g" := (fun_plus f g) (left associativity, at level 50) : fun_scope. 
 
-    Definition sf_plus_aux (sf sg : simpl_fun E μ) : simpl_fun E μ.
-        case: sf => wf vf maxf axf1 axf2 axf3 axf4.
-        case: sg => wg vg maxg axg1 axg2 axg3 axg4.
+    Definition sf_plus_aux (sf sg : simpl_fun E gen) : simpl_fun E gen.
+        case: sf => wf vf maxf axf1 axf2 axf3.
+        case: sg => wg vg maxg axg1 axg2 axg3.
         pose val := fun m =>
             let (nf, ng) := square_bij_inv (S maxg) m in
             plus (vf nf) (vg ng).
@@ -288,20 +297,20 @@ Section simpl_fun_plus.
             apply confined_square.
             split; apply [axf2, axg2].
             (* ax_measurable *)
-            1, 2 : assert
+            assert
                 (∀ n : nat, n <= max_which -> 
                 ∀ c : nat * nat, c = square_bij_inv (S maxg) n ->
                 ∀ nf ng : nat, (nf, ng) = c ->
                     measurable gen (λ x : X, wf x = nf ∧ wg x = ng)
                 ) as measurable_inter_fg.
-                1, 3 : move => n Hn c Eqc nf ng Hnfngc.
-                1, 2 : pose Hnfng := confined_square_inv maxg maxf n Hn; clearbody Hnfng => /=.
-                1, 2 : rewrite <-Eqc, <-Hnfngc in Hnfng.
-                1, 2 : case: Hnfng => Hnf Hng.
-                1, 2 : apply measurable_inter.
-                1, 3 : apply axf3 => //.
-                1, 2 : apply axg3 => //.
-
+                move => n Hn c Eqc nf ng Hnfngc.
+                pose Hnfng := confined_square_inv maxg maxf n Hn; clearbody Hnfng => /=.
+                rewrite <-Eqc, <-Hnfngc in Hnfng.
+                case: Hnfng => Hnf Hng.
+                apply measurable_inter.
+                apply axf3 => //.
+                apply axg3 => //.
+            (**)
             move => n Hn; unfold which.
             pose c := square_bij_inv (S maxg) n.
             case_eq c => [nf ng] Eqc.
@@ -324,109 +333,20 @@ Section simpl_fun_plus.
                     exact Hng.
                 split; congruence.
                 apply measurable_inter_fg with n c => //.
-            (* ax_finite *)
-            move => n Hn; unfold which.
-            pose c := square_bij_inv (S maxg) n.
-            case_eq c => [nf ng] Eqc.
-            assert (
-                ∀ x : Rbar, Rbar_le (@zero R_AbelianGroup) x -> Rbar_lt x p_infty ->
-                    is_finite x
-            ) as Rbar_pos_lt_finite.
-                move => x; case: x => //.
-            apply Rbar_pos_lt_finite.
-            apply meas_ge_0.
-            assert (n = square_bij (S maxg) c).
-                unfold c; rewrite is_bij_square_inv => //.
-            rewrite H Eqc.
-            replace
-                (μ (λ x : X, square_bij (S maxg) (wf x, wg x) = square_bij (S maxg) (nf, ng)))
-                with
-                (μ (λ x : X, wf x = nf ∧ wg x = ng)).
-                all : swap 1 2.
-                apply measure_ext => x; split.
-                    move => [-> ->] => //.
-                    move => Eqfg.
-                    assert 
-                        (square_bij_inv (S maxg) (square_bij (S maxg) (wf x, wg x)) = square_bij_inv (S maxg) (square_bij (S maxg) (nf, ng)))
-                        as Eqfg2 by congruence.
-                    rewrite is_bij_square in Eqfg2.
-                        2 : apply axg2.
-                    rewrite is_bij_square in Eqfg2.
-                        all : swap 1 2.
-                        pose Hng := confined_snd_square_inv maxg n.
-                        fold c in Hng; clearbody Hng; rewrite Eqc in Hng.
-                        exact Hng.
-                    split; congruence.
-                (* Ici il faut distinguer le cas ou
-                    on est dans la composante de 0 pour f ou pour g,
-                    sachant que les deux ne peuvent pas se produire simultanément *)
-                assert
-                    (n <= max_which)
-                    as Le_n_mw.
-                    apply le_Sn_le => //.
-                pose Hnfng := confined_square_inv maxg maxf n Le_n_mw; clearbody Hnfng.
-                fold c in Hnfng; rewrite Eqc in Hnfng; case: Hnfng => Hnf Hng.
-                assert
-                    (Rbar_le 
-                        (μ (λ x : X, wf x = nf ∧ wg x = ng))
-                        (μ (λ x : X, wf x = nf))
-                    ) as inter_le_f.
-                    apply measure_le.
-                    apply measurable_inter_fg with n c => //.
-                    apply axf3 => //.
-                    easy.
-                assert
-                (Rbar_le 
-                    (μ (λ x : X, wf x = nf ∧ wg x = ng))
-                    (μ (λ x : X, wg x = ng))
-                ) as inter_le_g.
-                    apply measure_le.
-                    apply measurable_inter_fg with n c => //.
-                    apply axg3 => //.
-                    easy.
-                case: (le_lt_v_eq nf maxf) => // Hnf'.
-                    (* cas ou le dommaine pour f est mesurable *)
-                    assert
-                        (is_finite (μ (λ x : X, wf x = nf))) 
-                        as fin_f.
-                        apply axf4 => //.
-                    assert
-                        (Rbar_lt (μ (λ x : X, wf x = nf)) p_infty) as fin_f'.
-                        unfold is_finite, real in fin_f.
-                        rewrite <-fin_f => //.
-                    apply (Rbar_le_lt_trans _ _ _ inter_le_f fin_f').
-                    (* cas ou nf = maxf, donc où le domaine pour g est mesurable *)
-                    assert (ng < maxg).
-                        apply not_le => Hng'.
-                        assert (ng = maxg) 
-                            as Eqgng by apply Nat.le_antisymm => //.
-                        rewrite Hnf' Eqgng in Eqc.
-                        rewrite Eqc in H; rewrite square_bij_corner in H.
-                        rewrite H in Hn; unfold max_which in Hn.
-                        exact (Nat.Private_Tac.lt_irrefl Hn).
-                    assert
-                        (is_finite (μ (λ x : X, wg x = ng))) 
-                        as fin_g.
-                        apply axg4 => //.
-                    assert
-                        (Rbar_lt (μ (λ x : X, wg x = ng)) p_infty) as fin_g'.
-                        unfold is_finite, real in fin_g.
-                        rewrite <-fin_g => //.
-                    apply (Rbar_le_lt_trans _ _ _ inter_le_g fin_g').
     Defined.
 
     Notation "sf + sg" := (sf_plus_aux sf sg) (left associativity, at level 50) : sf_scope.
 
     Lemma sf_plus :
         ∀ f g : X -> E, 
-        is_simpl μ f -> is_simpl μ g ->
-        is_simpl μ (fun_plus f g).
+        is_simpl gen f -> is_simpl gen g ->
+        is_simpl gen (fun_plus f g).
     Proof.
         move => f g.
         case => sf Eq_sf_f; case => sg Eq_sg_g.
         exists (sf_plus_aux sf sg).
-        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf.
-        case_eq sg => wg vg maxg axg1 axg2 axg3 axg4 Eqg.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf.
+        case_eq sg => wg vg maxg axg1 axg2 axg3 Eqg.
         unfold fun_sf => /= x.
         rewrite is_bij_square.
             2 : apply axg2.
@@ -441,15 +361,131 @@ Section simpl_fun_plus.
     Qed.
 
     Lemma fun_sf_plus :
-        ∀ sf sg : simpl_fun E μ, 
+        ∀ sf sg : simpl_fun E gen, 
             (∀ x : X, fun_sf (sf + sg)%sf x = (fun_sf sf x + fun_sf sg x)%hy).
     Proof.
         move => sf sg.
-        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
-        case_eq sg => wg vg maxg axg1 axg2 axg3 axg4 Eqg; rewrite <-Eqg => /=.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf; rewrite <-Eqf => /=.
+        case_eq sg => wg vg maxg axg1 axg2 axg3 Eqg; rewrite <-Eqg => /=.
         unfold fun_sf.
         rewrite Eqf Eqg => x /=.
         rewrite is_bij_square => //.
+    Qed.
+
+    Context {μ : measure gen}.
+
+    Lemma integrable_sf_plus {sf sg : simpl_fun E gen} : 
+        (integrable_sf μ sf) -> (integrable_sf μ sg) -> (integrable_sf μ (sf_plus_aux sf sg)).
+    Proof.
+        unfold integrable_sf.
+        move => axf4 axg4.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf.
+        case_eq sg => wg vg maxg axg1 axg2 axg3 Eqg => /=.
+        rewrite Eqf Eqg in axf4 axg4; simpl in axf4, axg4.
+        pose max_which := (S maxf) * (S maxg) - 1.
+        assert
+            (∀ n : nat, n <= max_which -> 
+            ∀ c : nat * nat, c = square_bij_inv (S maxg) n ->
+            ∀ nf ng : nat, (nf, ng) = c ->
+                measurable gen (λ x : X, wf x = nf ∧ wg x = ng)
+            ) as measurable_inter_fg.
+            move => n Hn c Eqc nf ng Hnfngc.
+            pose Hnfng := confined_square_inv maxg maxf n Hn; clearbody Hnfng => /=.
+            rewrite <-Eqc, <-Hnfngc in Hnfng.
+            case: Hnfng => Hnf Hng.
+            apply measurable_inter.
+            apply axf3 => //.
+            apply axg3 => //.
+    (**)
+    move => n Hn; unfold which.
+    pose c := square_bij_inv (S maxg) n.
+    case_eq c => [nf ng] Eqc.
+    assert (
+        ∀ x : Rbar, Rbar_le (@zero R_AbelianGroup) x -> Rbar_lt x p_infty ->
+            is_finite x
+    ) as Rbar_pos_lt_finite.
+        move => x; case: x => //.
+    apply Rbar_pos_lt_finite.
+    apply meas_ge_0.
+    assert (n = square_bij (S maxg) c).
+        unfold c; rewrite is_bij_square_inv => //.
+    rewrite H Eqc.
+    replace
+        (μ (λ x : X, square_bij (S maxg) (wf x, wg x) = square_bij (S maxg) (nf, ng)))
+        with
+        (μ (λ x : X, wf x = nf ∧ wg x = ng)).
+        all : swap 1 2.
+        apply measure_ext => x; split.
+            move => [-> ->] => //.
+            move => Eqfg.
+            assert 
+                (square_bij_inv (S maxg) (square_bij (S maxg) (wf x, wg x)) = square_bij_inv (S maxg) (square_bij (S maxg) (nf, ng)))
+                as Eqfg2 by congruence.
+            rewrite is_bij_square in Eqfg2.
+                2 : apply axg2.
+            rewrite is_bij_square in Eqfg2.
+                all : swap 1 2.
+                pose Hng := confined_snd_square_inv maxg n.
+                fold c in Hng; clearbody Hng; rewrite Eqc in Hng.
+                exact Hng.
+            split; congruence.
+        (* Ici il faut distinguer le cas ou
+            on est dans la composante de 0 pour f ou pour g,
+            sachant que les deux ne peuvent pas se produire simultanément *)
+        assert
+            (n <= max_which)
+            as Le_n_mw.
+            apply le_Sn_le => //.
+        pose Hnfng := confined_square_inv maxg maxf n Le_n_mw; clearbody Hnfng.
+        fold c in Hnfng; rewrite Eqc in Hnfng; case: Hnfng => Hnf Hng.
+        assert
+            (Rbar_le 
+                (μ (λ x : X, wf x = nf ∧ wg x = ng))
+                (μ (λ x : X, wf x = nf))
+            ) as inter_le_f.
+            apply measure_le.
+            apply measurable_inter_fg with n c => //.
+            apply axf3 => //.
+            easy.
+        assert
+        (Rbar_le 
+            (μ (λ x : X, wf x = nf ∧ wg x = ng))
+            (μ (λ x : X, wg x = ng))
+        ) as inter_le_g.
+            apply measure_le.
+            apply measurable_inter_fg with n c => //.
+            apply axg3 => //.
+            easy.
+        case: (le_lt_v_eq nf maxf) => // Hnf'.
+            (* cas ou le dommaine pour f est mesurable *)
+            assert
+                (is_finite (μ (λ x : X, wf x = nf))) 
+                as fin_f.
+                
+                apply axf4 => //.
+            assert
+                (Rbar_lt (μ (λ x : X, wf x = nf)) p_infty) as fin_f'.
+                unfold is_finite, real in fin_f.
+                rewrite <-fin_f => //.
+            apply (Rbar_le_lt_trans _ _ _ inter_le_f fin_f').
+            (* cas ou nf = maxf, donc où le domaine pour g est mesurable *)
+            assert (ng < maxg).
+                apply not_le => Hng'.
+                assert (ng = maxg) 
+                    as Eqgng by apply Nat.le_antisymm => //.
+                rewrite Hnf' Eqgng in Eqc.
+                rewrite Eqc in H; rewrite square_bij_corner in H.
+                rewrite H in Hn; unfold max_which in Hn.
+                exact (Nat.Private_Tac.lt_irrefl Hn).
+            assert
+                (is_finite (μ (λ x : X, wg x = ng))) 
+                as fin_g.
+                apply axg4 => //.
+            assert
+                (Rbar_lt (μ (λ x : X, wg x = ng)) p_infty) as fin_g'.
+                unfold is_finite, real in fin_g.
+                rewrite <-fin_g => //.
+            apply (Rbar_le_lt_trans _ _ _ inter_le_g fin_g').
     Qed.
 
 End simpl_fun_plus.
@@ -466,7 +502,6 @@ Section simpl_fun_scal.
     Context {E : NormedModule A}.
     (* Un espace mesuré *)
     Context {gen : (X -> Prop) -> Prop}.
-    Context {μ : measure gen}.
 
     Open Scope nat_scope.
 
@@ -475,38 +510,46 @@ Section simpl_fun_scal.
 
     Notation "a ⋅ g" := (fun_scal a g) (left associativity, at level 45) : fun_scope.
 
-    Definition sf_scal_aux (a : A) (sf : simpl_fun E μ) : simpl_fun E μ.
-        case: sf => wf vf maxf axf1 axf2 axf3 axf4.
+    Definition sf_scal_aux (a : A) (sf : simpl_fun E gen) : simpl_fun E gen.
+        case: sf => wf vf maxf axf1 axf2 axf3.
         pose val := fun k => scal a (vf k).
         apply (mk_simpl_fun wf val maxf).
             unfold val; rewrite axf1 scal_zero_r => //.
             exact axf2.
             exact axf3.
-            exact axf4.
     Defined.
 
     Notation "a ⋅ sf" := (sf_scal_aux a sf) (left associativity, at level 45) : sf_scope.
 
     Lemma sf_scal :
         ∀ a : A, ∀ f : X -> E, 
-        is_simpl μ f ->
-        is_simpl μ (fun_scal a f).
+        is_simpl gen f ->
+        is_simpl gen (fun_scal a f).
     Proof.
         move => a f.
-        case => sf; case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqsf => /= Eqf.
+        case => sf; case_eq sf => wf vf maxf axf1 axf2 axf3 Eqsf => /= Eqf.
         exists (sf_scal_aux a sf) => x.
         unfold fun_sf, val, which; rewrite Eqsf => /=.
         unfold fun_scal; rewrite Eqf => //.
     Qed.
 
     Lemma fun_sf_scal :
-        ∀ a : A, ∀ sf : simpl_fun E μ, 
+        ∀ a : A, ∀ sf : simpl_fun E gen, 
             (∀ x : X, fun_sf (a ⋅ sf) x = (a ⋅ (fun_sf sf x))%hy).
     Proof.
         move => a sf.
-        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf; rewrite <-Eqf => /=.
         unfold fun_sf.
         rewrite Eqf => //.
+    Qed.
+
+    Context {μ : measure gen}.
+
+    Lemma integrable_sf_scal (a : A) {sf : simpl_fun E gen} :
+        integrable_sf μ sf -> integrable_sf μ (sf_scal_aux a sf).
+    Proof.
+        unfold integrable_sf.
+        case: sf => //.
     Qed.
 
 End simpl_fun_scal.
@@ -532,7 +575,7 @@ Section simpl_fun_bounded.
     Open Scope hy_scope.
 
     Definition sf_bounded :
-        ∀ sf : simpl_fun E μ, { M : R | ∀ x : X, ‖ fun_sf sf x ‖ <= M }.
+        ∀ sf : simpl_fun E gen, { M : R | ∀ x : X, ‖ fun_sf sf x ‖ <= M }.
     (* definition *)
         move => sf.
         apply exist with (Rmax_n (fun k => ‖ val sf k ‖) (max_which sf)).
@@ -578,11 +621,11 @@ Section simpl_fun_meas.
     Context {μ : measure gen}.
 
     Lemma measurable_sf_preim :
-        ∀ sf : simpl_fun E μ, ∀ y : E,
+        ∀ sf : simpl_fun E gen, ∀ y : E,
             measurable gen (fun x : X => sf x = y).
     Proof.
         move => sf.
-        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf; rewrite <-Eqf => /=.
         move => y.
         pose P := fun k => (λ x : X, vf k = y ∧ which sf x = k).
         apply measurable_ext with (λ x : X, ∃ k : nat, k ≤ maxf ∧ P k x).
@@ -607,11 +650,11 @@ Section simpl_fun_meas.
     Qed.
 
     Lemma sf_measurable_preim_le :
-        ∀ sf : simpl_fun E μ, ∀ n : nat, n ≤ max_which sf ->
+        ∀ sf : simpl_fun E gen, ∀ n : nat, n ≤ max_which sf ->
             measurable gen (λ x : X, which sf x ≤ n).
     Proof.
         move => sf.
-        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf; rewrite <-Eqf => /=.
         move => n Hn.
         pose B := fun k => (λ x : X, which sf x = k).
         apply measurable_ext with (fun x => ∃ k : nat, k ≤ n ∧ which sf x = k).
@@ -624,11 +667,11 @@ Section simpl_fun_meas.
     Qed.
 
     Lemma sf_measurable_preim_lt :
-        ∀ sf : simpl_fun E μ, ∀ n : nat, n ≤ max_which sf ->
+        ∀ sf : simpl_fun E gen, ∀ n : nat, n ≤ max_which sf ->
             measurable gen (λ x : X, which sf x < n).
     Proof.
         move => sf.
-        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf; rewrite <-Eqf => /=.
         case.
             move => _.
             apply measurable_ext with (fun _ => False).
@@ -642,12 +685,13 @@ Section simpl_fun_meas.
             apply sf_measurable_preim_le; lia.
     Qed.
 
-    Lemma is_finite_sf_preim_lt :
-        ∀ sf : simpl_fun E μ, ∀ n : nat, n ≤ max_which sf ->
+    Lemma is_finite_sf_preim_lt {sf : simpl_fun E gen} :
+        integrable_sf μ sf -> ∀ n : nat, n ≤ max_which sf ->
             is_finite (μ (λ x : X, which sf x < n)).
     Proof.
-        move => sf.
-        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        unfold integrable_sf => axf4.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf; rewrite <-Eqf => /=.
+        rewrite Eqf in axf4; simpl in axf4.
         case.
             move => _.
             rewrite (measure_ext _ _ _ (fun _ => False)).
@@ -665,7 +709,7 @@ Section simpl_fun_meas.
         case_eq (k <=? n).
             move => /Nat.leb_le Hk'.
             rewrite (measure_ext _ _ _ (fun x => which sf x = k)).
-            apply ax_finite; lia.
+            rewrite Eqf => /=; apply axf4; lia.
             move => x; split; [easy | move => -> //].
             move => /Nat.leb_gt Hk'.
             rewrite (measure_ext _ _ _ (fun _ => False)).
@@ -681,12 +725,12 @@ Section simpl_fun_meas.
     Qed.
 
     Lemma sf_decomp_preim_which :
-        ∀ sf : simpl_fun E μ, ∀ y : E,
+        ∀ sf : simpl_fun E gen, ∀ y : E,
             (μ (fun x : X => sf x = y)) 
             = sum_Rbar (max_which sf) (fun k => (μ (fun x : X => val sf k = y ∧ which sf x = k))).
     Proof.
         move => sf.
-        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf; rewrite <-Eqf => /=.
         move => y.
         pose B := fun k => (λ x : X, which sf x = k).
             rewrite (measure_decomp_finite _ μ (fun x => sf x = y) maxf B).
@@ -705,12 +749,13 @@ Section simpl_fun_meas.
             move => p q x Hp Hq; unfold B => -> //.
     Qed.
 
-    Lemma finite_sf_preim_neq_0 :
-        ∀ sf : simpl_fun E μ, ∀ y : E, y ≠ zero ->
+    Lemma finite_sf_preim_neq_0 {sf : simpl_fun E gen} :
+        integrable_sf μ sf -> ∀ y : E, y ≠ zero ->
             is_finite (μ (fun x : X => sf x = y)).
     Proof.
-        move => sf.
-        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        unfold integrable_sf => axf4.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf; rewrite <-Eqf => /=.
+        rewrite Eqf in axf4; simpl in axf4.
         move => y Hy.
         rewrite sf_decomp_preim_which.
         apply finite_sum_Rbar => k Hk.
@@ -723,7 +768,8 @@ Section simpl_fun_meas.
             1, 2 : rewrite Eqf => /=; apply axf3; rewrite Eqf in Hk; simpl in Hk => //.
             move => x; case; auto.
             easy.
-            apply ax_finite => //.
+            rewrite Eqf => /=; apply axf4.
+            rewrite Eqf in Hkmaxf => //.
         
             rewrite (measure_ext _ _ _ (fun _ => False)).
             rewrite meas_False => //.
@@ -735,11 +781,11 @@ Section simpl_fun_meas.
     Qed.
 
     Lemma measurable_fun_sf_aux :
-        ∀ sf : simpl_fun E μ,
+        ∀ sf : simpl_fun E gen,
             (∀ P : E -> Prop, measurable open P -> measurable gen (fun x : X => P (sf x))).
     Proof.
         move => sf.
-        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf; rewrite <-Eqf => /=.
 
         move => P HP.
         pose B := fun (n : nat) => (fun x : X => (which sf x = n) ∧ (P (val sf n))).
@@ -760,11 +806,11 @@ Section simpl_fun_meas.
     Qed.
 
     Lemma measurable_fun_sf :
-        ∀ sf : simpl_fun E μ,
+        ∀ sf : simpl_fun E gen,
             measurable_fun gen open sf.
     Proof.
         move => sf.
-        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf; rewrite <-Eqf => /=.
 
         move => P HP; inversion HP.
             clear A0 H0.

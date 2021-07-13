@@ -154,8 +154,8 @@ Section Boshner_integrable_fun.
 
     (* Bochner Integrable Functions *)
     Inductive Bif (f : X -> E) : Type :=
-        | approximation (s : nat -> simpl_fun E μ) :
-            inhabited X ->
+        | approximation (s : nat -> simpl_fun E gen) :
+            (∀ n : nat, integrable_sf μ (s n)) -> inhabited X ->
             (∀ x : X, is_lim_seq (fun n => s n x) (f x))
             -> is_LimSup_seq' (fun n => LInt_p μ (‖ f - (s n) ‖)%fn) 0 -> Bif f.
 
@@ -180,11 +180,11 @@ Section Bi_fun_prop.
     Context {μ : measure gen}.
 
     Lemma Cauchy_seq_approx :
-        ∀ f : X -> E, ∀ s : nat -> simpl_fun E μ, inhabited X ->
+        ∀ f : X -> E, ∀ s : nat -> simpl_fun E gen, (∀ n : nat, integrable_sf μ (s n)) -> inhabited X ->
             (∀ x : X, is_lim_seq (fun n => s n x) (f x)) -> is_LimSup_seq' (fun n => LInt_p μ (‖ f - (s n) ‖)%fn) 0 
-            -> NM_Cauchy_seq (fun n => BInt_sf (s n)).
+            -> NM_Cauchy_seq (fun n => BInt_sf μ (s n)).
     Proof.
-        move => f s ι Hspointwise Hs.
+        move => f s isf ι Hspointwise Hs.
         unfold Cauchy_seq => ɛ Hɛ.
         unfold is_LimSup_seq' in Hs.
         pose sighalfɛ := RIneq.mkposreal (ɛ * /2) (R_compl.Rmult_lt_pos_pos_pos _ _ (RIneq.Rgt_lt _ _ Hɛ) RIneq.pos_half_prf).
@@ -194,9 +194,9 @@ Section Bi_fun_prop.
         move => p q Hp Hq.
         unfold ball_norm.
         unfold minus.
-        setoid_rewrite <-(scal_opp_one (BInt_sf (s p))).
+        setoid_rewrite <-(scal_opp_one (BInt_sf μ (s p))).
         rewrite <-BInt_sf_scal_aux, <-BInt_sf_plus_aux.
-        apply RIneq.Rle_lt_trans with (BInt_sf (‖(s q) - (s p)‖)%sf).
+        apply RIneq.Rle_lt_trans with (BInt_sf μ (‖(s q) - (s p)‖)%sf).
             apply norm_Bint_sf_le.
         rewrite (BInt_sf_LInt_SFp).
         rewrite <-LInt_p_SFp_eq.
@@ -249,14 +249,15 @@ Section Bi_fun_prop.
             simpl; rewrite Rlimit.eps2 => //.
         all : swap 1 3.
         pose Lint_p_Bint_sf :=
-            Finite_BInt_sf_LInt_SFp (‖ s q - s p ‖)%sf.
+            @Finite_BInt_sf_LInt_SFp _ _ μ (‖ s q - s p ‖)%sf.
             rewrite <-LInt_p_SFp_eq in Lint_p_Bint_sf.
             2 : exact ι.
             2 : unfold sum_Rbar_nonneg.non_neg => x.
             2 : simpl; rewrite fun_sf_norm.
             2 : apply norm_ge_0.
             rewrite <-Lint_p_Bint_sf => //.
-
+        
+        all : swap 1 2.
         assert
             (∀ x : X, is_lim_seq (fun n => (‖ s n + (- s p)%sf ‖)%fn x) ((‖ f + (- s p)%sf ‖)%fn x)) as Limseqnorm.
             move => x; unfold fun_norm.
@@ -281,6 +282,7 @@ Section Bi_fun_prop.
         apply measurable_fun_continuous.
         apply filterlim_norm.
 
+        all : swap 1 2.
         assert
             (∀ x : X, is_lim_seq (fun n => (‖ s n + (- s q)%sf ‖)%fn x) ((‖ f + (- s q)%sf ‖)%fn x)) as Limseqnorm.
             move => x; unfold fun_norm.
@@ -304,6 +306,11 @@ Section Bi_fun_prop.
         move => P. move /sigma_algebra_R_Rbar_new.measurable_R_equiv_oo.
         apply measurable_fun_continuous.
         apply filterlim_norm.
+
+        1, 2 : apply integrable_sf_norm.
+        1, 2 : apply integrable_sf_plus.
+        2, 4, 6 : apply integrable_sf_scal.
+        all : apply isf.
     Qed.
         
 End Bi_fun_prop.
@@ -322,10 +329,13 @@ Section Bif_sf.
     Context {gen : (X -> Prop) -> Prop}.
     Context {μ : measure gen}.
 
-    Definition Bif_sf (s : simpl_fun E μ) : Bif μ s.
+    Definition Bif_integrable_sf {s : simpl_fun E gen} :
+        integrable_sf μ s -> Bif μ s.
     (* Definition *)
         pose s' := fun _ : nat => s.
+        move => isf.
         apply (approximation s s').
+            unfold s' => _; exact isf.
             exact ι.
             move => x; apply lim_seq_cte.
             unfold s'; unfold fun_norm;
@@ -353,9 +363,12 @@ Section Bif_op.
     Context {f g : X -> E}.
 
     Definition Bif_plus (bf : Bif μ f) (bg : Bif μ g) : Bif μ (f + g)%fn.
-        case: bf => sf ι Hfpw Hfl1;
-        case: bg => sg _ Hgpw Hgl1.
+        case: bf => sf isf ι Hfpw Hfl1;
+        case: bg => sg isg _ Hgpw Hgl1.
+        assert (∀ n : nat, integrable_sf μ (sf n + sg n)%sf) as isfplusg.
+            move => n; apply integrable_sf_plus; [apply isf | apply isg].
         apply: (approximation (f + g)%fn (fun n : nat => sf n + sg n)%sf).
+            exact isfplusg.
             exact ι.
             move => x; unfold fun_plus.
             apply (lim_seq_ext (fun n => sf n x + sg n x)%hy).
@@ -488,8 +501,9 @@ Section Bif_op.
 
     Definition Bif_scal (a : R_AbsRing) (bf : Bif μ f) : Bif μ (a ⋅ f)%fn.
     (* Definition *)
-        case_eq bf => sf ι Hfpw Hfl1 Eqf.
+        case_eq bf => sf isf ι Hfpw Hfl1 Eqf.
         apply: (approximation (a ⋅ f)%fn (fun n : nat => a ⋅ sf n)%sf).
+            move => n; apply integrable_sf_scal; apply isf.
             exact ι.
             move => x; unfold fun_scal.
             apply (lim_seq_ext (fun n => a ⋅ sf n x)%hy).
@@ -546,8 +560,9 @@ Section Bif_op.
 
     Definition Bif_norm (bf : Bif μ f) : Bif μ (‖f‖)%fn.
     (* Definition *)
-        case_eq bf => sf ι Hfpw Hfl1 Eqf.
+        case_eq bf => sf isf ι Hfpw Hfl1 Eqf.
         apply: (approximation (‖f‖)%fn (fun n : nat => ‖ sf n ‖)%sf).
+            move => n; apply integrable_sf_norm; apply isf.
             exact ι.
             move => x; unfold fun_norm.
             apply (lim_seq_ext (fun n => ‖ sf n x ‖ )%hy).

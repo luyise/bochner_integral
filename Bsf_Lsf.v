@@ -253,14 +253,14 @@ Section Bochner_sf_Lebesgue_sf.
 
     (* Une fonction qui parcours les valeurs prises par une simpl_fun R μ 
     et qui en fait une liste de valeur utiles *)
-    Lemma Bsf_to_Lsf_list_aux (sf : simpl_fun (R_NormedModule) μ) (n : nat) 
+    Lemma Bsf_to_Lsf_list_aux (sf : simpl_fun (R_NormedModule) gen) (n : nat) 
     : { l : list R | 
         (∀ x : X, sf.(which) x < n -> List.In (sf x) l) ∧ (NoDup l)
-        ∧ ( match n with O => zero | S n' => sum_n (λ k : nat, (real (μ (nth_carrier sf k))) ⋅ val sf k) n' end
+        ∧ (integrable_sf μ sf -> ( match n with O => zero | S n' => sum_n (λ k : nat, (real (μ (nth_carrier sf k))) ⋅ val sf k) n' end
             = sum_Rbar_map l
-            ( λ y : R, Rbar_mult y (μ (λ x : X, sf x = y ∧ sf.(which) x < n)) ) ) }.
+            ( λ y : R, Rbar_mult y (μ (λ x : X, sf x = y ∧ sf.(which) x < n)) ) ) ) }.
     Proof.
-        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf; rewrite <-Eqf => /=.
         induction n.
             apply: (exist _ (nil)); split.
                 lia.
@@ -280,6 +280,7 @@ Section Bochner_sf_Lebesgue_sf.
                         assert (which sf x < n) by lia.
                         apply Pl => //.
                         split => //.
+                        move => isf.
                         rewrite sum_Sn.
                         replace (μ (nth_carrier sf (S n'))) with (Finite 0%R).
                         rewrite scal_zero_l plus_zero_r.
@@ -293,6 +294,7 @@ Section Bochner_sf_Lebesgue_sf.
                             assert (which sf x ≤ maxf).
                                 rewrite Eqf => /=; apply axf2.
                                 lia.
+                                exact isf.
                             rewrite (measure_ext _ μ _ (fun _ => False)).
                             rewrite meas_False => //.
                             move => x; split => //.
@@ -315,6 +317,7 @@ Section Bochner_sf_Lebesgue_sf.
                     reflexivity. 
                     split. 
                         apply NoDup_cons => //.
+                        move => isf.
                         unfold sum_Rbar_map => /=.
                         replace (sum_Rbar_l
                                     (List.map
@@ -396,6 +399,8 @@ Section Bochner_sf_Lebesgue_sf.
                 1, 2 : apply sf_measurable_preim_lt; rewrite Eqf => //.
                 1, 2 : easy.
                 apply is_finite_sf_preim_lt; rewrite Eqf => //.
+                rewrite <-Eqf => //.
+                exact isf.
 
                 clear Lenmaxf Pl Psum NIn_vfn; case: n.
                     rewrite sum_O plus_zero_r => //.
@@ -447,6 +452,7 @@ Section Bochner_sf_Lebesgue_sf.
                             unfold fun_sf; rewrite Heq; assumption.
                             lia.
 
+                    move => isf.
                     rewrite sum_Rbar_map_Rbar_plus_finite.
                         all : swap 1 2.
                         move => y Inyl; split.
@@ -464,6 +470,7 @@ Section Bochner_sf_Lebesgue_sf.
                         apply sf_measurable_preim_lt.
                         rewrite Eqf => //.
                         move => x; case => //.
+                        rewrite <-Eqf => //.
                         case: (RIneq.Req_EM_T y 0%R).
                             move ->.
                             rewrite Rbar_mult_0_l => //.
@@ -475,15 +482,17 @@ Section Bochner_sf_Lebesgue_sf.
                                 apply Rbar_bounded_is_finite with 0%R (μ (λ x : X, which sf x = n)).
                                 apply meas_ge_0.
                                 2 : easy.
-                                2 : apply ax_finite; rewrite Eqf => /=.
+                                2 : rewrite Eqf => /=.
+                                2 : unfold integrable_sf in isf.
+                                2 : rewrite Eqf in isf; simpl in isf.
+                                2 : apply isf; lia.
+                                rewrite Eqf => /=.
                                 apply measure_le.
                                 apply measurable_inter.
                                 apply measurable_Prop.
-                                1, 2 : apply ax_measurable; rewrite Eqf => //.
+                                1, 2 : apply axf3 => //.
                                 move => x; case => //.
-                                case: (le_lt_or_eq n maxf Lenmaxf) => //.
-
-                                move /Nat.eqb_eq ->.
+                                move => /Nat.eqb_eq ->.
                                 rewrite (measure_ext _ _ _ (fun _ => False)).
                                 rewrite meas_False => //.
                                 move => x; split => //.
@@ -524,7 +533,10 @@ Section Bochner_sf_Lebesgue_sf.
                             1, 2 : apply ax_measurable; rewrite Eqf => //.
                             move => x [_ H] => //.
                             easy.
-                            apply ax_finite; rewrite Eqf => //.
+                            unfold integrable_sf in isf.
+                            rewrite Eqf in isf; simpl in isf.
+                            rewrite Eqf => /=.
+                            apply isf => //.
                         rewrite Raxioms.Rmult_comm.
                         congr Rmult.
                         congr real.
@@ -539,19 +551,21 @@ Section Bochner_sf_Lebesgue_sf.
                         rewrite axf1.
                         rewrite RIneq.Rmult_0_l.
                         rewrite Rbar_mult_0_l => //.
+                        exact isf.
     Qed.
                 
-    Lemma Bsf_to_Lsf_list (sf : simpl_fun (R_NormedModule) μ)
+    Lemma Bsf_to_Lsf_list (sf : simpl_fun (R_NormedModule) gen)
     : { l : list R | 
         (finite_vals_canonic sf l)
-        ∧ sum_n (λ n : nat, (real (μ (nth_carrier sf n)) ⋅ val sf n)) (max_which sf) = sum_Rbar_map l
-            (λ x : R, Rbar_mult x (μ (λ x0 : X, sf x0 = x))) }.
+        ∧ (integrable_sf μ sf -> sum_n (λ n : nat, (real (μ (nth_carrier sf n)) ⋅ val sf n)) (max_which sf) = sum_Rbar_map l
+            (λ x : R, Rbar_mult x (μ (λ x0 : X, sf x0 = x)))) }.
     Proof.
         case: (Bsf_to_Lsf_list_aux sf (S (max_which sf))) => l Pl.
         pose l_can := canonizer sf l; apply: (exist _ l_can); split.
         unfold l_can; apply finite_vals_canonizer => x.
         pose Hx := ax_which_max_which sf x; clearbody Hx.
         apply Pl, le_n_S => //.
+        unfold integrable_sf => isf.
         assert (l_can = canonizer sf l) as Hlcan by unfold l_can => //.
         unfold canonizer in Hlcan; clearbody l_can.
         rewrite nodup_fixed_point in Hlcan.
@@ -616,7 +630,7 @@ Section Bochner_sf_Lebesgue_sf.
                 unfold sum_Rbar_map => //.
         rewrite Hrwrt.
         rewrite (sum_Rbar_map_ext_f l _ (fun y : R => Rbar_mult y (μ (λ x : X, sf x = y ∧ which sf x < S (max_which sf))))).
-        case: Pl => [_ [_ H]] => //.
+        case: Pl => [_ [_ H]]; apply H => //.
         move => y Inyl.
         congr Rbar_mult.
         apply measure_ext.
@@ -627,7 +641,7 @@ Section Bochner_sf_Lebesgue_sf.
             move => [H _] => //.
     Qed.
 
-    Definition is_SF_Bsf (sf : simpl_fun (R_NormedModule) μ) : SF gen sf.
+    Definition is_SF_Bsf (sf : simpl_fun (R_NormedModule) gen) : SF gen sf.
     (* Definition *)
         case: (Bsf_to_Lsf_list sf) => l Hl.
         apply (exist _ l); split => //.
@@ -648,11 +662,11 @@ Section Bochner_sf_Lebesgue_sf.
         apply measurable_union_finite => //.
     Defined.
 
-    Lemma BInt_sf_LInt_SFp :
-        ∀ sf : simpl_fun R_NormedModule μ, BInt_sf sf = LInt_SFp μ sf (is_SF_Bsf sf).
+    Lemma BInt_sf_LInt_SFp {sf : simpl_fun R_NormedModule gen} :
+        integrable_sf μ sf -> BInt_sf μ sf = LInt_SFp μ sf (is_SF_Bsf sf).
     Proof.
-        move => sf.
-        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        move => isf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf; rewrite <-Eqf => /=.
         unfold BInt_sf, LInt_SFp.
         unfold af1.
         unfold is_SF_Bsf.
@@ -667,13 +681,14 @@ Section Bochner_sf_Lebesgue_sf.
         move => x; split.
         move => -> //.
         congruence.
+        exact isf.
     Qed.
 
-    Lemma Finite_BInt_sf_LInt_SFp :
-        ∀ sf : simpl_fun R_NormedModule μ, Finite (BInt_sf sf) = LInt_SFp μ sf (is_SF_Bsf sf).
+    Lemma Finite_BInt_sf_LInt_SFp {sf : simpl_fun R_NormedModule gen} :
+        integrable_sf μ sf -> Finite (BInt_sf μ sf) = LInt_SFp μ sf (is_SF_Bsf sf).
     Proof.
-        move => sf.
-        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf => /=.
+        move => isf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf; rewrite <-Eqf => /=.
         unfold BInt_sf, LInt_SFp.
         unfold af1.
         unfold is_SF_Bsf.
@@ -701,6 +716,7 @@ Section Bochner_sf_Lebesgue_sf.
         move => x; split.
         move => -> //.
         congruence.
+        exact isf.
     Qed.
 
 End Bochner_sf_Lebesgue_sf.

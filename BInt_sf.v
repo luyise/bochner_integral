@@ -40,20 +40,19 @@ Section BInt_for_sf.
     Context {E : NormedModule R_AbsRing}.
     (* Un espace mesuré *)
     Context {gen : (X -> Prop) -> Prop}.
-    Context {μ : measure gen}.
 
     Open Scope R_scope.
 
     (* Une définition calculable de l'intégrale de Bochner d'une fonction simple *)
-    Definition BInt_sf (sf : simpl_fun _ μ) : E :=
+    Definition BInt_sf (μ : measure gen) (sf : simpl_fun _ gen) : E :=
         sum_n
             (fun n => scal (real (μ (nth_carrier sf n))) (sf.(val) n))
             (sf.(max_which)).
 
 End BInt_for_sf.
 
-Notation "'∫B' sf" := (BInt_sf sf)
-        (only printing, at level 45, format "'[ ' '∫B'  sf ']'") : sf_scope.
+Notation "'∫B' sf 'd' μ" := (BInt_sf μ sf)
+        (only printing, at level 45, format "'[ ' '∫B'  sf  'd' μ ']'") : sf_scope.
 
 Section BInt_sf_indic.
 
@@ -67,14 +66,14 @@ Section BInt_sf_indic.
     Open Scope R_scope.
     Open Scope fun_scope.
 
-    Lemma BInt_sf_indic (P : X -> Prop) (π_meas : measurable gen P) (π_fin : is_finite (μ P))
-        : BInt_sf (sf_indic_aux μ P π_meas π_fin) = real (μ P).
+    Lemma BInt_sf_indic (P : X -> Prop) (π_meas : measurable gen P)
+        : BInt_sf μ (sf_indic_aux gen P π_meas) = real (μ P).
     Proof.
         unfold BInt_sf.
-        replace (max_which (sf_indic_aux μ P π_meas π_fin)) with 1%nat at 1 
+        replace (max_which (sf_indic_aux gen P π_meas)) with 1%nat at 1 
             by unfold sf_indic_aux => //.
         rewrite sum_Sn sum_O.
-        case_eq (sf_indic_aux μ P π_meas π_fin) => wP vP maxP axP1 axP2 axP3 axP4 EqP;
+        case_eq (sf_indic_aux gen P π_meas) => wP vP maxP axP1 axP2 axP3 EqP;
             unfold nth_carrier; rewrite <-EqP => /=.
         rewrite (measure_ext gen μ _ P).
             all : swap 1 2.
@@ -165,13 +164,14 @@ Section BInt_sf_plus.
     Open Scope nat_scope.
     Open Scope sf_scope.
 
-    Lemma BInt_sf_plus_aux :
-        ∀ sf_f sf_g : simpl_fun E μ,
-            BInt_sf (sf_f + sf_g) = ((BInt_sf sf_f) + (BInt_sf sf_g))%hy.
+    Lemma BInt_sf_plus_aux {sf_f sf_g : simpl_fun E gen} :
+        integrable_sf μ sf_f -> integrable_sf μ sf_g ->
+            BInt_sf μ (sf_f + sf_g) = ((BInt_sf μ sf_f) + (BInt_sf μ sf_g))%hy.
     Proof.
-        move => sf_f sf_g.
-        case_eq sf_f => wf vf maxf axf1 axf2 axf3 axf4 Eqf.
-        case_eq sf_g => wg vg maxg axg1 axg2 axg3 axg4 Eqg.
+        unfold integrable_sf => axf4 axg4.
+        case_eq sf_f => wf vf maxf axf1 axf2 axf3 Eqf.
+        case_eq sf_g => wg vg maxg axg1 axg2 axg3 Eqg.
+        rewrite Eqf Eqg in axf4 axg4; simpl in axf4, axg4.
         rewrite <-Eqf, <- Eqg.
         unfold BInt_sf.
         replace (max_which sf_f) with maxf by rewrite Eqf => //.
@@ -468,7 +468,7 @@ Section BInt_sf_plus.
         congr plus; apply sum_n_ext_loc.
             replace (val sf_f) with vf by rewrite Eqf => //.
             move => k1 Hk1.
-            case (le_lt_v_eq k1 maxf) => //.
+            case (le_lt_or_eq k1 maxf) => //.
                 move => Hk1'.
                 congr scal.
                 replace (which sf_f) with wf by rewrite Eqf => //.
@@ -502,7 +502,7 @@ Section BInt_sf_plus.
                 rewrite axf1; do 2 rewrite scal_zero_r => //.
             replace (val sf_g) with vg by rewrite Eqg => //.
             move => k2 Hk2.
-            case (le_lt_v_eq k2 maxg) => //.
+            case (le_lt_or_eq k2 maxg) => //.
                 move => Hk2'.
                 congr scal.
                 replace (which sf_g) with wg by rewrite Eqg => //.
@@ -561,12 +561,12 @@ Section BInt_sf_scal.
     Open Scope sf_scope.
 
     Lemma BInt_sf_scal_aux :
-        ∀ a : R_AbsRing, ∀ sf : simpl_fun E μ,
-            BInt_sf (a ⋅ sf) = (a ⋅ (BInt_sf sf))%hy.
+        ∀ a : R_AbsRing, ∀ sf : simpl_fun E gen,
+            BInt_sf μ (a ⋅ sf) = (a ⋅ (BInt_sf μ sf))%hy.
     Proof.
         move => a sf.
         unfold BInt_sf.
-        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqsf; rewrite <-Eqsf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqsf; rewrite <-Eqsf.
         rewrite <-sum_n_scal_l.
         replace (max_which (a ⋅ sf)) with (max_which sf)
             by rewrite Eqsf => //.
@@ -601,14 +601,15 @@ Section BInt_sf_linearity.
     Open Scope nat_scope.
     Open Scope sf_scope.
 
-    Lemma BInt_sf_lin_aux :
-        ∀ a b : R_AbsRing, ∀ sf sg : simpl_fun E μ,
-            BInt_sf (a ⋅ sf + b ⋅ sg) 
-            = ((a ⋅ (BInt_sf sf)) + (b ⋅ (BInt_sf sg)))%hy.
+    Lemma BInt_sf_lin_aux {sf sg : simpl_fun E gen} :
+        ∀ a b : R_AbsRing, integrable_sf μ sf -> integrable_sf μ sg ->
+            BInt_sf μ (a ⋅ sf + b ⋅ sg) 
+            = ((a ⋅ (BInt_sf μ sf)) + (b ⋅ (BInt_sf μ sg)))%hy.
     Proof.
-        move => a b sf sg.
+        move => a b isf isg.
         do 2 rewrite <-BInt_sf_scal_aux.
         rewrite BInt_sf_plus_aux => //.
+        1, 2 : apply integrable_sf_scal => //.
     Qed.
 
 End BInt_sf_linearity.
@@ -669,11 +670,11 @@ Section BInt_sf_norm.
     Open Scope sf_scope.
 
     Lemma norm_Bint_sf_le :
-        ∀ sf : simpl_fun E μ,
-            (‖ BInt_sf sf ‖%hy <= BInt_sf (‖ sf ‖))%R.
+        ∀ sf : simpl_fun E gen,
+            (‖ BInt_sf μ sf ‖%hy <= BInt_sf μ (‖ sf ‖))%R.
     Proof.
         move => sf;
-            case_eq sf => vf wf maxf axf1 axf2 axf3 axf4 Eqf;
+            case_eq sf => vf wf maxf axf1 axf2 axf3 Eqf;
             rewrite <-Eqf.
         unfold BInt_sf.
         replace (max_which sf) with maxf by rewrite Eqf => //.
@@ -682,15 +683,14 @@ Section BInt_sf_norm.
             all : swap 1 2.
             rewrite Eqf => /=.
             unfold abs => /= n Hn.
-            case: (le_lt_v_eq n maxf) => // Hn'; clear Hn.
+            case: (le_lt_or_eq n maxf) => // Hn'; clear Hn.
             rewrite Rabs_pos_eq => //.
             unfold nth_carrier => /=.
             pose Le0μn := meas_ge_0 _ μ (λ x : X, vf x = n); clearbody Le0μn.
-            pose Fin_μn := axf4 n Hn'; clearbody Fin_μn.
             case_eq (μ (λ x : X, vf x = n)).
                 move => r Eqr; rewrite Eqr in Le0μn => //.
-                move => Abs; rewrite Abs in Fin_μn => //.
-                move => Abs; rewrite Abs in Fin_μn => //.
+                move => _; simpl; apply RIneq.Rle_refl.
+                move => Abs; rewrite Abs in Le0μn => //.
             setoid_rewrite Hn' at 2 4.
             replace (wf maxf) with (@zero E) at 2 3.
             rewrite norm_zero; do 2 rewrite scal_zero_r => //.
@@ -700,7 +700,6 @@ Section BInt_sf_norm.
             rewrite norm_scal_eq => //.
         apply: norm_sum_n_m.
     Qed.
-
 
 End BInt_sf_norm.
 
@@ -717,12 +716,12 @@ Section BInt_well_defined.
     Context {μ : measure gen}.
 
     Lemma BInt_sf_zero :
-        ∀ sf : simpl_fun E μ,
+        ∀ sf : simpl_fun E gen,
             (∀ x : X, fun_sf sf x = zero)
-            -> BInt_sf sf = zero.
+            -> BInt_sf μ sf = zero.
     Proof.
         move => sf.
-        case_eq sf => wf vf maxf axf1 axf2 axf3 axf4 Eqf; rewrite <-Eqf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf; rewrite <-Eqf.
         unfold fun_sf => Hf.
         unfold BInt_sf.
         rewrite (sum_n_ext_loc _ (fun (n : nat) => zero)).
@@ -734,8 +733,8 @@ Section BInt_well_defined.
         replace (which sf) with wf by rewrite Eqf => //.
         replace (max_which sf) with maxf in Hn
             by rewrite Eqf => //.
-        case: (le_lt_v_eq n maxf) => // Hn'.
-            pose Hμn := axf4 n Hn'; clearbody Hμn; unfold is_finite in Hμn.
+        case: (le_lt_or_eq n maxf) => // Hn'.
+            (* pose Hμn := axf4 n Hn'; clearbody Hμn; unfold is_finite in Hμn. *)
             pose Le0μn := meas_ge_0 _ μ (λ x : X, wf x = n); clearbody Le0μn.
             case: (Rbar_le_cases _ Le0μn).
                 (* cas où le support est de mesure nulle *)
@@ -750,32 +749,33 @@ Section BInt_well_defined.
                     case: (measure_gt_0_exists _ _ _ Lt0μn) => x <-.
                     replace (which sf) with wf in Hf by rewrite Eqf => //.
                     rewrite Hf scal_zero_r => //.
-                pose Finμn := axf4 _ Hn'; clearbody Finμn.
-                move => Abs; rewrite Abs in Finμn => //.
-            rewrite Hn'.
+                    move => -> /=; rewrite scal_zero_l => //.
             replace (val sf) with vf by rewrite Eqf => //.
+            rewrite Hn'.
             rewrite axf1 scal_zero_r => //.
     Qed.
 
-    Lemma BInt_sf_ext :
-        ∀ sf sf' : simpl_fun E μ,
+    Lemma BInt_sf_ext {sf sf' : simpl_fun E gen} :
+        integrable_sf μ sf -> integrable_sf μ sf' ->
             (∀ x : X, fun_sf sf x = fun_sf sf' x) ->
-            BInt_sf sf = BInt_sf sf'.
+            BInt_sf μ sf = BInt_sf μ sf'.
     Proof.
-        move => sf sf' Hsfsf'.
+        move => isf isf' Hsfsf'.
         pose δ := (sf + (opp one) ⋅ sf')%sf.
         assert (∀ x : X, fun_sf δ x = zero) as δNul.
             move => x; unfold δ.
             rewrite fun_sf_plus fun_sf_scal.
             rewrite scal_opp_l scal_one.
             rewrite <-Hsfsf'; rewrite plus_opp_r => //.
-            assert ((BInt_sf sf) + (opp one) ⋅ (BInt_sf sf') = (BInt_sf sf') + (opp one) ⋅ (BInt_sf sf'))%hy as Subgoal.
+            assert ((BInt_sf μ sf) + (opp one) ⋅ (BInt_sf μ sf') = (BInt_sf μ sf') + (opp one) ⋅ (BInt_sf μ sf'))%hy as Subgoal.
                 rewrite <-BInt_sf_scal_aux at 1.
                 rewrite <-BInt_sf_plus_aux at 1.
                 fold δ; rewrite BInt_sf_zero.
                 rewrite scal_opp_l scal_one plus_opp_r => //.
                 assumption.
-            apply plus_reg_r with ((opp one) ⋅ (BInt_sf sf'))%hy => //.
+            3 : apply plus_reg_r with ((opp one) ⋅ (BInt_sf μ sf'))%hy => //.
+            2 : apply integrable_sf_scal.
+            1, 2 : assumption.
     Qed.
 
 End BInt_well_defined.

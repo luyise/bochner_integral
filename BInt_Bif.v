@@ -49,16 +49,16 @@ Section BInt_Bif_def.
     Context {f : X -> E}.
 
     Definition BInt_Bif (π : Bif μ f) :=
-        match π return E with (approximation s _ _ _) =>
-            lim_seq (fun n => BInt_sf (s n))
+        match π return E with (approximation s _ _ _ _) =>
+            lim_seq (fun n => BInt_sf μ (s n))
         end.
 
     Theorem is_lim_seq_BInt_Bif (bf : Bif μ f) :
-        match bf return Prop with (approximation s _ _ _) =>
-            is_lim_seq (fun n => BInt_sf (s n)) (BInt_Bif bf)
+        match bf return Prop with (approximation s _ _ _ _) =>
+            is_lim_seq (fun n => BInt_sf μ (s n)) (BInt_Bif bf)
         end.
     Proof.
-        case: bf => s ι Hspw Hsl1.
+        case: bf => s isf ι Hspw Hsl1.
         apply NM_Cauchy_seq_lim_seq_correct.
         apply Cauchy_seq_approx with f => //.
     Qed.
@@ -85,11 +85,11 @@ Section BInt_Bif_prop.
             BInt_Bif bf = BInt_Bif bf'.
     Proof.
         move => f bf bf';
-            case_eq bf => s ι Hspw Hsl1 Eqπ;
-            case_eq bf' => s' ι' Hs'pw Hs'l1 Eqπ';
+            case_eq bf => s ints ι Hspw Hsl1 Eqπ;
+            case_eq bf' => s' ints' ι' Hs'pw Hs'l1 Eqπ';
             unfold BInt_Bif.
-        pose I := lim_seq (λ n : nat, BInt_sf (s n));
-        pose I' := lim_seq (λ n : nat, BInt_sf (s' n)).
+        pose I := lim_seq (λ n : nat, BInt_sf μ (s n));
+        pose I' := lim_seq (λ n : nat, BInt_sf μ (s' n)).
         pose HI := is_lim_seq_BInt_Bif bf;
             rewrite Eqπ in HI; simpl in HI;
             clearbody HI; fold I in HI.
@@ -97,35 +97,37 @@ Section BInt_Bif_prop.
             rewrite Eqπ' in HI'; simpl in HI';
             clearbody HI'; fold I' in HI'.
         move: HI' => /lim_seq_opp => HI'.
-        assert (is_lim_seq (λ n : nat, BInt_sf (s n) + opp (BInt_sf (s' n)))%hy (I + opp I')%hy) as limdif
+        assert (is_lim_seq (λ n : nat, BInt_sf μ (s n) + opp (BInt_sf μ (s' n)))%hy (I + opp I')%hy) as limdif
             by apply: lim_seq_plus => //.
         clear HI HI'.
-        move: limdif => /(lim_seq_ext _ (λ n : nat, BInt_sf (s n - s' n)%sf) _ _) => limdif.
-        assert (∀ n : nat, (BInt_sf (s n) + opp (BInt_sf (s' n)))%hy = BInt_sf (s n - s' n)%sf).
+        move: limdif => /(lim_seq_ext _ (λ n : nat, BInt_sf μ (s n - s' n)%sf) _ _) => limdif.
+        assert (∀ n : nat, (BInt_sf μ (s n) + opp (BInt_sf μ (s' n)))%hy = BInt_sf μ (s n - s' n)%sf).
             move => n; rewrite BInt_sf_plus_aux.
             rewrite BInt_sf_scal_aux.
             rewrite scal_opp_one => //.
+            apply ints.
+            apply integrable_sf_scal, ints'.
         pose limdif' := limdif H; clearbody limdif';
             clear H; clear limdif.
-        assert (is_lim_seq (λ n : nat, BInt_sf (s n - s' n)%sf) (I + opp I')%hy)
+        assert (is_lim_seq (λ n : nat, BInt_sf μ (s n - s' n)%sf) (I + opp I')%hy)
             as limdif by unfold is_lim_seq => //; clear limdif'.
         fold I I'.
 
-        suff: (is_lim_seq (λ n : nat, BInt_sf (s n - s' n)%sf) zero).
+        suff: (is_lim_seq (λ n : nat, BInt_sf μ (s n - s' n)%sf) zero).
         move => limdif'.
         assert (I + opp I' = zero)%hy.
-        apply NM_is_lim_seq_unique with (λ n : nat, BInt_sf (s n - s' n)%sf) => //.
+        apply NM_is_lim_seq_unique with (λ n : nat, BInt_sf μ (s n - s' n)%sf) => //.
         apply (plus_reg_r (opp I'));
             rewrite H;
             rewrite plus_opp_r => //.
         clear I I' limdif.
 
         apply lim_seq_norm_zero.
-        suff: (Lim_seq.is_lim_seq (‖(λ n : nat, BInt_sf (s n - s' n)%sf)‖)%fn 0%R).
+        suff: (Lim_seq.is_lim_seq (‖(λ n : nat, BInt_sf μ (s n - s' n)%sf)‖)%fn 0%R).
             unfold Lim_seq.is_lim_seq;
             unfold Rbar_locally.
             unfold is_lim_seq => //.
-        suff: (is_LimSup_seq' (‖ λ n : nat, BInt_sf (s n - s' n)%sf ‖)%fn 0).
+        suff: (is_LimSup_seq' (‖ λ n : nat, BInt_sf μ (s n - s' n)%sf ‖)%fn 0).
             move => HLS.
             simpl in HLS.
             apply is_lim_seq_spec; unfold is_lim_seq'.
@@ -165,7 +167,7 @@ Section BInt_Bif_prop.
         exists (max N N').
         move => n Hn => /=.
         unfold minus.
-        apply RIneq.Rle_lt_trans with (BInt_sf (‖(s n) - (s' n)‖)%sf).
+        apply RIneq.Rle_lt_trans with (BInt_sf μ (‖(s n) - (s' n)‖)%sf).
             apply norm_Bint_sf_le.
         rewrite (BInt_sf_LInt_SFp).
         rewrite <-LInt_p_SFp_eq.
@@ -220,14 +222,15 @@ Section BInt_Bif_prop.
             simpl; rewrite Rlimit.eps2 => //.
         all : swap 1 3.
         pose Lint_p_Bint_sf :=
-            Finite_BInt_sf_LInt_SFp (‖ s n - s' n ‖)%sf.
+            @Finite_BInt_sf_LInt_SFp _ _ μ (‖ s n - s' n ‖)%sf.
             rewrite <-LInt_p_SFp_eq in Lint_p_Bint_sf.
             2 : exact ι.
             2 : unfold sum_Rbar_nonneg.non_neg => x.
             2 : simpl; rewrite fun_sf_norm.
             2 : apply norm_ge_0.
             rewrite <-Lint_p_Bint_sf => //.
-
+        
+        all : swap 1 2.
         assert
             (∀ x : X, is_lim_seq (fun k => (‖ s k + (- s' n)%sf ‖)%fn x) ((‖ f + (- s' n)%sf ‖)%fn x)) as Limseqnorm.
             move => x; unfold fun_norm.
@@ -254,6 +257,7 @@ Section BInt_Bif_prop.
         apply measurable_fun_continuous.
         apply filterlim_norm.
 
+        all : swap 1 2.
         assert
             (∀ x : X, is_lim_seq (fun k => (‖ s k + (- s n)%sf ‖)%fn x) ((‖ f + (- s n)%sf ‖)%fn x)) as Limseqnorm.
             move => x; unfold fun_norm.
@@ -279,12 +283,18 @@ Section BInt_Bif_prop.
         move => P; move /sigma_algebra_R_Rbar_new.measurable_R_equiv_oo.
         apply measurable_fun_continuous.
         apply filterlim_norm.
+
+        1, 2 : apply integrable_sf_norm, integrable_sf_plus.
+        2, 4 : apply integrable_sf_scal.
+        1, 4 : apply ints.
+        1, 2 : apply ints'.
     Qed.
 
-    Lemma BInt_Bif_BInt_sf : ∀ s : simpl_fun E μ, ∀ ι : inhabited X,
-        BInt_sf s = BInt_Bif (Bif_sf ι s).
+    Lemma BInt_Bif_BInt_sf {s : simpl_fun E gen} : 
+        ∀ π : integrable_sf μ s, ∀ ι : inhabited X,
+        BInt_sf μ s = BInt_Bif (Bif_integrable_sf ι π).
     Proof.
-        move => s ι; unfold BInt_Bif; simpl.
+        move => π ι; unfold BInt_Bif; simpl.
         symmetry; apply: lim_seq_eq.
         apply lim_seq_cte.
     Qed.
@@ -304,7 +314,7 @@ Section BInt_Bif_indic.
 
     Lemma BInt_Bif_indic :
         ∀ P : X -> Prop, ∀ π : measurable gen P, ∀ π' : is_finite (μ P),
-            BInt_Bif (Bif_sf ι (sf_indic_aux μ P π π')) = μ P.
+            BInt_Bif (Bif_integrable_sf ι (integrable_sf_indic π π')) = μ P.
     Proof.
         move => P π π'.
         rewrite <-BInt_Bif_BInt_sf.
@@ -332,17 +342,17 @@ Section BInt_Bif_op.
             BInt_Bif (Bif_plus bf bg) = ((BInt_Bif bf) + (BInt_Bif bg))%hy.
     Proof.
         move => bf bg;
-        case: bf => sf ι Hfpw Hfl1;
-        case: bg => sg ι' Hgpw Hgl1.
+        case: bf => sf isf ι Hfpw Hfl1;
+        case: bg => sg isg ι' Hgpw Hgl1.
         unfold BInt_Bif, Bif_plus.
         apply lim_seq_eq.
-        apply (lim_seq_ext (fun n : nat => BInt_sf (sf n) + BInt_sf (sg n))%hy).
+        apply (lim_seq_ext (fun n : nat => BInt_sf μ (sf n) + BInt_sf μ (sg n))%hy).
             move => n; rewrite BInt_sf_plus_aux => //.
             apply: lim_seq_plus.
-            pose H := is_lim_seq_BInt_Bif (approximation f sf ι Hfpw Hfl1);
+            pose H := is_lim_seq_BInt_Bif (approximation f sf isf ι Hfpw Hfl1);
                 clearbody H; simpl in H.
             assumption.
-            pose H := is_lim_seq_BInt_Bif (approximation g sg ι' Hgpw Hgl1);
+            pose H := is_lim_seq_BInt_Bif (approximation g sg isg ι' Hgpw Hgl1);
                 clearbody H; simpl in H.
             assumption.
     Qed.
@@ -352,13 +362,13 @@ Section BInt_Bif_op.
             BInt_Bif (Bif_scal a bf) = (a ⋅ (BInt_Bif bf))%hy.
     Proof.
         move => bf a.
-        case: bf => sf ι Hfpw Hfl1.
+        case: bf => sf isf ι Hfpw Hfl1.
         unfold BInt_Bif, Bif_scal.
         apply lim_seq_eq.
-        apply (lim_seq_ext (fun n : nat => a ⋅ (BInt_sf (sf n)))%hy).
+        apply (lim_seq_ext (fun n : nat => a ⋅ (BInt_sf μ (sf n)))%hy).
             move => n; rewrite BInt_sf_scal_aux => //.
             apply: lim_seq_scal_r.
-            pose H := is_lim_seq_BInt_Bif (approximation f sf ι Hfpw Hfl1);
+            pose H := is_lim_seq_BInt_Bif (approximation f sf isf ι Hfpw Hfl1);
                 clearbody H; simpl in H.
             assumption.
     Qed.
@@ -368,17 +378,17 @@ Section BInt_Bif_op.
             ‖ BInt_Bif bf ‖%hy <= BInt_Bif (‖bf‖)%Bif.
     Proof.
         move => bf.
-        case: bf => sf ι Hfpw Hfl1.
+        case: bf => sf isf ι Hfpw Hfl1.
         unfold BInt_Bif, Bif_norm.
-        suff: (Rbar_le (‖ lim_seq (λ n : nat, BInt_sf (sf n)) ‖)%hy (lim_seq (λ n : nat, BInt_sf (‖ sf n ‖)%sf)))
+        suff: (Rbar_le (‖ lim_seq (λ n : nat, BInt_sf μ (sf n)) ‖)%hy (lim_seq (λ n : nat, BInt_sf μ (‖ sf n ‖)%sf)))
             by simpl => //.
-        apply is_lim_seq_le with (λ n : nat, ‖ BInt_sf (sf n) ‖)%hy (λ n : nat, BInt_sf (‖ sf n ‖%sf)).
+        apply is_lim_seq_le with (λ n : nat, ‖ BInt_sf μ (sf n) ‖)%hy (λ n : nat, BInt_sf μ (‖ sf n ‖%sf)).
             move => n; apply norm_Bint_sf_le.
             apply lim_seq_norm.
-            pose H := is_lim_seq_BInt_Bif (approximation f sf ι Hfpw Hfl1);
+            pose H := is_lim_seq_BInt_Bif (approximation f sf isf ι Hfpw Hfl1);
                 clearbody H; simpl in H.
             assumption.
-            pose H := is_lim_seq_BInt_Bif (Bif_norm (approximation f sf ι Hfpw Hfl1));
+            pose H := is_lim_seq_BInt_Bif (Bif_norm (approximation f sf isf ι Hfpw Hfl1));
                 clearbody H; simpl in H.
             assumption.
     Qed.
