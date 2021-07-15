@@ -632,13 +632,20 @@ Module Bif_adapted_seq.
         Context {gen : (X -> Prop) -> Prop}.
         Context {μ : measure gen}.
         Context {f : X -> E}.
+        Context (Hmeas : measurable_fun gen open f).
         
         Context {u : nat -> E}.
         Context {φ : ∀ x : E, inRange f x -> RIneq.posreal -> nat}.
         Context (Hsep : fun_separable u (inRange f) φ).
 
+        Definition v (k : nat) : E :=
+            match k with
+                | O => zero
+                | S k' => u k'
+            end.
+
         Definition B (m : nat) (j : nat) :=
-            ball_norm (u j) (/ (INR m + 1)).
+            ball_norm (v j) (/ (INR m + 1)).
         
         Definition A (n : nat) := fun x =>
             ∃ j : nat, (j < n)%nat ∧ B n j x.
@@ -653,7 +660,6 @@ Module Bif_adapted_seq.
 
         Lemma measA : ∀ n, measurable open (A n).
         Proof.
-            Print Implicit measurable_union_finite'.
             unfold A => n; apply: measurable_union_finite'.
             move => j _; apply measB.
         Qed.
@@ -665,7 +671,7 @@ Module Bif_adapted_seq.
             assert (0 < (/ (INR m + 1)))
                 by apply RiemannInt.RinvN_pos.
             pose ɛ := RIneq.mkposreal (/ (INR m + 1)) H.
-            pose Hdec := (ball_norm_dec (u j) x ɛ).
+            pose Hdec := (ball_norm_dec (v j) x ɛ).
             simpl in Hdec => //.
         Qed.
 
@@ -817,16 +823,16 @@ Module Bif_adapted_seq.
             lia.
         Qed.
 
-        Definition whichn' (n : nat) := fun x =>
-            let m := biggestA n x in
+        Definition whichn (n : nat) := fun x =>
+            let m := biggestA n (f x) in
             if (m =? n) then n else
-                smallestB n m x.
+                smallestB n m (f x).
 
-        Lemma whichn'_le_n (n : nat) (x : E) :
-            whichn' n x ≤ n.
+        Lemma whichn_le_n (n : nat) (x : X) :
+            whichn n x ≤ n.
         Proof.
-            unfold whichn'.
-            case (biggestA n x =? n) => //.
+            unfold whichn.
+            case (biggestA n (f x) =? n) => //.
             apply smallestB_le_n_weak.
             apply biggestA_le_max.
         Qed.
@@ -837,7 +843,7 @@ Module Bif_adapted_seq.
         Proof.
             move => Ltmn x; split.
             move => Eqwnxm; rewrite <-Eqwnxm in Ltmn.
-            unfold whichn' in Ltmn, Eqwnxm.
+            unfold whichn in Ltmn, Eqwnxm.
             unfold biggestA in Ltmn, Eqwnxm.
             case_eq (LPO_min_finite_decr n (λ j : nat, A j x) (decA_aux n x)).
                 move => s EqLPO; rewrite EqLPO in Ltmn, Eqwnxm.
@@ -948,35 +954,35 @@ Module Bif_adapted_seq.
                     easy.
         Qed.
 
-        Lemma whichn'_spec_lt_n (n : nat) (j : nat) : (j < n) ->
-            ∀ x : E,
-            whichn' n x = j <->
+        Lemma whichn_spec_lt_n (n : nat) (j : nat) : (j < n) ->
+            ∀ x : X,
+            whichn n x = j <->
             ∃ m : nat, m < n ∧
             (
-                (A m x ∧ ¬ (∃ k : nat, k > m ∧ k < n ∧ A k x)) ∧
-                ((B m j x) ∧ ¬ (∃ i : nat, i < j ∧ B m i x))
+                (A m (f x) ∧ ¬ (∃ k : nat, k > m ∧ k < n ∧ A k (f x))) ∧
+                (B m j (f x)) ∧ ¬ (∃ i : nat, i < j ∧ B m i (f x))
             ).
         Proof.
             pose LebigAn := biggestA_le_max n; clearbody LebigAn.
             move => Ltjn x; split.
-                unfold whichn'.
-                case_eq (biggestA n x =? n).
+                unfold whichn.
+                case_eq (biggestA n (f x) =? n).
                 lia.
                 move => /Nat.eqb_neq.
                 move => HbigA.
-                pose HbigA' := LebigAn x; clearbody HbigA'.
-                assert (biggestA n x < n) as LtbigA by lia.
+                pose HbigA' := LebigAn (f x); clearbody HbigA'.
+                assert (biggestA n (f x) < n) as LtbigA by lia.
                 move => HsmallB.
-                assert (smallestB n (biggestA n x) x < n) by lia.
-                pose H' := (smallestB_le_n_strong n (biggestA n x) x HbigA' H); clearbody H'.
+                assert (smallestB n (biggestA n (f x)) (f x) < n) by lia.
+                pose H' := (smallestB_le_n_strong n (biggestA n (f x)) (f x) HbigA' H); clearbody H'.
                 rewrite HsmallB in H'.
-                pose specB := smallestB_lt_max_spec n (biggestA n x) j HbigA' H' x.
+                pose specB := smallestB_lt_max_spec n (biggestA n (f x)) j HbigA' H' (f x).
                 case: specB => [specB _].
                 move: HsmallB => /specB [specB1 specB2].
-                exists (biggestA n x).
+                exists (biggestA n (f x)).
                 repeat split => //.
-                1, 2 : case: (biggestA_lt_max_spec _ _ LtbigA x) => [HA _].
-                1, 2 : assert (biggestA n x = biggestA n x) by easy.
+                1, 2 : case: (biggestA_lt_max_spec _ _ LtbigA (f x)) => [HA _].
+                1, 2 : assert (biggestA n (f x) = biggestA n (f x)) by easy.
                 1, 2 : move: H0 => /HA.
                 case => //.
                 case => _ HNA.
@@ -986,17 +992,17 @@ Module Bif_adapted_seq.
                 apply specB2 with i => //.
 
                 case => m [Ltmn [[Amx HNA] [Bmjx HNB]]].
-                unfold whichn'.
-                assert (biggestA n x < n) as LtbigA.
-                pose LebigAnx := LebigAn x; clearbody LebigAnx; clear LebigAn.
+                unfold whichn.
+                assert (biggestA n (f x) < n) as LtbigA.
+                pose LebigAnx := LebigAn (f x); clearbody LebigAnx; clear LebigAn.
                 case: (le_lt_or_eq _ _ LebigAnx) => //.
                 move /biggestA_eq_max_spec => Abs.
                 pose Absm := Abs m Ltmn; clearbody Absm => //.
-                assert (biggestA n x ≠ n) as NeqbigA by lia.
+                assert (biggestA n (f x) ≠ n) as NeqbigA by lia.
                 move: NeqbigA => /Nat.eqb_neq ->.
                 assert (m ≤ n) as Lemn by lia.
-                assert (smallestB n m x < n).
-                case: (smallestB_le_n _ _ x Lemn).
+                assert (smallestB n m (f x) < n).
+                case: (smallestB_le_n _ _ (f x) Lemn).
                     2 : lia.
                 move => /(smallestB_eq_max_spec n m Lemn) Abs; apply False_ind.
                 assert (j < m) as Ltjm.
@@ -1005,37 +1011,37 @@ Module Bif_adapted_seq.
                 move => Lemj; apply False_ind.
                 case: Amx => i; case => /(Abs i)//.
                 apply: (Abs j) => //.
-                move: H => /(smallestB_le_n_strong n m x Lemn) LtsmallBm.
-                assert (smallestB n m x = smallestB n m x) by easy.
-                move: H => /(smallestB_lt_max_spec n m (smallestB n m x) Lemn LtsmallBm x) [Bmsx HNB'].
-                assert (biggestA n x = m) as Eqm.
-                assert (biggestA n x = biggestA n x) as H by easy.
-                move: H => /((biggestA_lt_max_spec) n _ LtbigA x); move => [AbigAx HNA'].
-                case (lt_eq_lt_dec (biggestA n x) m).
+                move: H => /(smallestB_le_n_strong n m (f x) Lemn) LtsmallBm.
+                assert (smallestB n m (f x) = smallestB n m (f x)) by easy.
+                move: H => /(smallestB_lt_max_spec n m (smallestB n m (f x)) Lemn LtsmallBm (f x)) [Bmsx HNB'].
+                assert (biggestA n (f x) = m) as Eqm.
+                assert (biggestA n (f x) = biggestA n (f x)) as H by easy.
+                move: H => /((biggestA_lt_max_spec) n _ LtbigA (f x)); move => [AbigAx HNA'].
+                case (lt_eq_lt_dec (biggestA n (f x)) m).
                 case => //.
                 move => /(fun k => HNA' m k Ltmn)//.
                 move => Abs; apply False_ind, HNA.
-                exists (biggestA n x); repeat split => //.
+                exists (biggestA n (f x)); repeat split => //.
                 rewrite Eqm.
-                case (lt_eq_lt_dec (smallestB n m x) j).
+                case (lt_eq_lt_dec (smallestB n m (f x)) j).
                 case => //.
                 move => Abs; apply False_ind, HNB.
-                exists (smallestB n m x); repeat split => //.
+                exists (smallestB n m (f x)); repeat split => //.
                 move => /(HNB' j)//.
         Qed.
 
-        Lemma whichn'_spec_eq_n (n : nat) :
-            ∀ x : E,
-            whichn' n x = n <-> (¬ ∃ m : nat, m < n ∧ A m x).
+        Lemma whichn_spec_eq_n (n : nat) :
+            ∀ x : X,
+            whichn n x = n <-> (¬ ∃ m : nat, m < n ∧ A m (f x)).
         Proof.
             move => x; split.
                 move => Hwnx.
-                unfold whichn' in Hwnx.
-                case_eq (biggestA n x =? n).
+                unfold whichn in Hwnx.
+                case_eq (biggestA n (f x) =? n).
                     move => /Nat.eqb_eq HbigA.
                     clear Hwnx.
                     unfold biggestA in HbigA.
-                    case_eq (LPO_min_finite_decr n (λ j : nat, A j x) (decA_aux n x)).
+                    case_eq (LPO_min_finite_decr n (λ j : nat, A j (f x)) (decA_aux n (f x))).
                         2 : move => HNA _; case => j; case => /HNA//.
                         move => s EqLPO.
                         rewrite EqLPO in HbigA.
@@ -1046,8 +1052,8 @@ Module Bif_adapted_seq.
                     move => HbigA; rewrite HbigA in Hwnx.
                     move: HbigA => /Nat.eqb_neq HbigA.
                     unfold smallestB in Hwnx.
-                    case_eq (LPO_min_finite (biggestA n x) (λ j : nat, B (biggestA n x) j x)
-                        (decB_aux (biggestA n x) x)).
+                    case_eq (LPO_min_finite (biggestA n (f x)) (λ j : nat, B (biggestA n (f x)) j (f x))
+                        (decB_aux (biggestA n (f x)) (f x))).
                         move => s EqLPO.
                         rewrite EqLPO in Hwnx.
                         case_eq s => j [Abs H] Eqs.
@@ -1055,31 +1061,105 @@ Module Bif_adapted_seq.
                         simpl in Hwnx.
                         apply False_ind.
                         unfold biggestA in HbigA.
-                        assert (biggestA n x ≤ n) by apply biggestA_le_max.
+                        assert (biggestA n (f x) ≤ n) by apply biggestA_le_max.
                         lia.
                         move => HA /= _; clear Hwnx.
-                        assert (biggestA n x < n).
-                            pose H := biggestA_le_max n x; clearbody H.
+                        assert (biggestA n (f x) < n).
+                            pose H := biggestA_le_max n (f x); clearbody H.
                             lia.
                         move => Abs.
-                        move: H => /(fun H => biggestA_lt_max_spec n _ H x); case => H _.
-                        assert (biggestA n x = biggestA n x) as TrivEq by easy.
+                        move: H => /(fun H => biggestA_lt_max_spec n _ H (f x)); case => H _.
+                        assert (biggestA n (f x) = biggestA n (f x)) as TrivEq by easy.
                         move: TrivEq => /H; clear H; case => [AbigAx HNA].
                         case: AbigAx => j [LtjbigAx BbigAxjx].
                         apply HA with j => //.
 
                 move => NHA.
-                case: (le_lt_or_eq _ _ (whichn'_le_n n x)) => //.
+                case: (le_lt_or_eq _ _ (whichn_le_n n x)) => //.
                 move => Abs; apply False_ind.
-                assert (whichn' n x = whichn' n x) as TrivEq by easy.
-                move: TrivEq => / (whichn'_spec_lt_n n (whichn' n x) Abs x); case => j [Ltjn [[Ajx _] _]].
+                assert (whichn n x = whichn n x) as TrivEq by easy.
+                move: TrivEq => / (whichn_spec_lt_n n (whichn n x) Abs x); case => j [Ltjn [[Ajx _] _]].
                 apply: NHA; exists j; split => //.
         Qed.
 
         Open Scope R_scope.
-        Print Implicit RiemannInt.RinvN_pos.
+
+        Definition valn (n : nat) : nat -> E := fun k =>
+            if (k <? n) then v k else zero.
+
+        Lemma ax_val_max_which_n (n : nat) :
+            valn n n = zero.
+        Proof.
+            unfold valn.
+            assert (¬ n < n)%nat as H by lia; move: H.
+            move /Nat.ltb_lt/Bool.not_true_is_false ->; easy.
+        Qed.
+
+        Lemma ax_which_max_which_n (n : nat) :
+            ∀ x : X, whichn n x ≤ n.
+        Proof.
+            apply whichn_le_n.
+        Qed.
+
+        Close Scope R_scope.
+
+        Lemma ax_measurable_n (n : nat) :
+            ∀ j : nat, j ≤ n 
+                → measurable gen (λ x : X, whichn n x = j).
+        Proof.
+            move => j Lejn.
+            case: (le_lt_or_eq _ _ Lejn).
+                move => Ltjn.
+                apply measurable_ext with (fun x =>
+                    ∃ m : nat, m < n ∧
+                    (
+                        (A m (f x) ∧ ¬ (∃ k : nat, k > m ∧ k < n ∧ A k (f x))) ∧
+                        (B m j (f x)) ∧ ¬ (∃ i : nat, i < j ∧ B m i (f x))
+                    )).
+                split; apply whichn_spec_lt_n => //.
+                apply measurable_union_finite'.
+                move => i Ltin.
+                apply measurable_inter.
+                apply measurable_inter.
+                apply Hmeas.
+                apply measA.
+                apply measurable_compl'.
+                apply measurable_ext with
+                    (fun x => ∃ k : nat, (k < n)%nat ∧ (k > i) ∧ A k (f x)).
+                    move => x; split.
+                    case => k [Ltkn [Ltik Aikfx]].
+                    exists k; repeat split => //.
+                    case => k [Ltik [Ltkn Akfx]].
+                    exists k; repeat split => //.
+                apply measurable_union_finite' => k Ltkn.
+                apply measurable_inter.
+                apply measurable_Prop.
+                apply Hmeas.
+                apply measA.
+                apply measurable_inter.
+                apply Hmeas.
+                apply measB.
+                apply measurable_compl'.
+                apply measurable_union_finite'.
+                move => k Ltkj.
+                apply Hmeas.
+                apply measB.
+
+                move => ->.
+                apply measurable_ext with (fun x =>
+                    (¬ ∃ m : nat, m < n ∧ A m (f x))).
+                split; apply whichn_spec_eq_n => //.
+                apply measurable_compl'.
+                apply measurable_union_finite'.
+                move => k Ltkn.
+                apply Hmeas.
+                apply measA.
+        Qed.
+
+        (* 
 
         Definition whichn (n : nat) (x : X) : nat :=
+            let m := biggestA 
             let ɛ := (RIneq.mkposreal (/(INR n + 1)) (RiemannInt.RinvN_pos n)) in
             match ball_norm_dec zero (f x) ɛ with
                 | left _ => n
@@ -1149,6 +1229,156 @@ Module Bif_adapted_seq.
                     {|
                     RIneq.pos := / (INR n + 1);
                     RIneq.cond_pos := RiemannInt.RinvN_pos n |}) => //.
+        Qed.
+
+        Definition valn (n : nat) : nat -> E := fun k =>
+            if (k <? n) then u k else zero.
+
+        Lemma valn_maxn (n : nat) : (valn n n = zero).
+        Proof.
+            unfold valn.
+            assert (¬ n < n)%nat as H by lia; move: H.
+            move /Nat.ltb_lt/Bool.not_true_is_false ->; easy.
+        Qed.
+
+        Lemma ax_which_max_which_n (n : nat) :
+            ∀ x : X, whichn n x ≤ n.
+        Proof.
+            move => x; unfold whichn.
+            case: (ball_norm_dec zero (f x) _) => /=.
+                easy.
+                move => _; apply whichn'_le_n.
+        Qed.
+
+        Lemma ax_measurable_n (n : nat) :
+            ∀ j : nat, j ≤ n 
+                → measurable gen (λ x : X, whichn n x = j).
+        Proof.
+            move => j Lejn.
+            case: (le_lt_or_eq j n Lejn).
+                move => Ltjn.
+                apply measurable_ext with (fun x => (¬ (ball_norm zero (/(INR n + 1)) (f x))) ∧
+                    ∃ m : nat, (m < n)%nat ∧
+                    (
+                        (A m (f x) ∧ ¬ (∃ k : nat, (k > m)%nat ∧ (k < n)%nat ∧ A k (f x))) ∧
+                        ((B m j (f x)) ∧ ¬ (∃ i : nat, (i < j)%nat ∧ B m i (f x)))
+                    )).
+                split; apply whichn_spec_lt_n => //.
+                apply measurable_inter.
+                apply measurable_compl'.
+                apply Hmeas.
+                constructor 1.
+                apply: NM_open_ball_norm.
+                apply RiemannInt.RinvN_pos.
+                apply measurable_union_finite'.
+                move => k Ltkn.
+                apply measurable_inter.
+                apply measurable_inter.
+                apply Hmeas.
+                apply measA.
+                apply measurable_compl'.
+                apply measurable_ext with
+                    (fun x => ∃ j : nat, (j < n)%nat ∧ (j > k)%nat ∧ A j (f x)).
+                    move => x; split.
+                    case => i [Ltin [Ltki Aifx]].
+                    exists i; repeat split => //.
+                    case => i [Ltki [Ltin Aifx]].
+                    exists i; repeat split => //.
+                apply measurable_union_finite' => i Ltin.
+                apply measurable_inter.
+                apply measurable_Prop.
+                apply Hmeas.
+                apply measA.
+                apply measurable_inter.
+                apply Hmeas.
+                apply measB.
+                apply measurable_compl'.
+                apply measurable_union_finite' => i Ltij.
+                apply Hmeas.
+                apply measB.
+                
+                move => ->.
+                apply measurable_ext with (fun x => 
+                    (¬ ∃ m : nat, (m < n)%nat 
+                        ∧ A m (f x)) ∨ (ball_norm zero (/(INR n + 1)) (f x))).
+                move => x; split; apply whichn_spec_eq_n.
+                apply measurable_union.
+                apply measurable_compl'.
+                apply measurable_union_finite'.
+                move => k Ltkn; apply Hmeas.
+                apply measA.
+                apply Hmeas.
+                constructor 1.
+                apply: NM_open_ball_norm.
+                apply RiemannInt.RinvN_pos.
+        Qed.   
+        
+        *)
+
+        Definition s (n : nat) : simpl_fun E gen :=
+            mk_simpl_fun (whichn n) (valn n) n
+            (ax_val_max_which_n n)
+            (ax_which_max_which_n n)
+            (ax_measurable_n n).
+
+        Open Scope R_scope.
+
+        Lemma le_sn_two_f (n : nat) :
+            ∀ x : X, ‖ s n x ‖ <= 2 * ‖ f x ‖.
+        Proof.
+            move => x.
+            unfold s => /=.
+            case: (le_lt_or_eq _ _ (whichn_le_n n x)); swap 1 2.
+                    move => Eqn; rewrite Eqn ax_val_max_which_n norm_zero.
+                    replace 0 with (2 * 0).
+                        2 : apply RIneq.Rmult_0_r.
+                    apply RIneq.Rmult_le_compat_l.
+                    apply RIneq.IZR_le; lia.
+                    apply norm_ge_0.
+            move => Ltwnfxn.
+            assert ((whichn n x <? n) = true).
+                apply Nat.ltb_lt => //.
+            unfold valn.
+            rewrite H; clear H.
+            assert (whichn n x = whichn n x) as TrivEq by easy.
+            case: (whichn_spec_lt_n n (whichn n x) Ltwnfxn x) => [Hu _].
+            move: TrivEq => /Hu; clear Hu.
+            case => m [Ltmn [[Amfx HNA] [Bmx HNB]]].
+            unfold B, ball_norm in Bmx.
+            replace (u (whichn n x)) with (minus (u (whichn n x)) (f x) + (f x))%hy.
+            2 : unfold minus; rewrite <-plus_assoc.
+            2 : rewrite plus_opp_l plus_zero_r => //.
+            case_eq (whichn n x).
+                move => _ /=; rewrite norm_zero.
+                replace 0 with (2 * 0).
+                    2 : apply RIneq.Rmult_0_r.
+                apply RIneq.Rmult_le_compat_l.
+                apply RIneq.IZR_le; lia.
+                apply norm_ge_0.
+            move => k Hk.
+            assert (¬ B m O (f x)) as NB0fx.
+            move => Abs; apply HNB.
+                exists O.
+                split.
+                lia.
+                assumption.
+            unfold B, ball_norm in NB0fx, Bmx.
+            move: NB0fx => /RIneq.Rnot_lt_le NB0fx.
+            rewrite Hk in Bmx; simpl in Bmx => /=.
+            rewrite RIneq.double.
+            replace (u k) with (minus (u k) (f x) + (f x))%hy.
+            2 : unfold minus; rewrite <-plus_assoc; rewrite plus_opp_l.
+            2 : rewrite plus_zero_r; reflexivity.
+            apply RIneq.Rle_trans with
+                (‖ minus (u k) (f x) ‖ + ‖ f x ‖).
+            apply: norm_triangle.
+            apply RIneq.Rplus_le_compat_r.
+            apply RIneq.Rlt_le.
+            simpl in NB0fx.
+            rewrite minus_zero_r in NB0fx.
+            apply RIneq.Rlt_le_trans with (/ (INR m + 1)) => //.
+            rewrite <-norm_opp.
+            rewrite opp_minus => //.
         Qed.
 
     End construction_of_seq.
