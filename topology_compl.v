@@ -123,14 +123,30 @@ Section density.
             ∀ ɛ : posreal, ball x ɛ (u (f x π ɛ))).
     
     Definition separable (P : S -> Prop) : Prop :=
-        ∃ u : nat -> S, ∀ x : S, P x ->
+        ∃ u : nat -> S, (∀ n : nat, P (u n)) ∧ ∀ x : S, P x ->
             ∀ ɛ : posreal, ∃ n : nat, ball x ɛ (u n).
 
     Lemma fun_separable_separable {u : nat -> S} {P : S -> Prop} {f : (∀ x : S, P x -> posreal -> nat)} :
         fun_separable u P f -> separable P.
     Proof.
-        move => H; exists u => x Px ɛ.
-        exists (f x Px ɛ); apply H.
+        move => [H1 H2].
+        exists u; split => //.
+        move => x Px ɛ.
+        exists (f x Px ɛ); apply H2.
+    Qed.
+
+    Definition seq_separable (u : nat -> S) (P : S -> Prop) : Prop :=
+        (∀ n : nat, P (u n)) ∧
+        (∀ x : S, P x ->
+            ∀ ɛ : posreal, ∃ n : nat, ball x ɛ (u n)).
+
+    Lemma fun_separble_seq_separable {u : nat -> S} {P : S -> Prop} {f} : 
+        fun_separable u P f -> seq_separable u P.
+    Proof.
+        move => [H1 H2].
+        split => //.
+        move => x Px ɛ.
+        exists (f x Px ɛ) => //.
     Qed.
 
 End density.
@@ -230,4 +246,66 @@ Section denseQR.
         exact (fun_separable_separable fun_separableR).
     Qed.
 
+    Theorem seq_separableR : seq_separable (fun n => Q2R (bij_NQ n)) (fun _ : R_UniformSpace => True).
+    Proof.
+        exact (fun_separble_seq_separable fun_separableR).
+    Qed.
+
 End denseQR.
+
+Section NM_density.
+
+    Context {A : AbsRing}.
+    Context {E : NormedModule A}.
+
+    Definition NM_separable (P : E -> Prop) : Prop :=
+        ∃ u : nat -> E, ∀ x : E, P x ->
+            ∀ ɛ : posreal, ∃ n : nat, ball_norm x ɛ (u n).
+
+    Lemma separable_NM_separable :
+        ∀ P : E -> Prop, separable P -> NM_separable P.
+    Proof.
+        move => P; unfold separable.
+        case => u [Hu1 Hu2].
+        exists u => x /Hu2.
+        pose Hloc := locally_ball_norm; clearbody Hloc.
+        unfold locally_norm, ball_norm in Hloc.
+        move => Hux ɛ.
+        case: (Hloc A E x ɛ) => ɛ' Hɛ'; clear Hloc.
+        case: (Hux ɛ') => k /Hɛ' Hprox.
+        exists k => //.
+    Qed.
+
+    Definition NM_seq_separable (u : nat -> E) (P : E -> Prop) : Prop :=
+        (∀ n : nat, P (u n)) ∧
+        (∀ x : E, P x ->
+            ∀ ɛ : posreal, ∃ n : nat, ball_norm x ɛ (u n)).
+        
+    Lemma seq_separable_NM_seq_separable {u : nat -> E} {P : E -> Prop} :
+        seq_separable u P -> NM_seq_separable u P.
+    Proof.
+        unfold separable.
+        case => [Hu1 Hu2].
+        split => //.
+        move => x /Hu2.
+        pose Hloc := locally_ball_norm; clearbody Hloc.
+        unfold locally_norm, ball_norm in Hloc.
+        move => Hux ɛ.
+        case: (Hloc A E x ɛ) => ɛ' Hɛ'; clear Hloc.
+        case: (Hux ɛ') => k /Hɛ' Hprox.
+        exists k => //.
+    Qed.
+
+End NM_density.
+
+Lemma NM_separableR : NM_separable (fun _ : R_NormedModule => True).
+Proof.
+    apply separable_NM_separable.
+    apply separableR.
+Qed.
+
+Lemma NM_seq_separableR : NM_seq_separable (fun n => Q2R (bij_NQ n)) (fun _ : R_NormedModule => True).
+Proof.
+    apply seq_separable_NM_seq_separable.
+    apply seq_separableR.
+Qed.
