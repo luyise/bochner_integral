@@ -22,6 +22,7 @@ Require Import
     sum_Rbar_nonneg
     Rbar_compl
     measurable_fun
+    LInt_p
 .
 
 Require Import
@@ -828,3 +829,279 @@ Section simpl_fun_meas.
     Qed.
 
 End simpl_fun_meas.
+
+Require Import Lra.
+
+Section simpl_fun_nonzero.
+
+    (* espace de départ *)
+    Context  {X : Set}.
+    (* espace d'arrivé *)
+    Context {A : AbsRing}.
+    Context {E : NormedModule A}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+
+    Lemma sf_nonzero_ind (sf : simpl_fun E gen) (n : nat) :
+        { sf'   : simpl_fun E gen
+                | (∀ x : X, sf x = sf' x)
+                ∧ (max_which sf' ≤ max_which sf)
+                ∧ ((max_which sf - max_which sf') ≤ n)
+                ∧ (∀ k : nat, k < n - (max_which sf - max_which sf') -> k < max_which sf' -> val sf' k ≠ zero)
+        }.
+    Proof.
+        induction n.
+        exists sf; repeat split; lia.
+        case: IHn => sf'n [Ext [Ineqmax IHn]].
+        case_eq (n <? max_which sf); swap 1 2.
+        move => /Nat.ltb_ge n_large.
+        exists sf'n; repeat split => //.
+        lia.
+        move => k Hk1 Hk2; 
+            apply IHn; lia.
+        move => /Nat.ltb_lt n_small.
+        pose m := (n - (max_which sf - max_which sf'n)).
+        case: (eq_dec (val sf'n m) (zero)); swap 1 2.
+            move => NotEq0.
+            exists sf'n; repeat split => //.
+            lia.
+            move => k.
+            move => /le_lt_or_eq; case.
+            move => H1 H2.
+            apply IHn.
+            1, 2 : lia.
+            move => H.
+            assert (k = m) as Eqkn by lia; clear H.
+            rewrite Eqkn.
+            move => _.
+            assumption.
+
+            move => Eq0.
+            case_eq sf'n => whichn valn maxn axfn1 axfn2 axfn3 Eqsfn.
+            pose valSn :=
+            (
+                fun (k : nat) =>
+                    if (k <? m) then (valn k)
+                    else valn (S k)
+            ).
+            pose maxSn := maxn - 1.
+            pose whichSn :=
+            (
+                fun (x : X) =>
+                    if (whichn x =? m) then maxSn
+                    else if (m <? whichn x) then (whichn x - 1)
+                    else whichn x
+            ).
+            assert (m ≤ maxn - 1) as Lemmaxn.
+            replace maxn with (max_which sf'n)
+                by rewrite Eqsfn => //.
+            lia.
+            assert (0 < maxn) as Lt0maxn.
+            replace maxn with (max_which sf'n)
+                by rewrite Eqsfn => //.
+            lia.
+            assert (valSn maxSn = zero) as axSn1.
+            unfold valSn, maxSn.
+            assert (maxn - 1 <? m = false).
+            apply Nat.leb_gt. 
+            lia.
+            rewrite H; clear H.
+            replace (S (maxn - 1)) with maxn by lia.
+            assumption.
+            assert (∀ x : X, whichSn x ≤ maxSn) as axSn2.
+            move => x; unfold whichSn, maxSn.
+            case: (whichn x =? m) => //.
+            case_eq (m <? whichn x).
+            move => _.
+            assert (whichn x ≤ maxn) by apply axfn2.
+            lia.
+            move => /Nat.ltb_ge.
+            lia.
+            assert (max_which sf - maxSn ≤ S n) as Ineq2.
+            unfold maxSn.
+            replace maxn with (max_which sf'n).
+            2 : rewrite Eqsfn => //.
+            lia.
+            assert (∀ k : nat,
+                k ≤ maxSn
+                → measurable gen (λ x : X, whichSn x = k)) as axSn3.
+            move => k Hk; unfold whichSn.
+            case: (le_lt_or_eq _ _ Hk); swap 1 2.
+            move => ->.
+            apply measurable_ext with (fun (x : X) => whichn x = m ∨ whichn x = maxn).
+            move => x; split.
+            case.
+            move => /Nat.eqb_eq -> //.
+            move => Hx.
+            assert (m <? whichn x = true).
+            apply Nat.ltb_lt; lia.
+            rewrite H; clear H.
+            assert (whichn x =? m = false).
+            apply Nat.eqb_neq; lia.
+            rewrite H; clear H.
+            unfold maxSn; lia.
+            case_eq (whichn x =? m). 
+            move => /Nat.eqb_eq ->; left => //.
+            move => /Nat.eqb_neq Hx0.
+            case_eq (m <? whichn x).
+            move => /Nat.ltb_lt Hx1.
+            unfold maxSn => H.
+            right; lia.
+            move => /Nat.ltb_ge Hx1.
+            lia.
+            apply measurable_union.
+            apply axfn3.
+            lia.
+            apply axfn3 => //.
+            move => LtkmaxSn.
+            case: (le_lt_dec m k) => Hkm.
+            apply measurable_ext with (fun x : X => whichn x = S k).
+            move => x; split.
+            move => Hx0.
+            assert (whichn x =? m = false).
+            apply Nat.eqb_neq; lia.
+            rewrite H; clear H.
+            assert (m <? whichn x = true).
+            apply Nat.ltb_lt; lia.
+            rewrite H; clear H.
+            lia.
+            case_eq (whichn x =? m).
+            move => /Nat.eqb_eq; lia.
+            move => /Nat.eqb_neq Hx0.
+            case_eq (m <? whichn x).
+            move => /Nat.ltb_lt; lia.
+            move => /Nat.ltb_ge Hx1; lia.
+            apply axfn3; lia.
+            apply measurable_ext with (fun x : X => whichn x = k).
+            move => x; split.
+            move => Hx0.
+            assert (whichn x =? m = false).
+            apply Nat.eqb_neq; lia.
+            rewrite H; clear H.
+            assert (m <? whichn x = false).
+            apply Nat.ltb_ge; lia.
+            rewrite H; clear H.
+            lia.
+            case_eq (whichn x =? m).
+            move => /Nat.eqb_eq; lia.
+            move => /Nat.eqb_neq Hx0.
+            case_eq (m <? whichn x).
+            move => /Nat.ltb_lt; lia.
+            move => /Nat.ltb_ge Hx1; lia.
+            apply axfn3; lia.
+            assert (m = S n - (max_which sf - maxSn)) as Eqm.
+            unfold maxSn.
+            replace maxn with (max_which sf'n).
+            2 : rewrite Eqsfn => //.
+            lia.
+            exists (mk_simpl_fun whichSn valSn maxSn axSn1 axSn2 axSn3) => /=.
+            assert (maxSn ≤ max_which sf) as Ineq.
+            unfold maxSn.
+            assert (maxn ≤ max_which sf).
+            rewrite Eqsfn in Ineqmax; simpl in Ineqmax.
+            assumption.
+            lia.
+            repeat split.
+            move => x; unfold valSn, whichSn.
+            case: (lt_eq_lt_dec (whichn x) m).
+            case.
+            move => Hxm.
+            assert (whichn x =? m = false).
+            apply Nat.eqb_neq; lia.
+            rewrite H; clear H.
+            assert (m <? whichn x = false).
+            apply Nat.ltb_ge; lia.
+            rewrite H; clear H.
+            assert (whichn x <? m = true).
+            apply Nat.ltb_lt; lia.
+            rewrite H; clear H.
+            replace (valn (whichn x)) with (sf'n x).
+                2 : unfold fun_sf.
+                2 : rewrite Eqsfn => //.
+            apply Ext.
+            move => Hxm.
+            assert (whichn x =? m = true).
+            apply Nat.eqb_eq; lia.
+            rewrite H; clear H.
+            assert (maxSn <? m = false).
+            apply Nat.ltb_ge; lia.
+            rewrite H; clear H.
+            replace (S maxSn) with maxn by lia.
+            rewrite Ext.
+            unfold fun_sf.
+            rewrite Eqsfn => /=.
+            rewrite Hxm.
+            rewrite Eqsfn in Eq0; simpl in Eq0.
+            rewrite axfn1 Eq0 => //.
+            move => Hxm.
+            assert (whichn x =? m = false).
+            apply Nat.eqb_neq; lia.
+            rewrite H; clear H.
+            assert (m <? whichn x = true).
+            apply Nat.ltb_lt; lia.
+            rewrite H; clear H.
+            assert (whichn x - 1 <? m = false).
+            apply Nat.ltb_ge; lia.
+            rewrite H; clear H.
+            replace (S (whichn x - 1)) with (whichn x) by lia.
+            replace (valn (whichn x)) with (sf'n x).
+            2 : unfold fun_sf.
+            2 : rewrite Eqsfn => //.
+            apply Ext.
+            assumption.
+            assumption.
+            move => k Hk1 Hk2.
+            replace (match max_which sf - maxSn with
+            | 0 => S n
+            | S l => n - l
+            end) with ((S n) - (max_which sf - maxSn)) in Hk1.
+            2 : case: (max_which sf - maxSn) => //.
+            case: (le_lt_or_eq _ _ Hk1).
+            move => Hkn.
+            case: IHn => IHn1 IHn2.
+            rewrite Eqsfn in IHn2; simpl in IHn2.
+            unfold valSn, m.
+            rewrite Eqsfn => /=.
+            assert (k < n - (max_which sf - maxn)) by lia.
+            assert (k <? n - (max_which sf - maxn) = true).
+                apply Nat.ltb_lt => //.
+                rewrite H0; clear H0.
+            apply IHn2 => //.
+            lia.
+            move => Eqk.
+            assert (k = n - (max_which sf - maxSn)) by lia.
+            unfold valSn.
+            assert (k <? m = true).
+            apply Nat.ltb_lt.
+            unfold m; rewrite Eqsfn => /=.
+            case_eq (S n - (max_which sf - maxSn)).
+            lia.
+            move => l Hl.
+            assert (max_which sf - maxSn < S n) by lia.
+            unfold maxSn in H0.
+            replace (max_which sf - (maxn - 1)) with (S (max_which sf - maxn)) in H0.
+            lia.
+            lia.
+            rewrite H0.
+            case: IHn => [IHn1 IHn2].
+            rewrite Eqsfn in IHn2; simpl in IHn2.
+            apply IHn2.
+            lia.
+            lia.
+    Qed.
+
+    Lemma sf_remove_zeros (sf : simpl_fun E gen) :
+        { sf'   : simpl_fun E gen
+                | (∀ x : X, sf x = sf' x) 
+                ∧ (∀ k : nat, k < max_which sf' -> val sf' k ≠ zero)
+        }.
+    Proof.
+        case: (sf_nonzero_ind sf (max_which sf)).
+        move => sf' [Ext [Ineq [_ Hsf']]].
+        exists sf'; split => //.
+        move => k Hk.
+        apply Hsf' => //.
+        lia.
+    Qed.
+
+End simpl_fun_nonzero.

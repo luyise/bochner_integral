@@ -23,6 +23,7 @@ Require Import
     sum_Rbar_nonneg
     Rbar_compl
     simple_fun
+    subset_compl
 .
 
 Require Import 
@@ -720,3 +721,107 @@ Section Bochner_sf_Lebesgue_sf.
     Qed.
 
 End Bochner_sf_Lebesgue_sf.
+
+Arguments is_SF_Bsf {X gen} μ.
+
+Section simpl_fun_integrability.
+
+    (* espace de départ *)
+    Context  {X : Set}.
+    (* espace d'arrivé *)
+    Context {A : AbsRing}.
+    Context {E : NormedModule A}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context {μ : measure gen}.
+
+    Lemma integrable_sf_finite_LInt_p :
+        ∀ sf : simpl_fun E gen,
+        integrable_sf μ sf -> is_finite (LInt_SFp μ (‖sf‖)%sf (is_SF_Bsf μ (‖sf‖)%sf)).
+    Proof.
+        move => sf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf.
+        rewrite <-Eqf => /=.
+        move => axf4.
+        assert (integrable_sf μ (‖sf‖)%sf) as axf4'.
+            apply integrable_sf_norm => //.
+        setoid_rewrite <-(Finite_BInt_sf_LInt_SFp axf4') => //.
+    Qed.
+
+    Lemma finite_LInt_p_integrable_sf :
+        ∀ sf : simpl_fun E gen, inhabited X ->
+            (∀ k : nat, k < max_which sf -> val sf k ≠ zero)
+            -> is_finite (LInt_SFp μ (‖sf‖)%sf (is_SF_Bsf μ (‖sf‖)%sf))
+            -> integrable_sf μ sf.
+    Proof.
+        move => sf ι.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf.
+        rewrite <-Eqf => /=.
+        move => sf_nz FinInt.
+        move => k Hk.
+        assert (∀ x : X, (charac (λ x : X, which sf x = k) x <= ((‖ sf ‖%fn x) * / ‖(val sf k)‖))%R).
+        move => x.
+        unfold charac.
+        case: (excluded_middle_informative (which sf x = k)).
+        move => Eqx.
+        unfold fun_norm, fun_sf.
+        rewrite Eqx.
+        rewrite RIneq.Rinv_r.
+        apply RIneq.Rle_refl.
+        move => /norm_eq_zero Abs.
+        apply sf_nz with k => //.
+        move => Neqx.
+        apply Fourier_util.Rle_mult_inv_pos.
+        unfold fun_norm.
+        apply norm_ge_0.
+        apply norm_gt_0.
+        apply sf_nz => //.
+        setoid_rewrite Raxioms.Rmult_comm in H.
+        assert (measurable gen (λ x : X, which sf x = k)).
+        apply ax_measurable; lia.
+        rewrite <-(LInt_SFp_charac μ _ H0).
+        apply Rbar_bounded_is_finite with 0%R ( Rbar_mult (/(‖ val sf k ‖)) (LInt_SFp μ (‖ sf ‖)%sf
+            (is_SF_Bsf μ (‖ sf ‖)%sf)))%R.
+        apply LInt_SFp_pos.
+        unfold non_neg => x.
+        unfold charac.
+        case: (excluded_middle_informative (which sf x = k)).
+        move => _ /=.
+        apply RIneq.Rle_0_1.
+        move => _ /=.
+        apply RIneq.Rle_refl.
+        rewrite <-LInt_SFp_scal.
+        apply LInt_SFp_monotone.
+        exact ι.
+        unfold charac, non_neg => x.
+        case: (excluded_middle_informative (which sf x = k)).
+        move => _ /=.
+        apply RIneq.Rle_0_1.
+        move => _ /=.
+        apply RIneq.Rle_refl.
+        unfold non_neg => x.
+        rewrite fun_sf_norm.
+        rewrite Raxioms.Rmult_comm => /=.
+        apply Fourier_util.Rle_mult_inv_pos.
+        apply norm_ge_0.
+        apply norm_gt_0.
+        apply sf_nz => //.
+        move => x.
+        replace ((‖ sf ‖)%sf x) with ((‖ sf ‖)%fn x).
+        2 : unfold fun_norm; rewrite fun_sf_norm => //.
+        apply H.
+        exact ι.
+        unfold non_neg => x /=.
+        rewrite fun_sf_norm.
+        apply norm_ge_0.
+        apply RIneq.Rlt_le.
+        apply RIneq.Rinv_0_lt_compat.
+        apply norm_gt_0.
+        apply sf_nz => //.
+        easy.
+        rewrite Rbar_mult_comm.
+        apply is_finite_Rbar_mult_finite_real.
+        assumption.
+    Qed.
+
+End simpl_fun_integrability.

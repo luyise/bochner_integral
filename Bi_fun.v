@@ -40,6 +40,7 @@ Require Import
     simple_fun
     measurable_fun
     sigma_algebra
+    sigma_algebra_R_Rbar_new
 .
 
 Lemma is_LimSup_seq'_scal_l :
@@ -631,11 +632,14 @@ Module Bif_adapted_seq.
         (* Un espace mesuré *)
         Context {gen : (X -> Prop) -> Prop}.
         Context {μ : measure gen}.
+        Context (ι : inhabited X).
         Context {f : X -> E}.
         Context (Hmeas : measurable_fun gen open f).
         
         Context {u : nat -> E}.
         Context (Hsep : NM_seq_separable u (inRange f)).
+
+        Context (Hinteg : is_finite (LInt_p μ (‖f‖)%fn)).
 
         Definition v (k : nat) : E :=
             match k with
@@ -813,16 +817,6 @@ Module Bif_adapted_seq.
             case: (smallestB_le_n max m x) => //.
             1, 2 : lia.
         Qed.
-
-        (*
-        Lemma smallestB_le_n_strong (max : nat) (m : nat) (x : E) :
-            m ≤ max -> smallestB max m x < max -> smallestB max m x < m.
-        Proof.
-            move => Lemmax HsmallB.
-            pose H := smallestB_le_n max m x Lemmax; clearbody H.
-            lia.
-        Qed.
-        *)
 
         Definition whichn (n : nat) := fun x =>
             let m := biggestA n (f x) in
@@ -1156,166 +1150,7 @@ Module Bif_adapted_seq.
                 apply measA.
         Qed.
 
-        (* 
-
-        Definition whichn (n : nat) (x : X) : nat :=
-            let m := biggestA 
-            let ɛ := (RIneq.mkposreal (/(INR n + 1)) (RiemannInt.RinvN_pos n)) in
-            match ball_norm_dec zero (f x) ɛ with
-                | left _ => n
-                | right _ => whichn' n (f x)
-            end.
-
-        Lemma whichn_spec_lt_n (n : nat) (j : nat) : (j < n)%nat ->
-            ∀ x : X,
-            whichn n x = j <-> (¬ (ball_norm zero (/(INR n + 1)) (f x))) ∧
-            ∃ m : nat, (m < n)%nat ∧
-            (
-                (A m (f x) ∧ ¬ (∃ k : nat, (k > m)%nat ∧ (k < n)%nat ∧ A k (f x))) ∧
-                ((B m j (f x)) ∧ ¬ (∃ i : nat, (i < j)%nat ∧ B m i (f x)))
-            ).
-        Proof.
-            move => Ltjn x; split.
-                move => Hwhichn; split.
-                move => Abs.
-                unfold whichn in Hwhichn.
-                case_eq (ball_norm_dec zero (f x)  {|
-                    RIneq.pos := / (INR n + 1);
-                    RIneq.cond_pos := RiemannInt.RinvN_pos n |}).
-                    move => H Eqball.
-                    rewrite Eqball in Hwhichn.
-                    lia.
-                case_eq (ball_norm_dec zero (f x)  {|
-                    RIneq.pos := / (INR n + 1);
-                    RIneq.cond_pos := RiemannInt.RinvN_pos n |}).
-                    move => H Eqball NH //.
-                    move => NH Eqball NH'.
-                    simpl in NH.
-                    apply False_ind; apply NH => //.
-                case_eq (ball_norm_dec zero (f x)  {|
-                    RIneq.pos := / (INR n + 1);
-                    RIneq.cond_pos := RiemannInt.RinvN_pos n |}).
-                    move => H Eqball.
-                    unfold whichn in Hwhichn.
-                    rewrite Eqball in Hwhichn.
-                    lia.
-                move => NH Eqball.
-                unfold whichn in Hwhichn.
-                rewrite Eqball in Hwhichn.
-                move: Hwhichn => /(whichn'_spec_lt_n _ _ Ltjn)//.
-
-                unfold whichn.
-                move => [Nball /(whichn'_spec_lt_n _ _ Ltjn) ->].
-                case: (ball_norm_dec zero (f x) {|
-                    RIneq.pos := / (INR n + 1);
-                    RIneq.cond_pos := RiemannInt.RinvN_pos n |}) => //.
-        Qed.
-
-        Lemma whichn_spec_eq_n (n : nat) :
-            ∀ x : X,
-            whichn n x = n <-> ((¬ ∃ m : nat, (m < n)%nat ∧ A m (f x)) ∨ (ball_norm zero (/(INR n + 1)) (f x))).
-        Proof.
-            move => x; split.
-                unfold whichn.
-                case: (ball_norm_dec zero (f x)
-                    {|
-                    RIneq.pos := / (INR n + 1);
-                    RIneq.cond_pos := RiemannInt.RinvN_pos n |}) => /=.
-                move => ball_zero; right => //.
-                move => _ /(whichn'_spec_eq_n) Hwhichn; left => //.
-                case.
-                move => /(whichn'_spec_eq_n).
-                1, 2 : unfold whichn; case: (ball_norm_dec zero (f x)
-                    {|
-                    RIneq.pos := / (INR n + 1);
-                    RIneq.cond_pos := RiemannInt.RinvN_pos n |}) => //.
-        Qed.
-
-        Definition valn (n : nat) : nat -> E := fun k =>
-            if (k <? n) then u k else zero.
-
-        Lemma valn_maxn (n : nat) : (valn n n = zero).
-        Proof.
-            unfold valn.
-            assert (¬ n < n)%nat as H by lia; move: H.
-            move /Nat.ltb_lt/Bool.not_true_is_false ->; easy.
-        Qed.
-
-        Lemma ax_which_max_which_n (n : nat) :
-            ∀ x : X, whichn n x ≤ n.
-        Proof.
-            move => x; unfold whichn.
-            case: (ball_norm_dec zero (f x) _) => /=.
-                easy.
-                move => _; apply whichn'_le_n.
-        Qed.
-
-        Lemma ax_measurable_n (n : nat) :
-            ∀ j : nat, j ≤ n 
-                → measurable gen (λ x : X, whichn n x = j).
-        Proof.
-            move => j Lejn.
-            case: (le_lt_or_eq j n Lejn).
-                move => Ltjn.
-                apply measurable_ext with (fun x => (¬ (ball_norm zero (/(INR n + 1)) (f x))) ∧
-                    ∃ m : nat, (m < n)%nat ∧
-                    (
-                        (A m (f x) ∧ ¬ (∃ k : nat, (k > m)%nat ∧ (k < n)%nat ∧ A k (f x))) ∧
-                        ((B m j (f x)) ∧ ¬ (∃ i : nat, (i < j)%nat ∧ B m i (f x)))
-                    )).
-                split; apply whichn_spec_lt_n => //.
-                apply measurable_inter.
-                apply measurable_compl'.
-                apply Hmeas.
-                constructor 1.
-                apply: NM_open_ball_norm.
-                apply RiemannInt.RinvN_pos.
-                apply measurable_union_finite'.
-                move => k Ltkn.
-                apply measurable_inter.
-                apply measurable_inter.
-                apply Hmeas.
-                apply measA.
-                apply measurable_compl'.
-                apply measurable_ext with
-                    (fun x => ∃ j : nat, (j < n)%nat ∧ (j > k)%nat ∧ A j (f x)).
-                    move => x; split.
-                    case => i [Ltin [Ltki Aifx]].
-                    exists i; repeat split => //.
-                    case => i [Ltki [Ltin Aifx]].
-                    exists i; repeat split => //.
-                apply measurable_union_finite' => i Ltin.
-                apply measurable_inter.
-                apply measurable_Prop.
-                apply Hmeas.
-                apply measA.
-                apply measurable_inter.
-                apply Hmeas.
-                apply measB.
-                apply measurable_compl'.
-                apply measurable_union_finite' => i Ltij.
-                apply Hmeas.
-                apply measB.
-                
-                move => ->.
-                apply measurable_ext with (fun x => 
-                    (¬ ∃ m : nat, (m < n)%nat 
-                        ∧ A m (f x)) ∨ (ball_norm zero (/(INR n + 1)) (f x))).
-                move => x; split; apply whichn_spec_eq_n.
-                apply measurable_union.
-                apply measurable_compl'.
-                apply measurable_union_finite'.
-                move => k Ltkn; apply Hmeas.
-                apply measA.
-                apply Hmeas.
-                constructor 1.
-                apply: NM_open_ball_norm.
-                apply RiemannInt.RinvN_pos.
-        Qed.   
-        
-        *)
-
-        Definition s (n : nat) : simpl_fun E gen :=
+        Definition s' (n : nat) : simpl_fun E gen :=
             mk_simpl_fun (whichn n) (valn n) n
             (ax_val_max_which_n n)
             (ax_which_max_which_n n)
@@ -1323,11 +1158,11 @@ Module Bif_adapted_seq.
 
         Open Scope R_scope.
 
-        Lemma le_sn_two_f (n : nat) :
-            ∀ x : X, ‖ s n x ‖ <= 2 * ‖ f x ‖.
+        Lemma le_s'n_two_f (n : nat) :
+            ∀ x : X, ‖ s' n x ‖ <= 2 * ‖ f x ‖.
         Proof.
             move => x.
-            unfold s => /=.
+            unfold s' => /=.
             case: (le_lt_or_eq _ _ (whichn_le_n n x)); swap 1 2.
                     move => Eqn; rewrite Eqn ax_val_max_which_n norm_zero.
                     replace 0 with (2 * 0).
@@ -1381,14 +1216,14 @@ Module Bif_adapted_seq.
             rewrite opp_minus => //.
         Qed.
 
-        Lemma s_approx : ∀ x : X,
+        Lemma s'_approx : ∀ x : X,
             ∀ m k : nat, B m k (f x)
                 -> ∀ n : nat, (m < n)%nat -> (k < n)%nat ->
-                ball_norm (f x) (/ (INR m + 1)) (s n x).
+                ball_norm (f x) (/ (INR m + 1)) (s' n x).
         Proof.
             move => x m k Bmkx.
             move => n Ltmn Ltkn.
-            unfold s => /=.
+            unfold s' => /=.
             unfold valn.
             assert (biggestA n (f x) < n)%nat as LtbigA.
                 unfold biggestA.
@@ -1432,8 +1267,8 @@ Module Bif_adapted_seq.
             apply RIneq.le_INR => //.
         Qed.
 
-        Lemma s_pointwise_cv :
-            (∀ x : X, is_lim_seq (fun n => s n x) (f x)).
+        Lemma s'_pointwise_cv :
+            (∀ x : X, is_lim_seq (fun n => s' n x) (f x)).
         Proof.
             move => x; unfold is_lim_seq.
             unfold eventually, locally, filterlim => /=.
@@ -1459,7 +1294,7 @@ Module Bif_adapted_seq.
             apply ball_le with (RIneq.pos sigm).
             apply RIneq.Rlt_le => //.
             apply norm_compat1 => /=.
-            apply s_approx with (S k).
+            apply s'_approx with (S k).
             unfold B, ball_norm.
             unfold ball_norm in Hk.
             simpl in Hk.
@@ -1467,72 +1302,95 @@ Module Bif_adapted_seq.
             rewrite opp_minus => //.
             lia.
             lia.
-        Qed. 
+        Qed.
+
+        Definition s (n : nat) : simpl_fun E gen :=
+            proj1_sig (sf_remove_zeros (s' n)).
+
+        Lemma s'_s_ext (n : nat) : ∀ x : X,
+            s' n x = s n x.
+        Proof.
+            unfold s.
+            case: (sf_remove_zeros (s' n)) => s' [Hs'ext Hs'nz].
+            move => x /=.
+            simpl in Hs'ext => //.
+        Qed.
+
+        Lemma s_nz (n : nat) :
+            ∀ k : nat, (k < max_which (s n))%nat → val (s n) k ≠ zero.
+        Proof.
+            unfold s.
+            case: (sf_remove_zeros (s' n)) => s' [Hs'ext Hs'nz].
+            move => x /= Hx.
+            apply Hs'nz => //.
+        Qed.
+
+        Lemma le_sn_two_f (n : nat) :
+            ∀ x : X, ‖ s n x ‖ <= 2 * ‖ f x ‖.
+        Proof.
+            move => x.
+            rewrite <-s'_s_ext.
+            apply le_s'n_two_f.
+        Qed.
+
+        Lemma s_pointwise_cv :
+            (∀ x : X, is_lim_seq (fun n => s n x) (f x)).
+        Proof.
+            move => x.
+            apply lim_seq_ext with (fun n : nat => s' n x).
+            move => n; rewrite <-s'_s_ext => //.
+            apply s'_pointwise_cv.
+        Qed.
+
+        Lemma s_integrable_sf : ∀ n : nat,
+            integrable_sf μ (s n).
+        Proof.
+            move => n.
+            apply: finite_LInt_p_integrable_sf.
+            exact ι.
+            move => k Hk.
+            apply: s_nz => //.
+            rewrite <-LInt_p_SFp_eq.
+            2 : exact ι.
+            2 : unfold sum_Rbar_nonneg.non_neg => x /=.
+            2 : rewrite fun_sf_norm; apply norm_ge_0.
+            apply Rbar_bounded_is_finite with 0%R (Rbar_mult 2 (LInt_p μ (λ x : X, (‖ f ‖)%fn x))) => //.
+            apply LInt_p_ge_0 => //.
+            unfold sum_Rbar_nonneg.non_neg => x /=.
+            rewrite fun_sf_norm; apply norm_ge_0.
+            rewrite <-LInt_p_scal => //.
+            2 : unfold sum_Rbar_nonneg.non_neg => x.
+            2 : unfold fun_norm => /=.
+            2 : apply norm_ge_0.
+            3 : simpl.
+            3 : lra.
+            simpl.
+            apply LInt_p_monotone => x /=.
+            unfold fun_norm.
+            rewrite fun_sf_norm.
+            apply le_sn_two_f.
+            apply measurable_fun_R_Rbar.
+            apply: measurable_fun_composition.
+            apply Hmeas.
+            unfold measurable_fun => P.
+            move => /measurable_R_equiv_oo.
+            unfold measurable_Borel.
+            move: P.
+            suff: measurable_fun open open (@norm R_AbsRing E).
+            unfold measurable_fun => //.
+            apply measurable_fun_continuous.
+            unfold Continuity.continuous => x.
+            apply filterlim_norm.
+            rewrite Rbar_mult_comm.
+            apply is_finite_Rbar_mult_finite_real.
+            assumption.
+        Qed.
+
+        Lemma s_l1_cv :
+            (is_LimSup_seq' (fun n => LInt_p μ (‖ f - (s' n) ‖)%fn) 0).
+        Proof.
+        Admitted.
 
     End construction_of_seq.
-
-    (*
-    Definition Bif_adapted_seq : 
-        (fun_separable u (inRange f) φ) -> (measurable_fun gen open f)
-        -> (is_finite (LInt_p μ (‖f‖)%fn))
-            -> (nat -> simpl_fun E μ).
-    (* Definition *)
-        move => Hsep Hmeasurable Hintegrable n.
-        induction n.
-            (* cas initial : la fonction nulle *)
-            pose which0 := fun (_ : X) => O.
-            pose val0 := fun (_ : nat) => (zero : E).
-            pose max_which0 := O.
-            apply (mk_simpl_fun which0 val0 max_which0) => //.
-                move => n Hn; unfold which0; apply measurable_Prop.
-                lia.
-            (* induction *)
-            case: IHn => whichn valn max_whichn axn1 axn2 axn3 axn4.
-            assert (0 < (/ (INR max_whichn + 1)))
-                by apply RiemannInt.RinvN_pos.
-            pose ɛ := RIneq.mkposreal (/ (INR max_whichn + 1)) H.
-            assert (∀ x : X, inRange f (f x)) as IRff.
-                move => x; exists x => //.
-            pose k := (fun x : X => φ (f x) (IRff x) ɛ).
-            pose (max_whichSn := S max_whichn).
-            pose 
-                (
-                    valSn := fun (j : nat) =>
-                        if j <=? max_whichn then u j else zero
-                ).
-            pose 
-                (
-                    whichSn := fun (x : X) =>
-                        match RIneq.Rle_dec (‖f x‖) (/ (INR max_whichn + 1)) with
-                            | left _ => max_whichSn
-                            | right _ =>
-                                if (k x) <=? max_whichSn then
-                                    (k x)
-                                else whichn x
-                        end
-                ).
-            apply (mk_simpl_fun whichSn valSn max_whichSn).
-                unfold valSn, max_whichSn.
-                assert ((S max_whichn <=? max_whichn) = false) as R.
-                    rewrite Nat.leb_gt => //.
-                rewrite R; clear R => //.
-                move => x; unfold max_whichSn, whichSn.
-                case (RIneq.Rle_dec (‖ f x ‖) (/ (INR max_whichn + 1))) => //.
-                    move => _; case_eq (k x <=? max_whichSn) => //.
-                    move /Nat.leb_le => //.
-                    move => _; constructor 2; apply axn2.
-                move => j Hj.
-                unfold whichSn.
-
-    Definition prop_Bif_adapted_seq_aux :
-        (fun_separable u (inRange f) φ) ->
-            { s : nat -> simpl_fun E μ
-                | (∀ x : X, is_lim_seq (fun n => s n x) (f x))
-                ∧ (∀ n : nat, ∀ x : X, ‖ s n x ‖ <= 2 * ‖ f x ‖)
-            }.
-    (* Definition *)
-    case => inRangefu Hdense.
-    apply 
-    *)
 
 End Bif_adapted_seq.
