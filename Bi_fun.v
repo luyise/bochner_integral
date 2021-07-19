@@ -1,6 +1,4 @@
 
-Add LoadPath "~/Documents/CoqGit/completeModuleSummation" as CMS.
-
 From Coq Require Import 
     ssreflect
     ssrsearch
@@ -27,9 +25,6 @@ Require Import
     Bsf_Lsf
     CUS_Lim_seq
     topology_compl
-.
-
-From CMS Require Import
     series
 .
 
@@ -154,19 +149,23 @@ Section Boshner_integrable_fun.
     Open Scope fun_scope.
 
     (* Bochner Integrable Functions *)
-    Inductive Bif (f : X -> E) : Type :=
-        | approximation (s : nat -> simpl_fun E gen) :
-            (∀ n : nat, integrable_sf μ (s n)) -> inhabited X ->
-            (∀ x : X, is_lim_seq (fun n => s n x) (f x))
-            -> is_LimSup_seq' (fun n => LInt_p μ (‖ f - (s n) ‖)%fn) 0 -> Bif f.
+    Record Bif := mk_Bif {
+        fn :> X -> E;
+        seq : nat -> simpl_fun E gen;
+
+        ax_notempty : inhabited X;
+        ax_int : (∀ n : nat, integrable_sf μ (seq n));
+        ax_lim_pw : (∀ x : X, is_lim_seq (fun n => seq n x) (fn x));
+        ax_lim_l1 : is_LimSup_seq' (fun n => LInt_p μ (‖ fn - (seq n) ‖)%fn) 0
+    }.
 
 End Boshner_integrable_fun.
 
-Arguments Bif {X E gen} μ f.
+Arguments Bif {X} E {gen} μ.
 
 (* On note L¹(X,μ,E) l'espace des fonction Boshner integrable de X vers E *)
-Notation "'L¹(' X ',' μ ',' E ')'" := { f : X -> E | Bif μ f }
-    (format "'[ ' 'L¹(' X ','  μ ','  E ')' ']'").
+Notation "'𝓛¹(' X ',' μ ',' E ')'" := { f : X -> E | Bif μ f }
+    (format "'[ ' '𝓛¹(' X ','  μ ','  E ')' ']'").
 
 Section Bi_fun_prop.
 
@@ -331,13 +330,13 @@ Section Bif_sf.
     Context {μ : measure gen}.
 
     Definition Bif_integrable_sf {s : simpl_fun E gen} :
-        integrable_sf μ s -> Bif μ s.
+        integrable_sf μ s -> Bif E μ.
     (* Definition *)
         pose s' := fun _ : nat => s.
         move => isf.
-        apply (approximation s s').
-            unfold s' => _; exact isf.
+        apply (mk_Bif s s').
             exact ι.
+            unfold s' => _; exact isf.
             move => x; apply lim_seq_cte.
             unfold s'; unfold fun_norm;
             unfold fun_plus.
@@ -361,16 +360,15 @@ Section Bif_op.
     (* Un espace mesuré *)
     Context {gen : (X -> Prop) -> Prop}.
     Context {μ : measure gen}.
-    Context {f g : X -> E}.
 
-    Definition Bif_plus (bf : Bif μ f) (bg : Bif μ g) : Bif μ (f + g)%fn.
-        case: bf => sf isf ι Hfpw Hfl1;
-        case: bg => sg isg _ Hgpw Hgl1.
+    Definition Bif_plus (bf : Bif E μ) (bg : Bif E μ) : Bif E μ.
+        case: bf => f sf ι isf Hfpw Hfl1;
+        case: bg => g sg _ isg Hgpw Hgl1.
         assert (∀ n : nat, integrable_sf μ (sf n + sg n)%sf) as isfplusg.
             move => n; apply integrable_sf_plus; [apply isf | apply isg].
-        apply: (approximation (f + g)%fn (fun n : nat => sf n + sg n)%sf).
-            exact isfplusg.
+        apply: (mk_Bif (f + g)%fn (fun n : nat => sf n + sg n)%sf).
             exact ι.
+            exact isfplusg.
             move => x; unfold fun_plus.
             apply (lim_seq_ext (fun n => sf n x + sg n x)%hy).
                 move => n; rewrite fun_sf_plus => //.
@@ -500,12 +498,21 @@ Section Bif_op.
         apply filterlim_norm.
     Defined.
 
-    Definition Bif_scal (a : R_AbsRing) (bf : Bif μ f) : Bif μ (a ⋅ f)%fn.
+    Lemma Bif_fn_plus (bf bg : Bif E μ) :
+        ∀ x : X, Bif_plus bf bg x = (bf x + bg x)%hy.
+    Proof.
+        case: bf => f sf ιf isf axfpw axfl1.
+        case: bg => g sg ιg isg axgpw axgl1.
+        simpl.
+        unfold fun_plus => //.
+    Qed.
+
+    Definition Bif_scal (a : R_AbsRing) (bf : Bif E μ) : Bif E μ.
     (* Definition *)
-        case_eq bf => sf isf ι Hfpw Hfl1 Eqf.
-        apply: (approximation (a ⋅ f)%fn (fun n : nat => a ⋅ sf n)%sf).
-            move => n; apply integrable_sf_scal; apply isf.
+        case_eq bf => f sf ι isf Hfpw Hfl1 Eqf.
+        apply: (mk_Bif (a ⋅ f)%fn (fun n : nat => a ⋅ sf n)%sf).
             exact ι.
+            move => n; apply integrable_sf_scal; apply isf.
             move => x; unfold fun_scal.
             apply (lim_seq_ext (fun n => a ⋅ sf n x)%hy).
                 move => n; rewrite fun_sf_scal => //.
@@ -559,12 +566,19 @@ Section Bif_op.
             assumption.
     Defined.
 
-    Definition Bif_norm (bf : Bif μ f) : Bif μ (‖f‖)%fn.
+    Lemma Bif_fn_scal (a : R_AbsRing) (bf : Bif E μ) :
+        ∀ x : X, Bif_scal a bf x = a ⋅ (bf x).
+    Proof.
+        case: bf => f sf ι isf axfpw axfl1 x /=.
+        unfold fun_scal => //.
+    Qed.
+
+    Definition Bif_norm (bf : Bif E μ) : Bif R_NormedModule μ.
     (* Definition *)
-        case_eq bf => sf isf ι Hfpw Hfl1 Eqf.
-        apply: (approximation (‖f‖)%fn (fun n : nat => ‖ sf n ‖)%sf).
-            move => n; apply integrable_sf_norm; apply isf.
+        case_eq bf => f sf ι isf Hfpw Hfl1 Eqf.
+        apply (mk_Bif (‖f‖)%fn (fun n : nat => ‖ sf n ‖)%sf).
             exact ι.
+            move => n; apply integrable_sf_norm; apply isf.
             move => x; unfold fun_norm.
             apply (lim_seq_ext (fun n => ‖ sf n x ‖ )%hy).
                 move => n; rewrite fun_sf_norm => //.
@@ -604,6 +618,13 @@ Section Bif_op.
         apply: norm_triangle_inv.
     Defined.
 
+    Lemma Bif_fn_norm (bf : Bif E μ) :
+        ∀ x : X, Bif_norm bf x = ‖ bf x ‖.
+    Proof.
+        case: bf => f sf ι isf axfpw axfl1 /=.
+        unfold fun_norm => //.
+    Qed.
+
 End Bif_op.
 
 Notation "bf + bg" := (Bif_plus bf bg) : Bif_scope.
@@ -637,7 +658,7 @@ Module Bif_adapted_seq.
         Context (Hmeas : measurable_fun gen open f).
         
         Context {u : nat -> E}.
-        Context (Hsep : NM_seq_separable u (inRange f)).
+        Context (Hsep : NM_seq_separable_weak u (inRange f)).
 
         Context (Hinteg : is_finite (LInt_p μ (‖f‖)%fn)).
 
@@ -1285,8 +1306,7 @@ Module Bif_adapted_seq.
             pose sigm := {|
                 RIneq.pos := / (INR m + 1);
                 RIneq.cond_pos := RiemannInt.RinvN_pos m |}.
-            case: Hsep => _ Hsep'.
-            case: (Hsep' (f x) (iRR f x) sigm) => k Hk.
+            case: (Hsep (f x) (iRR f x) sigm) => k Hk.
             pose N := max m (S k).
             exists (S N).
             move => n LtNn.
@@ -1387,10 +1407,55 @@ Module Bif_adapted_seq.
         Qed.
 
         Lemma s_l1_cv :
-            (is_LimSup_seq' (fun n => LInt_p μ (‖ f - (s' n) ‖)%fn) 0).
+            (is_LimSup_seq' (fun n => LInt_p μ (‖ f - (s n) ‖)%fn) 0).
         Proof.
         Admitted.
+
+        Definition Bif_separable_range : Bif E μ :=
+            mk_Bif f s 
+            ι s_integrable_sf
+            s_pointwise_cv s_l1_cv.
 
     End construction_of_seq.
 
 End Bif_adapted_seq.
+
+Export Bif_adapted_seq(Bif_separable_range).
+
+Require Import Reals countable_sets Qreals.
+
+Section R_valued_Bif.
+
+    Context {X : Set}.
+    Context {gen : (X -> Prop) -> Prop}.
+    Context {μ : measure gen}.
+
+    Definition R_Bif {f : X -> R_NormedModule} :
+        measurable_fun gen open f ->
+        is_finite (LInt_p μ (‖f‖)%fn) ->
+        inhabited X ->
+            Bif R_NormedModule μ.
+    (* Definiton *)
+        move => Hmeas Hfin ι.
+        apply Bif_separable_range with f (fun n => Q2R (bij_NQ n)).
+        exact ι.
+        exact Hmeas.
+        assert (∀ x : R_NormedModule, inRange f x -> True)
+            as Hle.
+            by [].
+        apply (NM_seq_separable_weak_le _ Hle).
+        apply NM_seq_separable_weakR.
+        exact Hfin.
+    Defined.
+
+    Lemma R_bif_fun 
+        {f : X -> R_NormedModule}
+        {Hmeas : measurable_fun gen open f}
+        {Hfin : is_finite (LInt_p μ (‖f‖)%fn)}
+        {ι : inhabited X} :
+        ∀ x : X, R_Bif Hmeas Hfin ι x = f x.
+    Proof.
+        by [].
+    Qed.
+
+End R_valued_Bif.

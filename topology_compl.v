@@ -13,6 +13,8 @@ From Coq Require Import
 
 From Coquelicot Require Import
     Hierarchy
+    Rbar
+    Lub
 .
 
 Require Import
@@ -296,7 +298,44 @@ Section NM_density.
         exists k => //.
     Qed.
 
+    Definition dist (x : E) (P : E -> Prop) :=
+        (Glb_Rbar (fun d : R => ∃ y : E, P y ∧ ‖ minus x y ‖ = d)).
+
+    Definition NM_seq_separable_weak (u : nat -> E) (P : E -> Prop) : Prop :=
+        (∀ x : E, P x ->
+            ∀ ɛ : posreal, ∃ n : nat, ball_norm x ɛ (u n)).
+
+    Lemma NM_seq_separable_seq_separable_weak {u : nat -> E} {P : E -> Prop} :
+        NM_seq_separable u P -> NM_seq_separable_weak u P.
+    Proof.
+        move => [_ H2] //.
+    Qed.
+
+    Lemma NM_seq_separable_weak_le {u : nat -> E} {P : E -> Prop} :
+        ∀ Q : E -> Prop, 
+            (∀ x : E, Q x -> P x) ->
+            NM_seq_separable_weak u P ->
+            NM_seq_separable_weak u Q.
+    Proof.
+        move => Q LeQP H x /LeQP/H//.
+    Qed.
+
 End NM_density.
+
+Section NM_seq_separable_subspace.
+
+    (*
+    A montrer : une partie d'un NM separable l'est encore :
+
+    Tout sous-espace d'un espace pseudométrisable séparable est encore séparable, preuve directe :
+    Soit (X, d) un espace pseudométrique séparable, et soit A un sous-espace de X. On va construire une suite dense dans A.
+    Choisissons (xn)n∈ℕ* une suite dense dans X. Pour tout entier n > 0, fixons un point an de A vérifiant d(xn, an) < d(xn, A) + 1/n. 
+    Soit a un point de A et soit ε > 0. Par densité de (xn)n∈ℕ*, il existe un entier n > 3/ε tel que d(a, xn) < ε/3. 
+    On a alors (par construction de la suite (an)) d(xn, an) < ε/3 + 1/n < 2ε/3 donc (par inégalité triangulaire) d(a, an)< ε.
+    La suite (an) est donc bien dense dans A.
+    *)
+
+End NM_seq_separable_subspace.
 
 Lemma NM_separableR : NM_separable (fun _ : R_NormedModule => True).
 Proof.
@@ -308,4 +347,10 @@ Lemma NM_seq_separableR : NM_seq_separable (fun n => Q2R (bij_NQ n)) (fun _ : R_
 Proof.
     apply seq_separable_NM_seq_separable.
     apply seq_separableR.
+Qed.
+
+Lemma NM_seq_separable_weakR : NM_seq_separable_weak (fun n => Q2R (bij_NQ n)) (fun _ : R_NormedModule => True).
+Proof.
+    apply NM_seq_separable_seq_separable_weak.
+    apply NM_seq_separableR.
 Qed.

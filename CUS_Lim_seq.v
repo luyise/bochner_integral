@@ -1,5 +1,3 @@
-Add LoadPath "~/Documents/CoqGit/completeModuleSummation" as CMS.
-
 From Coq Require Import
     Utf8
     ssreflect
@@ -12,13 +10,10 @@ From Coquelicot Require Import
     Hierarchy
 .
 
-From CMS Require Import
-    series
-.
-
 Require Import
     hierarchy_notations
     simpl_fun
+    series
 .
 
 Open Scope nat_scope.
