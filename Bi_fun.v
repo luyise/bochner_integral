@@ -179,6 +179,12 @@ Section Bi_fun_prop.
     Context {gen : (X -> Prop) -> Prop}.
     Context {μ : measure gen}.
 
+    Lemma measurable_Bif :
+        ∀ bf : Bif E μ, measurable_fun gen open bf.
+    Proof.
+        case => f sf ι isf axfpw axfl1 /=.
+    Admitted.
+
     Lemma Cauchy_seq_approx :
         ∀ f : X -> E, ∀ s : nat -> simpl_fun E gen, (∀ n : nat, integrable_sf μ (s n)) -> inhabited X ->
             (∀ x : X, is_lim_seq (fun n => s n x) (f x)) -> is_LimSup_seq' (fun n => LInt_p μ (‖ f - (s n) ‖)%fn) 0 
@@ -348,6 +354,21 @@ Section Bif_sf.
                 rewrite norm_zero => //.
         apply LimSup_seq'_const.
     Defined.
+
+    Lemma Bif_integrable_sf_fun {s : simpl_fun E gen}
+        {Hinteg : integrable_sf μ s} :
+        ∀ x : X, Bif_integrable_sf Hinteg x = s x.
+    Proof.
+        by [].
+    Qed.
+
+    Definition Bif_zero := Bif_integrable_sf (integrable_sf_zero _ μ).
+
+    Lemma Bif_zero_fun :
+        ∀ x : X, Bif_zero x = zero.
+    Proof.
+        by [].
+    Qed.
 
 End Bif_sf.
 

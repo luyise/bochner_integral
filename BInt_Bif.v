@@ -32,7 +32,7 @@ Require Import
     sigma_algebra
 .
 
-Section BInt_Bif_def.
+Section BInt_def.
 
     (* espace de départ *)
     Context {X : Set}.
@@ -42,23 +42,23 @@ Section BInt_Bif_def.
     Context {gen : (X -> Prop) -> Prop}.
     Context {μ : measure gen}.
 
-    Definition BInt_Bif (bf : Bif E μ) :=
+    Definition BInt (bf : Bif E μ) :=
         lim_seq (fun n => BInt_sf μ (seq bf n)).
 
-    Theorem is_lim_seq_BInt_Bif (bf : Bif E μ) :
-        is_lim_seq (fun n => BInt_sf μ (seq bf n)) (BInt_Bif bf).
+    Theorem is_lim_seq_BInt (bf : Bif E μ) :
+        is_lim_seq (fun n => BInt_sf μ (seq bf n)) (BInt bf).
     Proof.
         case: bf => f s ι isf Hspw Hsl1.
         apply NM_Cauchy_seq_lim_seq_correct.
         apply Cauchy_seq_approx with f => //.
     Qed.
 
-End BInt_Bif_def.
+End BInt_def.
 
-Notation "'∫B' bf" := (BInt_Bif bf)
+Notation "'∫B' bf" := (BInt bf)
         (only printing, at level 45, format "'[ ' '∫B'  bf ']'") : Bif_scope.
 
-Section BInt_Bif_prop.
+Section BInt_prop.
 
     (* espace de départ *)
     Context {X : Set}.
@@ -70,22 +70,22 @@ Section BInt_Bif_prop.
 
     Open Scope Bif_scope.
 
-    Lemma BInt_Bif_ext :
+    Lemma BInt_ext :
         ∀ bf bf' : Bif E μ, (∀ x : X, bf x = bf' x) ->
-            BInt_Bif bf = BInt_Bif bf'.
+            BInt bf = BInt bf'.
     Proof.
         move => bf bf' Ext;
             case_eq bf => f s ι ints Hspw Hsl1 Eqπ;
             case_eq bf' => f' s' ι' ints' Hs'pw Hs'l1 Eqπ';
-            unfold BInt_Bif => /=.
+            unfold BInt => /=.
             rewrite Eqπ in Ext; simpl in Ext.
             rewrite Eqπ' in Ext; simpl in Ext.
         pose I := lim_seq (λ n : nat, BInt_sf μ (s n));
         pose I' := lim_seq (λ n : nat, BInt_sf μ (s' n)).
-        pose HI := is_lim_seq_BInt_Bif bf;
+        pose HI := is_lim_seq_BInt bf;
             rewrite Eqπ in HI; simpl in HI;
             clearbody HI; fold I in HI.
-        pose HI' := is_lim_seq_BInt_Bif bf';
+        pose HI' := is_lim_seq_BInt bf';
             rewrite Eqπ' in HI'; simpl in HI';
             clearbody HI'; fold I' in HI'.
         move: HI' => /lim_seq_opp => HI'.
@@ -285,18 +285,18 @@ Section BInt_Bif_prop.
         1, 2 : apply ints'.
     Qed.
 
-    Lemma BInt_Bif_BInt_sf {s : simpl_fun E gen} : 
+    Lemma BInt_BInt_sf {s : simpl_fun E gen} : 
         ∀ π : integrable_sf μ s, ∀ ι : inhabited X,
-        BInt_sf μ s = BInt_Bif (Bif_integrable_sf ι π).
+        BInt_sf μ s = BInt (Bif_integrable_sf ι π).
     Proof.
-        move => π ι; unfold BInt_Bif; simpl.
+        move => π ι; unfold BInt; simpl.
         symmetry; apply: lim_seq_eq.
         apply lim_seq_cte.
     Qed.
 
-End BInt_Bif_prop.
+End BInt_prop.
 
-Section BInt_Bif_indic.
+Section BInt_indic.
 
     (* espace de départ *)
     Context {X : Set}.
@@ -307,18 +307,18 @@ Section BInt_Bif_indic.
     Context {gen : (X -> Prop) -> Prop}.
     Context {μ : measure gen}.
 
-    Lemma BInt_Bif_indic :
+    Lemma BInt_indic :
         ∀ P : X -> Prop, ∀ π : measurable gen P, ∀ π' : is_finite (μ P),
-            BInt_Bif (Bif_integrable_sf ι (integrable_sf_indic π π')) = μ P.
+            BInt (Bif_integrable_sf ι (integrable_sf_indic π π')) = μ P.
     Proof.
         move => P π π'.
-        rewrite <-BInt_Bif_BInt_sf.
+        rewrite <-BInt_BInt_sf.
         apply BInt_sf_indic.
     Qed.
 
-End BInt_Bif_indic.
+End BInt_indic.
 
-Section BInt_Bif_op.
+Section BInt_op.
 
     (* espace de départ *)
     Context {X : Set}.
@@ -331,32 +331,32 @@ Section BInt_Bif_op.
     Open Scope hy_scope.
     Open Scope Bif_scope.
 
-    Lemma BInt_Bif_plus :
+    Lemma BInt_plus :
         ∀ (bf : Bif E μ) (bg : Bif E μ),
-            BInt_Bif (Bif_plus bf bg) = ((BInt_Bif bf) + (BInt_Bif bg))%hy.
+            BInt (Bif_plus bf bg) = ((BInt bf) + (BInt bg))%hy.
     Proof.
         move => bf bg;
         case_eq bf => f sf ι isf Hfpw Hfl1 eqbf;
         case_eq bg => g sg ι' isg Hgpw Hgl1 eqbg;
         rewrite <-eqbf, <-eqbg. 
-        unfold BInt_Bif.
+        unfold BInt.
         apply lim_seq_eq.
         apply (lim_seq_ext (fun n : nat => BInt_sf μ (sf n) + BInt_sf μ (sg n))%hy).
             move => n.
             rewrite eqbf eqbg => /=.
             rewrite BInt_sf_plus_aux => //.
             apply: lim_seq_plus.
-            pose H := is_lim_seq_BInt_Bif (mk_Bif f sf ι isf Hfpw Hfl1);
+            pose H := is_lim_seq_BInt (mk_Bif f sf ι isf Hfpw Hfl1);
                 clearbody H; simpl in H; rewrite <-eqbf in H.
             assumption.
-            pose H := is_lim_seq_BInt_Bif (mk_Bif g sg ι' isg Hgpw Hgl1);
+            pose H := is_lim_seq_BInt (mk_Bif g sg ι' isg Hgpw Hgl1);
                 clearbody H; simpl in H; rewrite <-eqbg in H.
             assumption.
     Qed.
 
-    Lemma BInt_Bif_scal :
+    Lemma BInt_scal :
         ∀ (bf : Bif E μ), ∀ (a : R_AbsRing),
-            BInt_Bif (Bif_scal a bf) = (a ⋅ (BInt_Bif bf))%hy.
+            BInt (Bif_scal a bf) = (a ⋅ (BInt bf))%hy.
     Proof.
         move => bf a.
         case: bf => f sf ι isf Hfpw Hfl1.
@@ -364,14 +364,14 @@ Section BInt_Bif_op.
         apply (lim_seq_ext (fun n : nat => a ⋅ (BInt_sf μ (sf n)))%hy).
             move => n; rewrite BInt_sf_scal_aux => //.
             apply: lim_seq_scal_r.
-            pose H := is_lim_seq_BInt_Bif (mk_Bif f sf ι isf Hfpw Hfl1);
+            pose H := is_lim_seq_BInt (mk_Bif f sf ι isf Hfpw Hfl1);
                 clearbody H; simpl in H.
             assumption.
     Qed.
 
-    Lemma norm_BInt_Bif_le :
+    Lemma norm_BInt_le :
         ∀ (bf : Bif E μ),
-            ‖ BInt_Bif bf ‖%hy <= BInt_Bif (‖bf‖)%Bif.
+            ‖ BInt bf ‖%hy <= BInt (‖bf‖)%Bif.
     Proof.
         move => bf.
         case: bf => f sf ι isf Hfpw Hfl1.
@@ -380,17 +380,17 @@ Section BInt_Bif_op.
         apply is_lim_seq_le with (λ n : nat, ‖ BInt_sf μ (sf n) ‖)%hy (λ n : nat, BInt_sf μ (‖ sf n ‖%sf)).
             move => n; apply norm_Bint_sf_le.
             apply lim_seq_norm.
-            pose H := is_lim_seq_BInt_Bif (mk_Bif f sf ι isf Hfpw Hfl1);
+            pose H := is_lim_seq_BInt (mk_Bif f sf ι isf Hfpw Hfl1);
                 clearbody H; simpl in H.
             assumption.
-            pose H := is_lim_seq_BInt_Bif (Bif_norm (mk_Bif f sf ι isf Hfpw Hfl1));
+            pose H := is_lim_seq_BInt (Bif_norm (mk_Bif f sf ι isf Hfpw Hfl1));
                 clearbody H; simpl in H.
             assumption.
     Qed.
 
-End BInt_Bif_op.
+End BInt_op.
 
-Section BInt_Bif_linearity.
+Section BInt_linearity.
 
     (* espace de départ *)
     Context {X : Set}.
@@ -403,14 +403,30 @@ Section BInt_Bif_linearity.
     Open Scope hy_scope.
     Open Scope Bif_scope.
     
-    Lemma BInt_Bif_linearity :
+    Lemma BInt_linearity :
         ∀ (bf : Bif E μ) (bg : Bif E μ), ∀ a b : R,
-            BInt_Bif (a ⋅ bf + b ⋅ bg)
-            = (a ⋅ (BInt_Bif bf) + (b ⋅ (BInt_Bif bg)))%hy.
+            BInt (a ⋅ bf + b ⋅ bg)
+            = (a ⋅ (BInt bf) + (b ⋅ (BInt bg)))%hy.
     Proof.
         move => bf bg a b.
-        rewrite BInt_Bif_plus.
-        do 2 rewrite BInt_Bif_scal => //.
+        rewrite BInt_plus.
+        do 2 rewrite BInt_scal => //.
     Qed.
 
-End BInt_Bif_linearity.
+    Lemma BInt_zero :
+        ∀ (bf : Bif E μ),
+            (∀ x : X, bf x = zero) -> BInt bf = zero.
+    Proof.
+        move => bf Hbf.
+        Print Implicit BInt_ext.
+        rewrite (BInt_ext bf (Bif_zero (ax_notempty bf))).
+        unfold Bif_zero. 
+        rewrite <-BInt_BInt_sf.
+        unfold BInt_sf => /=.
+        rewrite sum_O.
+        rewrite scal_zero_r => //.
+        move => x; rewrite Hbf.
+        rewrite Bif_zero_fun => //.
+    Qed.
+
+End BInt_linearity.

@@ -184,6 +184,42 @@ End simpl_fun_indic.
 
 Arguments integrable_sf_indic {X gen μ P} π.
 
+Section sf_zero_fun.
+
+    (* espace de départ *)
+    Context  {X : Set}.
+    (* Un espace mesuré *)
+    Context (gen : (X -> Prop) -> Prop).
+
+    Context {A : AbsRing}.
+    Context {E : NormedModule A}.
+    
+    Definition sf_zero : simpl_fun E gen.
+        pose whichz := fun _ : X => O.
+        pose valz := fun _ : nat => zero : E.
+        apply (mk_simpl_fun whichz valz 0).
+        unfold valz => //.
+        unfold whichz => //.
+        move => n /(Nat.le_0_r) ->.
+        unfold whichz; apply measurable_Prop.
+    Defined.
+
+    Lemma sf_zero_zero : ∀ x : X, sf_zero x = zero.
+    Proof.
+       by [].
+    Qed.
+
+    Context (μ : measure gen).
+
+    Lemma integrable_sf_zero :
+        integrable_sf μ sf_zero.
+    Proof.
+        unfold integrable_sf => /=.
+        lia.
+    Qed.
+
+End sf_zero_fun.
+
 Section simpl_fun_norm.
 
     (* espace de départ *)

@@ -4,6 +4,8 @@ From Coq Require Import
 
     Rdefinitions
     RIneq
+    Lia
+    Lra
 .
 
 From Coquelicot Require Import
@@ -13,6 +15,8 @@ From Coquelicot Require Import
 Require Import
     hierarchy_notations
     simpl_fun
+    sigma_algebra
+    measurable_fun
     series
 .
 
@@ -313,6 +317,177 @@ Section NM_lim_seq_prop.
     Proof.
         move => u Hu.
         apply filterlim_bounded => //.
+    Qed.
+
+    Lemma measurable_fun_lim_seq {X : Set} {gen : (X -> Prop) -> Prop} :
+        ∀ s : nat -> X -> E, (∀ n : nat, measurable_fun gen open (s n)) ->
+        ∀ f : X -> E,
+            (∀ x : X, is_lim_seq (fun n => s n x) (f x))
+            -> measurable_fun gen open f.
+    Proof.
+        move => s Hs f Hf.
+        suff: (∀ U : E -> Prop, open U -> measurable gen (λ x : X, U (f x))).
+            move => H P HP.
+            induction HP.
+            move: H0 => /H//.
+            apply measurable_empty.
+            apply measurable_compl => //.
+            apply measurable_union_countable => //.
+            move => U HU.
+        pose Ω := fun r : nat => (fun x : E => ∃ d : R, ( / (INR r + 1)) < d ∧ (∀ y : E, U y ∨ (‖ minus x y ‖%hy > d))).
+        assert (∀ x : X, (∃ r : nat, Ω r (f x)) ↔ U (f x)) as Decomp.
+            move => x; split.
+            case => r; unfold Ω; case => [d [Hlt H]].
+            case (H (f x)) => //.
+            rewrite minus_eq_zero norm_zero => Abs.
+            apply False_ind.
+            assert (0 < /(INR r + 1)).
+            apply RiemannInt.RinvN_pos.
+            apply (Rlt_asym _ _ H0) => //.
+            apply Rlt_trans with d => //.
+            move => Ufx.
+            unfold open in HU.
+            move: (HU (f x) Ufx) => /locally_norm_le_locally.
+            case; move => [ɛ Hɛ] Hloc.
+            assert (0 < ɛ*/2) as Hhalfɛ by lra.
+            case: (Rtrigo_def.archimed_cor1 (ɛ*/2) Hhalfɛ).
+            move => m' [Hm'0 Hm'1].
+            assert (m' = (m' - 1) + 1)%nat by lia.
+            pose m := (m' - 1)%nat.
+            fold m in H; rewrite H in Hm'0.
+            replace (m + 1)%nat with (S m) in Hm'0 by lia.
+            rewrite RIneq.S_INR in Hm'0.
+            clear H; clearbody m; clear Hm'1 m'.
+            exists m.
+            exists (ɛ*/2); split => //.
+            move => y.
+            case: (ball_norm_dec (f x) y {| pos := ɛ; cond_pos := Hɛ |}).
+                move => /Hloc; left => //.
+                move => /Rnot_gt_le/=H; right.
+                apply Rlt_gt, RIneq.Rlt_le_trans with ɛ => //.
+                apply Rlimit.Rlt_eps2_eps => //.
+                rewrite <-norm_opp, opp_minus => //.
+        apply measurable_ext with (fun x => ∃ r : nat, Ω r (f x)).
+        exact Decomp.
+        apply measurable_ext with (fun x => ∃ r : nat, ∃ m : nat, ∀ n : nat, m ≤ n -> Ω r (s n x)).
+            move => x; split.
+            case => r; case => m H.
+            apply Decomp.
+            unfold Ω in H.
+            unfold is_lim_seq in Hf.
+            pose sigr := {|
+                RIneq.pos := / (INR r + 1);
+                RIneq.cond_pos := RiemannInt.RinvN_pos r |}.
+            assert (locally (f x) (ball_norm (f x) sigr)) as Hloc_norm.
+            apply locally_le_locally_norm; unfold locally_norm.
+                exists sigr => //.
+            pose Hloc := Hf x (ball_norm (f x) sigr) Hloc_norm; clearbody Hloc; clear Hloc_norm.
+            case: Hloc => N /= HN.
+            assert (m ≤ max m N) as Ineq by lia.
+            case: (H (max m N) Ineq) => d [Hlt {}H].
+            case: (H (f x)) => //.
+            move => Abs; apply False_ind.
+            assert (N ≤ max m N) as Ineq' by lia.
+            pose Abs' := (HN (max m N) Ineq'); clearbody Abs'.
+            unfold ball_norm in Abs'.
+            apply (Rlt_asym _ _ Abs).
+            apply Rlt_trans with (/ (INR r + 1)) => //.
+            case => r Ωrfx.
+            exists r.
+            unfold is_lim_seq, filterlim, eventually, filter_le, filtermap
+                in Hf.
+            case: Ωrfx => d; move => [Hlt Hloc].
+            apply Hf.
+            pose ɛ := (d - / (INR r + 1))%R.
+            assert (0 < ɛ) as Hɛ.
+            apply Rlt_Rminus => //.
+            pose sigɛ := {| pos := ɛ; cond_pos := Hɛ |}.
+            suff: locally_norm (f x) (Ω r).
+            apply locally_le_locally_norm.
+            exists sigɛ => y Hy.
+            pose (d' := (d - ‖ minus y (f x) ‖%hy)%R).
+            assert (/ (INR r + 1) < d') as Hlt'.
+            unfold ball_norm in Hy; simpl in Hy.
+            unfold d'; unfold ɛ in Hy; lra.
+            exists d'; split => //.
+            move => z.
+            case: (Hloc z).
+                left => //.
+                move => Hz.
+                right.
+                unfold d'.
+                apply Rlt_gt.
+                unfold Rminus.
+                apply Rlt_le_trans with ((‖ minus (f x) z ‖)%hy + - (‖ minus y (f x) ‖)%hy)%R.
+                apply Rplus_lt_compat_r => //.
+                setoid_rewrite <-norm_opp at 2.
+                setoid_rewrite opp_minus.
+                apply Rle_trans with (‖ minus (minus (f x) z) (minus (f x) y) ‖)%hy.
+                apply Rle_trans with (| ‖ minus (f x) z ‖%hy - ‖ minus (f x) y ‖%hy |)%R.
+                apply Rbasic_fun.Rle_abs.
+                apply norm_triangle_inv.
+                unfold minus.
+                rewrite opp_plus opp_opp.
+                rewrite plus_assoc.
+                rewrite plus_comm.
+                rewrite plus_assoc.
+                setoid_rewrite plus_comm at 3.
+                do 2 rewrite <-plus_assoc.
+                rewrite plus_opp_r plus_zero_r.
+                apply Rle_refl.
+                apply measurable_union_countable => r.
+                apply measurable_union_countable => m.
+                apply measurable_inter_countable => n.
+                case_eq (m <=? n).
+                    move => /Nat.leb_le Lemn.
+                    apply measurable_ext with (λ x : X, Ω r (s n x)).
+                    move => x; split => //.
+                    move => H; exact (H Lemn).
+                    apply (Hs n).
+                    apply measurable_gen.
+                    move => x; case => d [Hd H].
+                    suff: (locally_norm x (Ω r)).
+                    apply locally_le_locally_norm.
+                    pose ɛ := (d - / (INR r + 1))%R.
+                    assert (0 < ɛ) as Hɛ.
+                    apply Rlt_Rminus => //.
+                    pose sigɛ := {| pos := ɛ; cond_pos := Hɛ |}.
+                    exists sigɛ => y Hy.
+                    pose (d' := (d - ‖ minus y x ‖%hy)%R).
+                    assert (/ (INR r + 1) < d') as Hlt'.
+                    unfold ball_norm in Hy; simpl in Hy.
+                    unfold d'; unfold ɛ in Hy; lra.
+                    exists d'; split => //.
+                    move => z.
+                    case: (H z).
+                        left => //.
+                        move => Hz.
+                        right.
+                        unfold d'.
+                        apply Rlt_gt.
+                        unfold Rminus.
+                        apply Rlt_le_trans with ((‖ minus x z ‖)%hy + - (‖ minus y x ‖)%hy)%R.
+                        apply Rplus_lt_compat_r => //.
+                        setoid_rewrite <-norm_opp at 2.
+                        setoid_rewrite opp_minus.
+                        apply Rle_trans with (‖ minus (minus x z) (minus x y) ‖)%hy.
+                        apply Rle_trans with (| ‖ minus x z ‖%hy - ‖ minus x y ‖%hy |)%R.
+                        apply Rbasic_fun.Rle_abs.
+                        apply norm_triangle_inv.
+                        unfold minus.
+                        rewrite opp_plus opp_opp.
+                        rewrite plus_assoc.
+                        rewrite plus_comm.
+                        rewrite plus_assoc.
+                        setoid_rewrite plus_comm at 3.
+                        do 2 rewrite <-plus_assoc.
+                        rewrite plus_opp_r plus_zero_r.
+                        apply Rle_refl.
+                move => /Nat.leb_gt Ltnm.
+                apply measurable_ext with (fun _ => True).
+                move => x; split => //.
+                    move => _ Abs; lia.
+                apply measurable_full.
     Qed.
 
 End NM_lim_seq_prop.
