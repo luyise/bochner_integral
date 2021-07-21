@@ -18,9 +18,9 @@ From Coquelicot Require Import
 .
 
 Require Import
-    CUS_Lim_seq
     countable_sets
     hierarchy_notations
+    Rbar_compl
 .
 
 Section open_subspaces.
@@ -68,6 +68,27 @@ Section open_subspaces.
         unfold plus => //.
         setoid_rewrite Rplus_assoc.
         rewrite Rplus_opp_l; apply Rplus_ne.
+    Qed.
+
+    Lemma NM_open_neq : ∀ x : E,
+        open (fun y => y ≠ x).
+    Proof.
+        move => x y Neqxy.
+        assert (0 < ‖ minus x y ‖) as Hdxy.
+            apply norm_gt_0.
+            unfold minus.
+            move => Abs.
+            apply Neqxy.
+            apply plus_reg_r with (opp y).
+            rewrite plus_opp_r Abs => //.
+        suff: (locally_norm y (λ y0 : E, y0 ≠ x)).
+            apply locally_le_locally_norm.
+        exists (RIneq.mkposreal _ Hdxy) => z /= By.
+        move => Abs.
+        rewrite Abs in By.
+        unfold ball_norm in By.
+        apply: Rlt_irrefl.
+        exact By.
     Qed.
 
 End open_subspaces.

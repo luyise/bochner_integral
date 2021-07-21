@@ -183,7 +183,88 @@ Section Bi_fun_prop.
         ∀ bf : Bif E μ, measurable_fun gen open bf.
     Proof.
         case => f sf ι isf axfpw axfl1 /=.
-    Admitted.
+        apply measurable_fun_lim_seq with sf.
+        move => n; apply measurable_fun_sf.
+        assumption.
+    Qed.
+
+    Lemma integrable_Bif :
+        ∀ bf : Bif E μ, is_finite (LInt_p μ (‖ bf ‖)%fn).
+    Proof.
+        case => f sf ι isf axfpw axfl1 /=.
+        case: (axfl1 (RIneq.posreal_one)) => /=.
+        move => H1 H2; case: H2 => N HN.
+        rewrite Raxioms.Rplus_0_l in HN.
+        assert (N ≤ N) by lia.
+        pose HNN := HN _ H; clearbody HNN.
+        apply Rbar_bounded_is_finite with 0%R
+        (Rbar_plus 1%R (BInt_sf μ (‖ sf N ‖)%sf)).
+        apply LInt_p_ge_0 => //.
+        move => x; unfold fun_norm.
+        apply norm_ge_0.
+        rewrite (LInt_p_ext _ _ (fun x => (‖ f + (- sf N)%sf + (sf N) ‖)%fn x));
+            swap 1 2.
+            move => x.
+            unfold fun_norm.
+            unfold fun_plus.
+            rewrite <-plus_assoc.
+            rewrite fun_sf_scal.
+            rewrite scal_opp_one.
+            rewrite plus_opp_l.
+            rewrite plus_zero_r => //.
+        apply Rbar_le_trans with (Rbar_plus (LInt_p μ (λ x : X, (‖ f + (- sf N)%sf ‖)%fn x)) (LInt_p μ (‖ sf N ‖)%fn)).
+        rewrite <-LInt_p_plus => /=.
+        apply LInt_p_monotone => x /=.
+        apply norm_triangle.
+        exact ι.
+        all : swap 1 2.
+        assert
+            (∀ x : X, is_lim_seq (fun n => (‖ sf n + (- sf N)%sf ‖)%fn x) ((‖ f + (- sf N)%sf ‖)%fn x)) as Limseqnorm.
+            move => x; unfold fun_norm.
+            apply lim_seq_norm.
+            apply lim_seq_plus.
+            apply axfpw.
+            apply lim_seq_cte.
+        apply measurable_fun_ext with (fun x : X => (Lim_seq' (λ n : nat, (‖ sf n + (- sf N)%sf ‖)%fn x))).
+            move => x; rewrite <-Lim_seq_seq'.
+            apply is_lim_seq_unique.
+            apply Limseqnorm.
+        apply measurable_fun_Lim_seq'.
+        move => n; unfold sum_Rbar_nonneg.non_neg => x; apply norm_ge_0.
+        move => n; apply measurable_fun_R_Rbar.
+        unfold measurable_fun_R.
+        unfold gen_R.
+        suff: measurable_fun gen open (‖ sf n + (- sf N)%sf ‖)%fn.
+        move => Hmeas P /measurable_R_equiv_oo/Hmeas//.
+        apply measurable_fun_ext with (fun x => (‖ sf n + (- sf N) ‖)%sf x).
+        move => x; unfold fun_norm; rewrite fun_sf_norm.
+        rewrite fun_sf_plus; unfold fun_plus => //.
+        apply: measurable_fun_sf.
+        move => x; unfold fun_norm; apply norm_ge_0.
+        move => x; unfold fun_norm; apply norm_ge_0.
+        apply measurable_fun_R_Rbar.
+        unfold measurable_fun_R.
+        unfold gen_R.
+        suff: measurable_fun gen open (‖ sf N ‖)%fn.
+        move => Hmeas P /measurable_R_equiv_oo/Hmeas//.
+        apply measurable_fun_ext with (fun x => (‖ sf N ‖)%sf x).
+        move => x; unfold fun_norm; rewrite fun_sf_norm //.
+        apply: measurable_fun_sf.
+        apply Rbar_plus_le_compat.
+        apply Rbar_lt_le => //.
+        rewrite Finite_BInt_sf_LInt_SFp.
+        rewrite <-LInt_p_SFp_eq.
+        rewrite (LInt_p_ext _ _ (λ x : X, (‖ sf N ‖)%sf x)).
+        all : swap 1 2.
+        move => x; unfold fun_norm; rewrite fun_sf_norm => //.
+        apply Rbar_le_refl.
+        exact ι.
+        move => x; rewrite fun_sf_norm; apply norm_ge_0.
+        apply integrable_sf_norm.
+        apply isf.
+        by [].
+        simpl => //.
+    Qed.
 
     Lemma Cauchy_seq_approx :
         ∀ f : X -> E, ∀ s : nat -> simpl_fun E gen, (∀ n : nat, integrable_sf μ (s n)) -> inhabited X ->

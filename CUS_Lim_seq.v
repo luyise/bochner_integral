@@ -215,6 +215,39 @@ Section NM_lim_seq_prop.
     Open Scope hy_scope.
     Open Scope fun_scope.
 
+    Lemma is_lim_seq_epsilon :
+        ∀ u : nat -> E, ∀ l : E,
+            is_lim_seq u l <-> 
+            (∀ ɛ : R, 0 < ɛ -> ∃ N : nat, ∀ n : nat, N ≤ n -> (‖ minus (u n) l ‖%hy < ɛ)%R).
+    Proof.
+        move => u l; split.
+        unfold is_lim_seq, filterlim, eventually.
+        move => H.
+        assert (filter_le
+        (filtermap u (λ P : nat → Prop, ∃ N : nat, ∀ n : nat, N ≤ n → P n))
+        (locally_norm l)).
+        apply filter_le_trans with (locally l) => //.
+        apply locally_le_locally_norm.
+        clear H => ɛ Hɛ.
+        unfold filter_le, filtermap, locally_norm in H0.
+        assert (∃ η : posreal, ∀ y : E, ball_norm l η y -> ball_norm l ɛ y).
+        exists (RIneq.mkposreal ɛ Hɛ) => //.
+        case: (H0 _ H) => N HN.
+        exists N; unfold ball_norm in HN.
+        assumption.
+        move => Hloc.
+        unfold is_lim_seq, filterlim, eventually.
+        suff: (filter_le (filtermap u (λ P : nat → Prop, ∃ N : nat, ∀ n : nat, N ≤ n → P n))
+        (locally_norm l)).
+        move => H.
+        apply filter_le_trans with (locally_norm l) => //.
+        apply locally_norm_le_locally.
+        unfold locally_norm, filter_le, filtermap.
+        move => P; case; case => ɛ Hɛ Hloc'.
+        case: (Hloc ɛ Hɛ) => N HN.
+        exists N => n; move => /HN/Hloc'//.
+    Qed.
+
     Lemma lim_seq_plus :
         ∀ u v : nat -> E, ∀ lu lv : E,
             is_lim_seq u lu -> is_lim_seq v lv ->

@@ -29,6 +29,7 @@ Require Import
     square_bij
     hierarchy_notations
     Rmax_n
+    topology_compl
 .
 
 Declare Scope sf_scope.
@@ -862,6 +863,59 @@ Section simpl_fun_meas.
             clear H0 HP.
             constructor 4.
             move => n; apply measurable_fun_sf_aux => //.
+    Qed.
+
+    Lemma finite_sf_preim_neq_0' {sf : simpl_fun E gen} :
+        integrable_sf μ sf ->
+            is_finite (μ (fun x : X => sf x ≠ zero)).
+    Proof.
+        unfold integrable_sf => axf4.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf; rewrite <-Eqf => /=.
+        rewrite Eqf in axf4; simpl in axf4.
+        apply Rbar_bounded_is_finite with 0%R (μ (fun x => ∃ n : nat, n < max_which sf ∧ which sf x = n)).
+        apply meas_ge_0.
+        apply measure_le.
+        apply (measurable_fun_sf sf (fun x : E => x ≠ zero)).
+        apply measurable_gen.
+        apply NM_open_neq.
+        apply measurable_union_finite' => n Hn.
+        apply ax_measurable; lia.
+        move => x Neq0.
+        exists (which sf x); split => //.
+        case: (le_lt_or_eq _ _ (ax_which_max_which sf x)) => //.
+        move => Abs.
+        unfold fun_sf in Neq0.
+        rewrite Abs in Neq0.
+        rewrite ax_val_max_which in Neq0 => //.
+        easy.
+        rewrite (measure_decomp_finite _ μ _ (max_which sf) (fun n => fun x => which sf x = n)).
+        apply finite_sum_Rbar => k Hk.
+        case: (le_lt_or_eq _ _ Hk) => Hk'.
+        rewrite (measure_ext _ _ _ (λ x : X, which sf x = k)).
+        rewrite Eqf in Hk' |- * => /=; simpl in Hk'.
+        apply axf4 => //.
+        move => x; split.
+        easy.
+        move => ->.
+        split.
+        exists k => //.
+        reflexivity.
+        rewrite Hk'.
+        rewrite (measure_ext _ _ _ (fun _ => False)).
+        rewrite meas_False => //.
+        move => x; split => //.
+        case; case => n; case => Hn1 ->.
+        lia.
+        apply measurable_union_finite'.
+        move => n Hn.
+        apply ax_measurable; lia.
+        move => n Hn.
+        apply ax_measurable => //.
+        move => x.
+        exists (which sf x); split.
+        apply ax_which_max_which.
+        reflexivity.
+        move => n p x Hn Hp Eqwn <- //.
     Qed.
 
 End simpl_fun_meas.

@@ -418,7 +418,6 @@ Section BInt_linearity.
             (∀ x : X, bf x = zero) -> BInt bf = zero.
     Proof.
         move => bf Hbf.
-        Print Implicit BInt_ext.
         rewrite (BInt_ext bf (Bif_zero (ax_notempty bf))).
         unfold Bif_zero. 
         rewrite <-BInt_BInt_sf.

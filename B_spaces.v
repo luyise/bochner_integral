@@ -39,6 +39,8 @@ Require Import
     sigma_algebra_R_Rbar_new
 .
 
+(*
+
 Section ae_eq_prop.
 
     (* espace de départ *)
@@ -55,6 +57,34 @@ Section ae_eq_prop.
         ae_eq μ bf (fun _ => zero) ->
             BInt bf = zero.
     Proof.
+        pose NZ := (fun x => bf x ≠ zero).
+        assert (measurable gen NZ) as π.
+        apply (measurable_Bif bf (fun x => x ≠ zero)).
+        apply measurable_gen.
+        apply NM_open_neq.
+        unfold ae_eq, ae_rel.
+        move => Hae0.
+        apply: norm_eq_zero.
+        suff: ((‖ BInt bf ‖)%hy <= 0).
+        move => Le.
+        apply RIneq.Rle_le_eq.
+        split => //.
+        apply norm_ge_0.
+        apply RIneq.Rle_trans with (BInt (‖bf‖)).
+        apply norm_BInt_le.
+        assert (μ (λ x : X, bf x ≠ zero) = Finite 0%R) as negNZ.
+        case Hae0 => A [Hle [HMA HμA]].
+        suff: (Rbar_le (μ (λ x : X, bf x ≠ zero)) 0).
+            move => HLe.
+            apply Rbar_le_antisym => //.
+            apply meas_ge_0.
+            apply Rbar_le_trans with (μ A).
+            apply measure_le => //.
+            rewrite HμA; apply Rbar_le_refl.
+        assert (is_finite (μ (λ x : X, bf x ≠ zero))) as π'.
+        rewrite negNZ => //.
+        apply RIneq.Rle_trans with
+            (BInt (Bif_integrable_sf ι (integrable_sf_indic π π')) = μ P).
 
     Lemma BInt_ae_eq {bf bf' : Bif E μ} :
         ae_eq μ bf bf' -> BInt bf = BInt bf'.
@@ -87,3 +117,5 @@ Section ae_eq_prop.
     Admitted.
 
 End ae_eq_prop.
+
+*)
