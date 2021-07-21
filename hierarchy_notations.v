@@ -13,6 +13,10 @@ Open Scope hy_scope.
 
 Notation "a + b" := (plus a b) : hy_scope.
 
+Notation "- a" := (opp a) : hy_scope.
+
+Notation "a - b" := (plus a (- b))%hy : hy_scope.
+
 Notation "a * b" := (mult a b) : hy_scope.
 
 Notation "a ⋅ u" := (scal a u) (left associativity, at level 45) : hy_scope.

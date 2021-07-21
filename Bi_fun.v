@@ -36,7 +36,24 @@ Require Import
     measurable_fun
     sigma_algebra
     sigma_algebra_R_Rbar_new
+    sum_Rbar_nonneg
 .
+
+Lemma LInt_p_dominated_convergence' {E : Set} {gen : (E -> Prop) -> Prop} {mu : measure gen} :
+  forall f: nat -> E -> Rbar, forall g,
+    (forall n, non_neg (f n)) ->
+    (forall n, measurable_fun_Rbar gen (f n)) ->
+    (forall x, ex_lim_seq' (fun n => f n x)) ->
+     non_neg g -> measurable_fun_Rbar gen g ->
+    (forall n x, Rbar_le (f n x) (g x)) ->
+     is_finite (LInt_p mu g) ->
+    let lim_f := fun x => Lim_seq' (fun n => f n x) in
+     measurable_fun_Rbar gen lim_f /\ 
+     is_finite (LInt_p mu lim_f) /\
+     LInt_p mu lim_f = Lim_seq' (fun n => LInt_p mu (f n)) /\
+     ex_lim_seq' (fun n => LInt_p mu (f n)).
+Proof.
+Admitted.
 
 Lemma is_LimSup_seq'_scal_l :
   forall u : nat -> Rbar, forall a : R, 0%R <= a -> forall l : R, is_LimSup_seq' u l ->
@@ -732,6 +749,8 @@ End Bif_op.
 Notation "bf + bg" := (Bif_plus bf bg) : Bif_scope.
 Notation "a ⋅ bf" := (Bif_scal a bf) : Bif_scope.
 Notation "‖ bf ‖" := (Bif_norm bf) : Bif_scope.
+Notation "- bf" := (Bif_scal (opp one) bf) : Bif_scope.
+Notation "bf - bg" := (bf + (- bg))%Bif : Bif_scope.
 
 Definition inRange 
     {X : Set} {A : AbsRing} {E : NormedModule A}
@@ -1511,7 +1530,170 @@ Module Bif_adapted_seq.
         Lemma s_l1_cv :
             (is_LimSup_seq' (fun n => LInt_p μ (‖ f - (s n) ‖)%fn) 0).
         Proof.
-        Admitted.
+            assert ((∀ n : nat,
+                non_neg
+                ((λ (n0 : nat) (x : X),
+                  (‖ f + (- s n0)%sf ‖)%fn x) n))) as H1_CVD.
+                move => n x; unfold fun_norm; apply norm_ge_0.
+            assert
+                (∀ n : nat,
+                measurable_fun_Rbar gen
+                ((λ (n0 : nat) (x : X),
+                    (‖ f + (- s n0)%sf ‖)%fn x) n))
+                as H2_CVD.
+                move => n.
+                assert
+                (∀ x : X, is_lim_seq (fun k => (‖ s k + (- s n)%sf ‖)%fn x) ((‖ f + (- s n)%sf ‖)%fn x)) as Limseqnorm.
+                move => x; unfold fun_norm.
+                apply lim_seq_norm.
+                apply lim_seq_plus.
+                apply s_pointwise_cv.
+                apply lim_seq_cte.
+                apply measurable_fun_ext with (fun x : X => (Lim_seq' (λ k : nat, (‖ s k + (- s n)%sf ‖)%fn x))).
+                move => x; rewrite <-Lim_seq_seq'.
+                apply is_lim_seq_unique.
+                unfold Lim_seq.is_lim_seq.
+                unfold Rbar_locally => /=.
+                apply: Limseqnorm.
+                apply measurable_fun_Lim_seq'.
+                move => k; unfold sum_Rbar_nonneg.non_neg => x; apply norm_ge_0.
+                move => k; apply measurable_fun_R_Rbar.
+                apply: (measurable_fun_composition _ open).
+                apply measurable_fun_ext with ((s k + (- s n)%sf))%sf.
+                    move => x.
+                    rewrite fun_sf_plus => //.
+                apply (measurable_fun_sf (s k - s n)%sf).
+                move => P; move /sigma_algebra_R_Rbar_new.measurable_R_equiv_oo.
+                apply measurable_fun_continuous.
+                apply filterlim_norm.
+            assert
+                ((∀ x : X,
+                ex_lim_seq'
+                  (λ n : nat,
+                     (λ (n0 : nat) (x0 : X),
+                        (‖ f + (- s n0)%sf ‖)%fn x0) n x)))
+                as H3_CVD.
+                move => x.
+                unfold ex_lim_seq'.
+                rewrite <-LimInf_seq_seq'.
+                rewrite <-LimSup_seq_seq'.
+                suff: Lim_seq.is_lim_seq (λ x0 : nat, (‖ f + (- s x0)%sf ‖)%fn x) 0.
+                move => H.
+                symmetry.
+                apply ex_lim_LimSup_LimInf_seq.
+                exists 0 => //.
+                suff: is_lim_seq (λ x0 : nat, (‖ f + (- s x0)%sf ‖)%fn x) 0.
+                easy.
+                replace 0%R with (‖ @zero (CompleteNormedModule.NormedModule R_AbsRing E) ‖)%hy at 1.
+                2 : rewrite norm_zero => //.
+                apply lim_seq_ext with (‖ fun n => ((f x) - (s n x))%hy ‖)%fn.
+                move => n; unfold fun_norm, fun_plus; rewrite fun_sf_scal.
+                rewrite scal_opp_one => //.
+                apply lim_seq_norm.
+                replace zero with (f x - f x)%hy at 1.
+                2 : rewrite plus_opp_r => //.
+                apply: lim_seq_plus.
+                apply lim_seq_cte.
+                apply: lim_seq_opp.
+                apply s_pointwise_cv.
+            assert (non_neg (λ x : X, 3 * (‖ f x ‖)))
+                as H4_CVD.
+                move => x /=; apply RIneq.Rmult_le_pos.
+                lra.
+                apply norm_ge_0.
+            assert (measurable_fun_Rbar gen (λ x : X, 3 * (‖ f x ‖)))
+                as H5_CVD.
+                apply measurable_fun_R_Rbar.
+                apply measurable_fun_Rmult.
+                apply measurable_fun_cte.
+                apply measurable_fun_composition with open.
+                assumption.
+                suff: (measurable_fun open open (@norm _ E)).
+                move => Hmeasn P /measurable_R_equiv_oo/Hmeasn//.
+                apply measurable_fun_continuous.
+                unfold Continuity.continuous.
+                apply filterlim_norm.
+            assert
+                ((∀ (n : nat) (x : X),
+                Rbar_le ((λ (n0 : nat) (x0 : X), (‖ f + (- s n0)%sf ‖)%fn x0) n x)
+                ((λ x0 : X, 3 * (‖ f x0 ‖)) x))) as H6_CVD.
+                move => n x /=.
+                unfold fun_norm, fun_plus.
+                rewrite fun_sf_scal scal_opp_one.
+                apply RIneq.Rle_trans with (‖ f x ‖ + ‖ - s n x ‖)%hy.
+                unfold plus at 2 => /=.
+                apply norm_triangle.
+                rewrite norm_opp.
+                unfold plus => /=.
+                replace (3 * (‖ f x ‖)) with ((‖ f x ‖) + 2 * (‖ f x ‖)).
+                2 : replace (‖ f x ‖) with (1 * (‖ f x ‖)) at 1 by lra.
+                2 : rewrite <-RIneq.Rmult_plus_distr_r.
+                2 : lra.
+                apply: RIneq.Rplus_le_compat_l.
+                apply le_sn_two_f.
+            assert (is_finite (LInt_p μ (λ x : X, 3 * (‖ f x ‖)))) as H7_CVD.
+                rewrite (LInt_p_ext _ _  (fun x => Rbar_mult 3 (‖ f x ‖))).
+                2 : easy.
+                rewrite LInt_p_scal => //.
+                2 : move => x /=; apply norm_ge_0.
+                3 : simpl; lra.
+                all : swap 1 2.
+                apply measurable_fun_R_Rbar.
+                apply measurable_fun_composition with open.
+                assumption.
+                suff: (measurable_fun open open (@norm _ E)).
+                move => Hmeasn P /measurable_R_equiv_oo/Hmeasn//.
+                apply measurable_fun_continuous.
+                unfold Continuity.continuous.
+                apply filterlim_norm.
+                rewrite Rbar_mult_comm.
+                apply is_finite_Rbar_mult_finite_real.
+                assumption.
+
+            pose HCVD := LInt_p_dominated_convergence' 
+                (fun n => (λ x : X, (‖ f + (- s n)%sf ‖)%fn x)) 
+                (fun x : X => 3 * ‖ f x ‖)
+                H1_CVD
+                H2_CVD
+                H3_CVD
+                H4_CVD
+                H5_CVD
+                H6_CVD
+                H7_CVD
+            ; clearbody HCVD.
+            assert (Finite 0 =
+                Lim_seq'
+                (λ n : nat,
+                    LInt_p μ
+                    ((λ (n0 : nat) (x : X), (‖ f + (- s n0)%sf ‖)%fn x) n))).
+                case: HCVD => [CVD1 [CVD2 [CVD3 CVD4]]].
+            rewrite <-CVD3.
+            rewrite (LInt_p_ext _ _ (fun _ => 0)).
+            rewrite LInt_p_0 => //.
+            move => x.
+            rewrite <-Lim_seq_seq'.
+            suff: Lim_seq.is_lim_seq (λ x0 : nat, (‖ f + (- s x0)%sf ‖)%fn x) 0.
+            apply: is_lim_seq_unique.
+            replace 0%R with (‖ @zero (CompleteNormedModule.NormedModule R_AbsRing E) ‖)%hy at 1.
+            2 : rewrite norm_zero => //.
+            apply lim_seq_ext with (‖ fun n => ((f x) - (s n x))%hy ‖)%fn.
+            move => n; unfold fun_norm, fun_plus; rewrite fun_sf_scal.
+            rewrite scal_opp_one => //.
+            apply lim_seq_norm.
+            replace zero with (f x - f x)%hy at 1.
+            2 : rewrite plus_opp_r => //.
+            apply: lim_seq_plus.
+            apply lim_seq_cte.
+            apply: lim_seq_opp.
+            apply s_pointwise_cv.
+
+            rewrite ex_lim_seq'_LimSup in H.
+            unfold real in H.
+            rewrite H.
+            unfold real.
+            apply: LimSup_seq'_correct.
+            case: HCVD => [_ [_ [_ CVD4]]] //.
+        Qed.
 
         Definition Bif_separable_range : Bif E μ :=
             mk_Bif f s 

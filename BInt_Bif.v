@@ -428,4 +428,21 @@ Section BInt_linearity.
         rewrite Bif_zero_fun => //.
     Qed.
 
+    Lemma BInt_minus :
+        ∀ bf bg : Bif E μ,
+            BInt (bf - bg)%Bif = ((BInt bf) - (BInt bg))%hy.
+    Proof.
+        move => bf bg.
+        rewrite BInt_plus BInt_scal.
+        rewrite scal_opp_one => //.
+    Qed.
+
+    Lemma BInt_opp :
+        ∀ bf : Bif E μ,
+            (BInt (- bf)) = (- (BInt bf))%hy.
+    Proof.
+        move => bf.
+        rewrite BInt_scal scal_opp_one => //.
+    Qed.
+
 End BInt_linearity.

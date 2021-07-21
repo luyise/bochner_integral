@@ -14,7 +14,6 @@ From Coquelicot Require Import
     Hierarchy
     Rbar
     Lim_seq
-    Markov
 .
     
 Require Import
