@@ -162,4 +162,77 @@ Section ae_eq_prop2.
         rewrite Hz plus_opp_r => //.
     Qed.
 
+    Lemma BInt_ae_eq_norm1_zero {bf : Bif E μ} :
+        ae_eq μ bf (fun _ => zero) ->
+            BInt (‖bf‖) = zero.
+    Proof.
+        move => H.
+        apply BInt_ae_zero.
+        unfold ae_eq, ae_rel in *.
+        apply ae_ext with (λ x : X, bf x = zero).
+        move => x; rewrite Bif_fn_norm; split.
+            move => ->; rewrite norm_zero => //.
+            move => /norm_eq_zero//.
+        assumption.
+    Qed.
+
+    Lemma BInt_norm1_zero_ae_eq {bf bf' : Bif E μ} :
+        BInt (‖bf‖) = 0 -> ae_eq μ bf (fun _ => zero).
+    Proof.
+        pose NZ := (fun x => bf x ≠ zero).
+        assert (measurable gen NZ) as π.
+        apply (measurable_Bif bf (fun x => x ≠ zero)).
+        apply measurable_gen.
+        apply NM_open_neq.
+        unfold ae_eq, ae_rel.
+        move => HInt0.
+        apply ae_ext with (fun x => ‖ bf ‖ x = 0).
+        move => x; rewrite Bif_fn_norm; split.
+            move => /norm_eq_zero//.
+            move => ->; rewrite norm_zero //.
+        suff: (ae_eq μ (‖bf‖) (λ _ : X, 0)).
+        unfold ae_eq, ae_rel => //.
+        assert (sum_Rbar_nonneg.non_neg (λ x : X, (‖ bf ‖) x)) as H_0.
+            move => x; rewrite Bif_fn_norm; apply norm_ge_0.
+        assert (measurable_fun_Rbar gen (λ x : X, (‖ bf ‖) x)) as H_1.
+        apply measurable_fun_R_Rbar.
+        apply measurable_fun_ext with (fun x => ‖ bf x ‖%hy).
+        move => x; rewrite Bif_fn_norm //.
+        apply measurable_fun_composition with open.
+        apply measurable_Bif.
+        suff: measurable_fun open open (@norm _ E).
+        move => Hmeas P /measurable_R_equiv_oo/Hmeas//.
+        apply measurable_fun_continuous.
+        move => x.
+        apply filterlim_norm.
+        case: (LInt_p_ae_definite (ax_notempty bf) μ (‖bf‖ : X -> R) H_0 H_1) => _ HypLInt_p.
+        unfold ae_eq, ae_rel in HypLInt_p |- *.
+        move: HInt0.
+        rewrite BInt_LInt_p_eq; swap 1 2.
+        move => x; rewrite Bif_fn_norm; apply norm_ge_0.
+        rewrite <-is_finite_LInt_p_Bif in HypLInt_p; swap 1 2.
+        move => x; rewrite Bif_fn_norm; apply norm_ge_0.
+        simpl => H.
+        assert (@eq Rbar
+        (Finite
+           (real
+              (@LInt_p X gen μ
+                 (fun x : X =>
+                  Finite
+                    (@fn X R_NormedModule gen μ
+                       (@Bif_norm X E gen μ bf) x)))))
+        (Finite (IZR Z0))) as Hstrange.
+        congr Finite => //.
+        move: Hstrange => /HypLInt_p GoalStrange.
+        clear HypLInt_p.
+        unfold ae, ae_rel, negligible in *.
+        case: GoalStrange => A [HA1 [HA2 HA3]].
+        exists A; repeat split => //.
+        move => x NH.
+        apply HA1 => Abs.
+        apply NH.
+        suff: Finite ((‖ bf ‖) x) = Finite 0 => //.
+        congruence.
+    Qed.
+
 End ae_eq_prop2.
