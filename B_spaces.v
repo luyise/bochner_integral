@@ -26,6 +26,8 @@ Require Import
     series
     Bi_fun
     BInt_Bif
+    BInt_R
+    BInt_LInt_p
 .
 
 Require Import
@@ -37,8 +39,6 @@ Require Import
     sigma_algebra
     sigma_algebra_R_Rbar_new
 .
-
-(*
 
 Section ae_eq_prop.
 
@@ -82,8 +82,51 @@ Section ae_eq_prop.
             rewrite HμA; apply Rbar_le_refl.
         assert (is_finite (μ (λ x : X, bf x ≠ zero))) as π'.
         rewrite negNZ => //.
-        apply RIneq.Rle_trans with
-            (BInt (Bif_integrable_sf ι (integrable_sf_indic π π')) = μ P).
+        rewrite BInt_LInt_p_eq; swap 1 2.
+        move => x; rewrite Bif_fn_norm; apply norm_ge_0.
+        assert (ae μ (λ x : X, ‖bf‖ x = zero)).
+        apply ae_ext with (λ x : X, bf x = zero) => //.
+        move => x; rewrite Bif_fn_norm; split.
+        move => ->; rewrite norm_zero => //.
+        move => /norm_eq_zero//.
+        suff: (LInt_p μ (λ x : X, (‖ bf ‖) x) = 0).
+        move ->; apply RIneq.Rle_refl.
+        apply LInt_p_ae_definite.
+        exact (ax_notempty bf).
+        move => x; rewrite Bif_fn_norm; apply norm_ge_0.
+        apply measurable_fun_R_Rbar.
+        apply measurable_fun_ext with (fun x => ‖ bf x ‖%hy).
+        move => x; rewrite Bif_fn_norm //.
+        apply measurable_fun_composition with open.
+        apply measurable_Bif.
+        suff: measurable_fun open open (@norm _ E).
+        move => Hmeas P /measurable_R_equiv_oo/Hmeas//.
+        apply measurable_fun_continuous.
+        move => x.
+        apply filterlim_norm.
+        unfold ae_eq, ae_rel.
+        unfold zero in H; simpl in H.
+        unfold ae, negligible in *.
+        case: H => A [HA1 [HA2 HA3]].
+        exists A; repeat split => //.
+        move => x Hx.
+        apply HA1 => Abs.
+        rewrite Abs in Hx => //.
+    Qed.
+
+End ae_eq_prop.
+
+Section ae_eq_prop2.
+
+    (* espace de départ *)
+    Context {X : Set}.
+    (* espace d'arrivé *)
+    Context {E : CompleteNormedModule R_AbsRing}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context {μ : measure gen}.
+
+    Open Scope Bif_scope.
 
     Lemma BInt_ae_eq {bf bf' : Bif E μ} :
         ae_eq μ bf bf' -> BInt bf = BInt bf'.
@@ -109,12 +152,14 @@ Section ae_eq_prop.
         apply norm_BInt_le.
         suff: (BInt (‖ bf + opp one ⋅ bf' ‖) = 0).
         move => ->; apply RIneq.Rle_refl.
-        admit.
-        (* la j'ai besoin d'un pont entre BInt et LInt_p ! 
-         (ça doit venir avec de la convergence dominée )*)
+        rewrite BInt_ae_zero => //.
+        unfold ae_eq, ae_rel in *.
+        apply ae_ext with (fun x => bf x = bf' x) => //.
+        move => x; rewrite Bif_fn_norm Bif_fn_plus Bif_fn_scal scal_opp_one; split.
+        move ->; rewrite plus_opp_r norm_zero => //.
+        move => /norm_eq_zero.
+        move => Hz; apply plus_reg_r with (- bf' x)%hy.
+        rewrite Hz plus_opp_r => //.
+    Qed.
 
-    Admitted.
-
-End ae_eq_prop.
-
-*)
+End ae_eq_prop2.
