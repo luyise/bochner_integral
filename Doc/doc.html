@@ -504,6 +504,137 @@
 
 <br/>
 <span class="id" title="keyword">End</span> <span class="id" title="var">R_valued_Bif</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">strongly_measurable_fun</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Set</span>}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">E</span> : <span class="id" title="var">CompleteNormedModule</span> <span class="id" title="var">R_AbsRing</span>}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">gen</span> : (<span class="id" title="var">X</span> → <span class="id" title="keyword">Prop</span>) → <span class="id" title="keyword">Prop</span>}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">μ</span> : <span class="id" title="keyword">measure</span> <span class="id" title="var">gen</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">strongly_measurable</span> <span class="id" title="var">f</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">s</span> : <span class="id" title="var">nat</span> → <span class="id" title="var">simpl_fun</span> <span class="id" title="var">E</span> <span class="id" title="var">gen</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| (∀ <span class="id" title="var">x</span> : <span class="id" title="var">X</span>, <span class="id" title="var">is_lim_seq</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> ⇒ <span class="id" title="var">s</span> <span class="id" title="var">n</span> <span class="id" title="var">x</span>) (<span class="id" title="var">f</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">strongly_measurable_measurable</span> {<span class="id" title="var">f</span> : <span class="id" title="var">X</span> → <span class="id" title="var">E</span>} :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strongly_measurable</span> <span class="id" title="var">f</span> → <span class="id" title="var">measurable_fun</span> <span class="id" title="var">gen</span> <span class="id" title="var">open</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">strongly_measurable_plus</span> {<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">X</span> → <span class="id" title="var">E</span>} :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strongly_measurable</span> <span class="id" title="var">f</span> → <span class="id" title="var">strongly_measurable</span> <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ <span class="id" title="var">strongly_measurable</span> (<span class="id" title="var">f</span> + <span class="id" title="var">g</span>)%<span class="id" title="var">fn</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">strongly_measurable_scal</span> {<span class="id" title="var">f</span> : <span class="id" title="var">X</span> → <span class="id" title="var">E</span>} :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∀ <span class="id" title="var">a</span> : <span class="id" title="var">R</span>, <span class="id" title="var">strongly_measurable</span> <span class="id" title="var">f</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strongly_measurable</span> (<span class="id" title="var">a</span> ⋅ <span class="id" title="var">f</span>)%<span class="id" title="var">fn</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">strongly_measurable_opp</span> {<span class="id" title="var">f</span> : <span class="id" title="var">X</span> → <span class="id" title="var">E</span>} :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strongly_measurable</span> <span class="id" title="var">f</span> → <span class="id" title="var">strongly_measurable</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> ⇒ - (<span class="id" title="var">f</span> <span class="id" title="var">x</span>))%<span class="id" title="var">hy</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">strongly_measurable_minus</span> {<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">X</span> → <span class="id" title="var">E</span>} :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strongly_measurable</span> <span class="id" title="var">f</span> → <span class="id" title="var">strongly_measurable</span> <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ <span class="id" title="var">strongly_measurable</span> (<span class="id" title="var">f</span> + - <span class="id" title="var">g</span>)%<span class="id" title="var">fn</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">strongly_measurable_fun</span>.<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="var">strongly_measurable_separated_range_proof</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">seq_construction</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Set</span>}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">E</span> : <span class="id" title="var">CompleteNormedModule</span> <span class="id" title="var">R_AbsRing</span>}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">gen</span> : (<span class="id" title="var">X</span> → <span class="id" title="keyword">Prop</span>) → <span class="id" title="keyword">Prop</span>}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">μ</span> : <span class="id" title="keyword">measure</span> <span class="id" title="var">gen</span>}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">f</span> : <span class="id" title="var">X</span> → <span class="id" title="var">E</span>}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">Hsm</span> : <span class="id" title="var">strongly_measurable</span> <span class="id" title="var">gen</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">u_aux</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : (<span class="id" title="var">E</span> × <span class="id" title="var">nat</span> × <span class="id" title="var">nat</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">Hsm</span> <span class="id" title="keyword">with</span> <span class="id" title="var">exist</span> <span class="id" title="var">s</span> <span class="id" title="var">_</span> ⇒<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">O</span> ⇒ <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">val</span> (<span class="id" title="var">s</span> <span class="id" title="var">O</span>) <span class="id" title="var">O</span>, <span class="id" title="var">O</span>, <span class="id" title="var">O</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">S</span> <span class="id" title="var">n'</span> ⇒<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> '(<span class="id" title="var">_</span>, <span class="id" title="var">term</span>, <span class="id" title="var">value</span>) := <span class="id" title="var">u_aux</span> <span class="id" title="var">n'</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">if</span> <span class="id" title="var">value</span> =? <span class="id" title="var">max_which</span> (<span class="id" title="var">s</span> <span class="id" title="var">term</span>) <span class="id" title="keyword">then</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">val</span> (<span class="id" title="var">s</span> (<span class="id" title="var">S</span> <span class="id" title="var">term</span>)) <span class="id" title="var">O</span>, <span class="id" title="var">S</span> <span class="id" title="var">term</span>, <span class="id" title="var">O</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">else</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">val</span> (<span class="id" title="var">s</span> <span class="id" title="var">term</span>) (<span class="id" title="var">S</span> <span class="id" title="var">value</span>), <span class="id" title="var">term</span>, <span class="id" title="var">S</span> <span class="id" title="var">value</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">u</span> : <span class="id" title="var">nat</span> → <span class="id" title="var">E</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> ⇒ <span class="id" title="var">fst</span> (<span class="id" title="var">fst</span> (<span class="id" title="var">u_aux</span> <span class="id" title="var">n</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">u_aux_spec</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">Hsm</span> <span class="id" title="keyword">with</span> <span class="id" title="var">exist</span> <span class="id" title="var">s</span> <span class="id" title="var">_</span> ⇒<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∀ <span class="id" title="var">n</span> : <span class="id" title="var">nat</span>, ∀ <span class="id" title="var">k</span> : <span class="id" title="var">nat</span>, <span class="id" title="var">k</span> ≤ <span class="id" title="var">max_which</span> (<span class="id" title="var">s</span> <span class="id" title="var">n</span>) →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∃ <span class="id" title="var">m</span> : <span class="id" title="var">nat</span>, <span class="id" title="var">u_aux</span> <span class="id" title="var">m</span> = (<span class="id" title="var">val</span> (<span class="id" title="var">s</span> <span class="id" title="var">n</span>) <span class="id" title="var">k</span>, <span class="id" title="var">n</span>, <span class="id" title="var">k</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">u_spec</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">Hsm</span> <span class="id" title="keyword">with</span> <span class="id" title="var">exist</span> <span class="id" title="var">s</span> <span class="id" title="var">_</span> ⇒<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∀ <span class="id" title="var">n</span> : <span class="id" title="var">nat</span>, ∀ <span class="id" title="var">k</span> : <span class="id" title="var">nat</span>, <span class="id" title="var">k</span> ≤ <span class="id" title="var">max_which</span> (<span class="id" title="var">s</span> <span class="id" title="var">n</span>) →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∃ <span class="id" title="var">m</span> : <span class="id" title="var">nat</span>, <span class="id" title="var">u</span> <span class="id" title="var">m</span> = <span class="id" title="var">val</span> (<span class="id" title="var">s</span> <span class="id" title="var">n</span>) <span class="id" title="var">k</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">strongly_measurable_separated_range</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">NM_seq_separable_weak</span> <span class="id" title="var">u</span> (<span class="id" title="var">inRange</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">seq_construction</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">strongly_measurable_separated_range_proof</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Export</span> <span class="id" title="var">strongly_measurable_separated_range_proof</span>(<span class="id" title="var">strongly_measurable_separated_range</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">Bif_characterisation</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Set</span>}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">E</span> : <span class="id" title="var">CompleteNormedModule</span> <span class="id" title="var">R_AbsRing</span>}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">gen</span> : (<span class="id" title="var">X</span> → <span class="id" title="keyword">Prop</span>) → <span class="id" title="keyword">Prop</span>}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">μ</span> : <span class="id" title="keyword">measure</span> <span class="id" title="var">gen</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">strongly_measurable_integrable_Bif</span> {<span class="id" title="var">f</span> : <span class="id" title="var">X</span> → <span class="id" title="var">E</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">strongly_measurable</span> <span class="id" title="var">gen</span> <span class="id" title="var">f</span> → <span class="id" title="var">is_finite</span> (<span class="id" title="var">LInt_p</span> <span class="id" title="var">μ</span> (‖<span class="id" title="var">f</span>‖)%<span class="id" title="var">fn</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ <span class="id" title="var">inhabited</span> <span class="id" title="var">X</span> → <span class="id" title="var">Bif</span> <span class="id" title="var">E</span> <span class="id" title="var">μ</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">Hmeas</span> <span class="id" title="var">Hfin</span> <span class="id" title="var">ι</span> ⇒ <span class="id" title="var">Bif_separable_range</span> <span class="id" title="var">ι</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">strongly_measurable_measurable</span> <span class="id" title="var">Hmeas</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">strongly_measurable_separated_range</span> <span class="id" title="var">Hmeas</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Hfin</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">strongly_measurable_integrable_Bif_correct</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">f</span> : <span class="id" title="var">X</span> → <span class="id" title="var">E</span>} {<span class="id" title="var">Hmeas</span> : <span class="id" title="var">strongly_measurable</span> <span class="id" title="var">gen</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Hfin</span> : <span class="id" title="var">is_finite</span> (<span class="id" title="var">LInt_p</span> <span class="id" title="var">μ</span> (‖<span class="id" title="var">f</span>‖)%<span class="id" title="var">fn</span>)} {<span class="id" title="var">ι</span> : <span class="id" title="var">inhabited</span> <span class="id" title="var">X</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: ∀ <span class="id" title="var">x</span> : <span class="id" title="var">X</span>, <span class="id" title="var">f</span> <span class="id" title="var">x</span> =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strongly_measurable_integrable_Bif</span> <span class="id" title="var">Hmeas</span> <span class="id" title="var">Hfin</span> <span class="id" title="var">ι</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Bif_characterisation</span>.<br/>
 </div>
 <h1 class="libtitle">Library BInt_Bif</h1>
 
@@ -2122,7 +2253,7 @@
 <span class="id" title="keyword">Notation</span> &quot;a ⋅ sf" := (<span class="id" title="var">sf_scal_aux</span> <span class="id" title="var">a</span> <span class="id" title="var">sf</span>) (<span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 45) : <span class="id" title="var">sf_scope</span>.<br/>
 <span class="id" title="keyword">Notation</span> &quot;- g" := (<span class="id" title="var">fun_scal</span> (<span class="id" title="var">opp</span> <span class="id" title="var">one</span>) <span class="id" title="var">g</span>) : <span class="id" title="var">fun_scope</span>.<br/>
 <span class="id" title="keyword">Notation</span> &quot;- sg" := (<span class="id" title="var">sf_scal_aux</span> (<span class="id" title="var">opp</span> <span class="id" title="var">one</span>) <span class="id" title="var">sg</span>) : <span class="id" title="var">sf_scope</span>.<br/>
-<span class="id" title="keyword">Notation</span> &quot;f - g" := (<span class="id" title="var">fun_plus</span> <span class="id" title="var">f</span> (- <span class="id" title="var">g</span>)) : <span class="id" title="var">fun_scope</span>.<br/>
+<span class="id" title="keyword">Notation</span> &quot;f - g" := (<span class="id" title="var">fun_plus</span> <span class="id" title="var">f</span> (- <span class="id" title="var">g</span>))%<span class="id" title="var">fn</span> : <span class="id" title="var">fun_scope</span>.<br/>
 <span class="id" title="keyword">Notation</span> &quot;sf - sg" := (<span class="id" title="var">sf_plus_aux</span> <span class="id" title="var">sf</span> (- <span class="id" title="var">sg</span>)) : <span class="id" title="var">sf_scope</span>.<br/>
 
 <br/>
@@ -2603,7 +2734,7 @@
 <td>Z</td>
 <td>_</td>
 <td><a href="index.html#global_*">other</a></td>
-<td>(2165 entries)</td>
+<td>(2295 entries)</td>
 </tr>
 <tr>
 <td>Notation Index</td>
@@ -2667,7 +2798,7 @@
 <td>Z</td>
 <td>_</td>
 <td><a href="index.html#binder_*">other</a></td>
-<td>(1822 entries)</td>
+<td>(1929 entries)</td>
 </tr>
 <tr>
 <td>Module Index</td>
@@ -2689,7 +2820,7 @@
 <td>P</td>
 <td>Q</td>
 <td>R</td>
-<td>S</td>
+<td><a href="index.html#module_S">S</a></td>
 <td>T</td>
 <td>U</td>
 <td>V</td>
@@ -2699,7 +2830,7 @@
 <td>Z</td>
 <td>_</td>
 <td>other</td>
-<td>(1 entry)</td>
+<td>(2 entries)</td>
 </tr>
 <tr>
 <td>Library Index</td>
@@ -2763,7 +2894,7 @@
 <td>Z</td>
 <td>_</td>
 <td>other</td>
-<td>(168 entries)</td>
+<td>(181 entries)</td>
 </tr>
 <tr>
 <td>Constructor Index</td>
@@ -2831,7 +2962,7 @@
 </tr>
 <tr>
 <td>Section Index</td>
-<td>A</td>
+<td><a href="index.html#section_A">A</a></td>
 <td><a href="index.html#section_B">B</a></td>
 <td><a href="index.html#section_C">C</a></td>
 <td><a href="index.html#section_D">D</a></td>
@@ -2859,7 +2990,7 @@
 <td>Z</td>
 <td>_</td>
 <td>other</td>
-<td>(48 entries)</td>
+<td>(53 entries)</td>
 </tr>
 <tr>
 <td>Definition Index</td>
@@ -2891,7 +3022,7 @@
 <td>Z</td>
 <td>_</td>
 <td>other</td>
-<td>(61 entries)</td>
+<td>(65 entries)</td>
 </tr>
 <tr>
 <td>Record Index</td>
@@ -2929,6 +3060,8 @@
 <hr/>
 <h1>Global Index</h1>
 <a id="global_A"></a><h2>A </h2>
+<a href="Top.bochner_integral.B_spaces.html#ae_eq_prop2">ae_eq_prop2</a> [section, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#ae_eq_prop">ae_eq_prop</a> [section, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#ax_measurable">ax_measurable</a> [projection, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#ax_which_max_which">ax_which_max_which</a> [projection, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#ax_val_max_which">ax_val_max_which</a> [projection, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -2978,6 +3111,7 @@
 <a href="Top.bochner_integral.Bsf_Lsf.html#a:4">a:4</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#a:41">a:41</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#A:45">A:45</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#a:482">a:482</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#a:5">a:5</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.series.html#A:5">A:5</a> [binder, in <a href="Top.bochner_integral.series.html">Top.bochner_integral.series</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#A:50">A:50</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -2997,6 +3131,8 @@
 <a href="Top.bochner_integral.BInt_Bif.html#a:97">a:97</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <br/><br/><a id="global_B"></a><h2>B </h2>
 <a href="Top.bochner_integral.BInt_Bif.html#bf':14">bf':14</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#bf':26">bf':26</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#bf':33">bf':33</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#bf:10">bf:10</a> [binder, in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#bf:101">bf:101</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#bf:103">bf:103</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
@@ -3010,9 +3146,13 @@
 <a href="Top.bochner_integral.Bi_fun.html#bf:175">bf:175</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#bf:182">bf:182</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#bf:19">bf:19</a> [binder, in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#bf:25">bf:25</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#bf:29">bf:29</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#bf:32">bf:32</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#bf:4">bf:4</a> [binder, in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#bf:41">bf:41</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#bf:42">bf:42</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#bf:5">bf:5</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#bf:5">bf:5</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#bf:6">bf:6</a> [binder, in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#bf:67">bf:67</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
@@ -3034,6 +3174,7 @@
 <a href="Top.bochner_integral.BInt_Bif.html#bg:77">bg:77</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#bg:96">bg:96</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Bif">Bif</a> [record, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#Bif_characterisation">Bif_characterisation</a> [section, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Bif_adapted_seq.Bif_separable_range">Bif_adapted_seq.Bif_separable_range</a> [definition, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Bif_adapted_seq.s_l1_cv">Bif_adapted_seq.s_l1_cv</a> [lemma, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Bif_adapted_seq.s_integrable_sf">Bif_adapted_seq.s_integrable_sf</a> [lemma, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
@@ -3089,6 +3230,10 @@
 <a href="Top.bochner_integral.Bi_fun.html#Bif_integrable_sf">Bif_integrable_sf</a> [definition, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Bif_sf">Bif_sf</a> [section, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#BInt">BInt</a> [definition, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#BInt_norm1_zero_ae_eq">BInt_norm1_zero_ae_eq</a> [lemma, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#BInt_ae_eq_norm1_zero">BInt_ae_eq_norm1_zero</a> [lemma, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#BInt_ae_eq">BInt_ae_eq</a> [lemma, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#BInt_ae_zero">BInt_ae_zero</a> [lemma, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#BInt_monotone">BInt_monotone</a> [lemma, in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#BInt_ge_0">BInt_ge_0</a> [lemma, in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#BInt_Rlinearity">BInt_Rlinearity</a> [lemma, in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
@@ -3207,11 +3352,13 @@
 <a href="Top.bochner_integral.Bi_fun.html#E:192">E:192</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#E:194">E:194</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#E:196">E:196</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#E:2">E:2</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#E:2">E:2</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#E:2">E:2</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.complete_normed_module_series.html#E:2">E:2</a> [binder, in <a href="Top.bochner_integral.complete_normed_module_series.html">Top.bochner_integral.complete_normed_module_series</a>]<br/>
 <a href="Top.bochner_integral.series.html#E:2">E:2</a> [binder, in <a href="Top.bochner_integral.series.html">Top.bochner_integral.series</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#E:21">E:21</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#E:22">E:22</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.series.html#E:22">E:22</a> [binder, in <a href="Top.bochner_integral.series.html">Top.bochner_integral.series</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#E:22">E:22</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#E:235">E:235</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
@@ -3226,7 +3373,10 @@
 <a href="Top.bochner_integral.BInt_sf.html#E:35">E:35</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#E:38">E:38</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#E:46">E:46</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#E:465">E:465</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#E:496">E:496</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#E:51">E:51</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#E:518">E:518</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#E:52">E:52</a> [binder, in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#E:59">E:59</a> [binder, in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.series.html#E:6">E:6</a> [binder, in <a href="Top.bochner_integral.series.html">Top.bochner_integral.series</a>]<br/>
@@ -3285,8 +3435,17 @@
 <a href="Top.bochner_integral.Bsf_Lsf.html#f:45">f:45</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#f:454">f:454</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#f:459">f:459</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#f:468">f:468</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#f:472">f:472</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#f:473">f:473</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#f:48">f:48</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#f:481">f:481</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#f:487">f:487</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#f:493">f:493</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#f:499">f:499</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#f:5">f:5</a> [binder, in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#f:521">f:521</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#f:525">f:525</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#f:53">f:53</a> [binder, in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#f:53">f:53</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#f:60">f:60</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -3310,12 +3469,14 @@
 <a href="Top.bochner_integral.BInt_R.html#gen:2">gen:2</a> [binder, in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#gen:2">gen:2</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#gen:2">gen:2</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#gen:23">gen:23</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#gen:23">gen:23</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#gen:236">gen:236</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#gen:242">gen:242</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#gen:251">gen:251</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#gen:253">gen:253</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#gen:267">gen:267</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#gen:3">gen:3</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#gen:3">gen:3</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#gen:3">gen:3</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#gen:30">gen:30</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -3323,7 +3484,10 @@
 <a href="Top.bochner_integral.Bi_fun.html#gen:39">gen:39</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#gen:44">gen:44</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#gen:452">gen:452</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#gen:466">gen:466</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#gen:497">gen:497</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#gen:51">gen:51</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#gen:519">gen:519</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#gen:52">gen:52</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#gen:6">gen:6</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#gen:66">gen:66</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -3337,18 +3501,25 @@
 <a href="Top.bochner_integral.Bi_fun.html#g:193">g:193</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.square_bij.html#G:20">G:20</a> [binder, in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
 <a href="Top.bochner_integral.square_bij.html#G:26">G:26</a> [binder, in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#g:474">g:474</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#g:494">g:494</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#g:5">g:5</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#g:5">g:5</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#g:68">g:68</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#g:91">g:91</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <br/><br/><a id="global_H"></a><h2>H </h2>
 <a href="Top.bochner_integral.Bi_fun.html#Hfin:461">Hfin:461</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#Hfin:523">Hfin:523</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#Hfin:527">Hfin:527</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="hierarchy_notations.html">hierarchy_notations</a> [library]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Hinteg:108">Hinteg:108</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Hinteg:204">Hinteg:204</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Hmeas:201">Hmeas:201</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Hmeas:460">Hmeas:460</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#Hmeas:522">Hmeas:522</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#Hmeas:526">Hmeas:526</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Hsep:203">Hsep:203</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#Hsm:500">Hsm:500</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#H:339">H:339</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <br/><br/><a id="global_I"></a><h2>I </h2>
 <a href="Top.bochner_integral.simpl_fun.html#indic">indic</a> [definition, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -3609,6 +3780,8 @@
 <a href="Top.bochner_integral.BInt_Bif.html#k:46">k:46</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#k:48">k:48</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#k:50">k:50</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#k:508">k:508</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#k:512">k:512</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#k:52">k:52</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#k:54">k:54</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#k:56">k:56</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
@@ -3733,6 +3906,8 @@
 <a href="Top.bochner_integral.Bi_fun.html#m:363">m:363</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#m:368">m:368</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.square_bij.html#m:5">m:5</a> [binder, in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#m:509">m:509</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#m:513">m:513</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#m:72">m:72</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.square_bij.html#m:9">m:9</a> [binder, in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
 <br/><br/><a id="global_N"></a><h2>N </h2>
@@ -3977,11 +4152,33 @@
 <a href="Top.bochner_integral.Bi_fun.html#n:455">n:455</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#n:456">n:456</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#n:46">n:46</a> [binder, in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:471">n:471</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:475">n:475</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:476">n:476</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:477">n:477</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:478">n:478</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:479">n:479</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:480">n:480</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:483">n:483</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:484">n:484</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:485">n:485</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:486">n:486</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:489">n:489</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#n:49">n:49</a> [binder, in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#n:49">n:49</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:490">n:490</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:491">n:491</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:492">n:492</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.complete_normed_module_series.html#n:5">n:5</a> [binder, in <a href="Top.bochner_integral.complete_normed_module_series.html">Top.bochner_integral.complete_normed_module_series</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#n:50">n:50</a> [binder, in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:501">n:501</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:505">n:505</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:507">n:507</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#n:51">n:51</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:511">n:511</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:514">n:514</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:515">n:515</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:516">n:516</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#n:53">n:53</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#n:53">n:53</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#n:55">n:55</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
@@ -4220,6 +4417,22 @@
 <a href="Top.bochner_integral.square_bij.html#square_bij">square_bij</a> [definition, in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
 <a href="Top.bochner_integral.square_bij.html#square_bij_def">square_bij_def</a> [section, in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
 <a href="square_bij.html">square_bij</a> [library]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_integrable_Bif_correct">strongly_measurable_integrable_Bif_correct</a> [lemma, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_integrable_Bif">strongly_measurable_integrable_Bif</a> [definition, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_separated_range_proof.strongly_measurable_separated_range">strongly_measurable_separated_range_proof.strongly_measurable_separated_range</a> [lemma, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_separated_range_proof.u_spec">strongly_measurable_separated_range_proof.u_spec</a> [lemma, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_separated_range_proof.u_aux_spec">strongly_measurable_separated_range_proof.u_aux_spec</a> [lemma, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_separated_range_proof.u">strongly_measurable_separated_range_proof.u</a> [definition, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_separated_range_proof.u_aux">strongly_measurable_separated_range_proof.u_aux</a> [definition, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_separated_range_proof.seq_construction">strongly_measurable_separated_range_proof.seq_construction</a> [section, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_separated_range_proof">strongly_measurable_separated_range_proof</a> [module, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_minus">strongly_measurable_minus</a> [lemma, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_opp">strongly_measurable_opp</a> [lemma, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_scal">strongly_measurable_scal</a> [lemma, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_plus">strongly_measurable_plus</a> [lemma, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_measurable">strongly_measurable_measurable</a> [lemma, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable">strongly_measurable</a> [definition, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_fun">strongly_measurable_fun</a> [section, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.square_bij.html#sum_n_m_shift">sum_n_m_shift</a> [lemma, in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#sum_Rbar_map_sort">sum_Rbar_map_sort</a> [lemma, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#sum_Rbar_Permutation">sum_Rbar_Permutation</a> [lemma, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
@@ -4240,6 +4453,7 @@
 <a href="Top.bochner_integral.CUS_Lim_seq.html#S:39">S:39</a> [binder, in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#s:41">s:41</a> [binder, in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#s:43">s:43</a> [binder, in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#s:469">s:469</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#s:61">s:61</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#s:64">s:64</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <br/><br/><a id="global_T"></a><h2>T </h2>
@@ -4367,11 +4581,13 @@
 <a href="Top.bochner_integral.Bsf_Lsf.html#x1:166">x1:166</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x1:168">x1:168</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x1:170">x1:170</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#X:1">X:1</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#X:1">X:1</a> [binder, in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#X:1">X:1</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#X:1">X:1</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#X:1">X:1</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#X:1">X:1</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:10">x:10</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:10">x:10</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:100">x:100</a> [binder, in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:100">x:100</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
@@ -4410,6 +4626,7 @@
 <a href="Top.bochner_integral.Bi_fun.html#x:109">x:109</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#x:109">x:109</a> [binder, in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:11">x:11</a> [binder, in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:11">x:11</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:11">x:11</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:110">x:110</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:110">x:110</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
@@ -4444,6 +4661,7 @@
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:119">x:119</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:119">x:119</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#x:119">x:119</a> [binder, in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:12">x:12</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:12">x:12</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:12">x:12</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:120">x:120</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
@@ -4479,6 +4697,7 @@
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:129">x:129</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:129">x:129</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:129">x:129</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:13">x:13</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:13">x:13</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:13">x:13</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:13">x:13</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
@@ -4506,6 +4725,7 @@
 <a href="Top.bochner_integral.BInt_sf.html#x:139">x:139</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:139">x:139</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#X:139">X:139</a> [binder, in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:14">x:14</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:14">x:14</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:141">x:141</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:141">x:141</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
@@ -4525,6 +4745,7 @@
 <a href="Top.bochner_integral.BInt_sf.html#x:149">x:149</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:149">x:149</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#x:149">x:149</a> [binder, in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:15">x:15</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:15">x:15</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:15">x:15</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:151">x:151</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
@@ -4538,6 +4759,7 @@
 <a href="Top.bochner_integral.CUS_Lim_seq.html#x:156">x:156</a> [binder, in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#x:158">x:158</a> [binder, in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:159">x:159</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:16">x:16</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:16">x:16</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:16">x:16</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#x:160">x:160</a> [binder, in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
@@ -4552,6 +4774,7 @@
 <a href="Top.bochner_integral.CUS_Lim_seq.html#x:168">x:168</a> [binder, in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#x:169">x:169</a> [binder, in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:17">x:17</a> [binder, in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:17">x:17</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#x:17">x:17</a> [binder, in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:17">x:17</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:170">x:170</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -4568,6 +4791,7 @@
 <a href="Top.bochner_integral.BInt_sf.html#x:177">x:177</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:179">x:179</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:179">x:179</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:18">x:18</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#x:18">x:18</a> [binder, in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:18">x:18</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:180">x:180</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
@@ -4587,6 +4811,7 @@
 <a href="Top.bochner_integral.BInt_sf.html#x:189">x:189</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:189">x:189</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:189">x:189</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:19">x:19</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:19">x:19</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:190">x:190</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:190">x:190</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
@@ -4609,6 +4834,7 @@
 <a href="Top.bochner_integral.simpl_fun.html#x:198">x:198</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:199">x:199</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:199">x:199</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:20">x:20</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:20">x:20</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:20">x:20</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:200">x:200</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
@@ -4631,6 +4857,7 @@
 <a href="Top.bochner_integral.simpl_fun.html#x:208">x:208</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:209">x:209</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:209">x:209</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#X:21">X:21</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#x:21">x:21</a> [binder, in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:21">x:21</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#X:21">X:21</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
@@ -4710,6 +4937,7 @@
 <a href="Top.bochner_integral.simpl_fun.html#x:267">x:267</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:268">x:268</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:269">x:269</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:27">x:27</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:27">x:27</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:270">x:270</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:270">x:270</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -4721,6 +4949,7 @@
 <a href="Top.bochner_integral.BInt_sf.html#x:276">x:276</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:279">x:279</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:279">x:279</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:28">x:28</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:28">x:28</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:28">x:28</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:280">x:280</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
@@ -4732,9 +4961,11 @@
 <a href="Top.bochner_integral.simpl_fun.html#X:29">X:29</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:292">x:292</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:299">x:299</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:30">x:30</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:30">x:30</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:30">x:30</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:309">x:309</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:31">x:31</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:31">x:31</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:31">x:31</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:31">x:31</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
@@ -4747,18 +4978,21 @@
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:33">x:33</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:333">x:333</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:34">x:34</a> [binder, in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:34">x:34</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:34">x:34</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#X:34">X:34</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:34">x:34</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:344">x:344</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:347">x:347</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:348">x:348</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:35">x:35</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:35">x:35</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:35">x:35</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:35">x:35</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:352">x:352</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:356">x:356</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:358">x:358</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:36">x:36</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:36">x:36</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:36">x:36</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:36">x:36</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -4766,6 +5000,7 @@
 <a href="Top.bochner_integral.Bi_fun.html#x:362">x:362</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:366">x:366</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:367">x:367</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:37">x:37</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:37">x:37</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:37">x:37</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:37">x:37</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -4774,12 +5009,14 @@
 <a href="Top.bochner_integral.Bi_fun.html#x:375">x:375</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:379">x:379</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:38">x:38</a> [binder, in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:38">x:38</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:38">x:38</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:38">x:38</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:38">x:38</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:380">x:380</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:385">x:385</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:386">x:386</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:39">x:39</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:39">x:39</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:39">x:39</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:390">x:390</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
@@ -4787,6 +5024,7 @@
 <a href="Top.bochner_integral.Bi_fun.html#x:396">x:396</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:399">x:399</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:4">x:4</a> [binder, in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:40">x:40</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:40">x:40</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:40">x:40</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:400">x:400</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
@@ -4795,9 +5033,11 @@
 <a href="Top.bochner_integral.Bi_fun.html#x:406">x:406</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:408">x:408</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:41">x:41</a> [binder, in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:41">x:41</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:41">x:41</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:41">x:41</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:412">x:412</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:42">x:42</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:42">x:42</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:42">x:42</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:42">x:42</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
@@ -4806,6 +5046,7 @@
 <a href="Top.bochner_integral.Bi_fun.html#x:422">x:422</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:423">x:423</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:425">x:425</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:43">x:43</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:43">x:43</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:43">x:43</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:43">x:43</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
@@ -4818,43 +5059,52 @@
 <a href="Top.bochner_integral.Bi_fun.html#x:437">x:437</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:438">x:438</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:439">x:439</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:44">x:44</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:44">x:44</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:44">x:44</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:44">x:44</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:441">x:441</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:444">x:444</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:447">x:447</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:45">x:45</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:45">x:45</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:45">x:45</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:45">x:45</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#X:451">X:451</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:457">x:457</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:458">x:458</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:46">x:46</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:46">x:46</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:46">x:46</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:46">x:46</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:46">x:46</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:463">x:463</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#X:464">X:464</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:47">x:47</a> [binder, in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:47">x:47</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:47">x:47</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:47">x:47</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:47">x:47</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:47">x:47</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#x:470">x:470</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:48">x:48</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:48">x:48</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#x:488">x:488</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:49">x:49</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:49">x:49</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#X:49">X:49</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#X:495">X:495</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:5">x:5</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#X:50">X:50</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:50">x:50</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:50">x:50</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:51">x:51</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:51">x:51</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#X:517">X:517</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:52">x:52</a> [binder, in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:52">x:52</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:52">x:52</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#x:529">x:529</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:53">x:53</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:53">x:53</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:54">x:54</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
@@ -4874,6 +5124,7 @@
 <a href="Top.bochner_integral.BInt_Bif.html#x:59">x:59</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:59">x:59</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:59">x:59</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:6">x:6</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:6">x:6</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:6">x:6</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#x:6">x:6</a> [binder, in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
@@ -4906,6 +5157,7 @@
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:69">x:69</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:69">x:69</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:69">x:69</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:7">x:7</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#X:7">X:7</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:7">x:7</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:70">x:70</a> [binder, in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
@@ -4936,6 +5188,7 @@
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:79">x:79</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:79">x:79</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:79">x:79</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:8">x:8</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:8">x:8</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:80">x:80</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:81">x:81</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
@@ -4964,6 +5217,7 @@
 <a href="Top.bochner_integral.BInt_sf.html#x:89">x:89</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:89">x:89</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:89">x:89</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:9">x:9</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#X:9">X:9</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:9">x:9</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:90">x:90</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
@@ -5069,6 +5323,8 @@
 <a href="Top.bochner_integral.CUS_Lim_seq.html#93e49effe4eb7f5fde4f11e0d52ed2c4">η:83</a> [binder, in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#725b65839cf13f6084a9b992175da75f">ι:199</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#58b58118f241c87f44bdd97787302056">ι:462</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#a6d9e193502864f298662dd2593337cf">ι:524</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#de968f9a68aeae26f98823a4a790bdca">ι:528</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#36960e7dc43858cdd22c52fe0604e3c3">ι:63</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#b7a49531fbd31d2eddd6c917929eef6d">ι:65</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#5de5b59bc3a251e19ab59fcaa68bf2f7">ι:99</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
@@ -5081,6 +5337,7 @@
 <a href="Top.bochner_integral.Bsf_Lsf.html#69d3dc6762dd58ba95effb3df0f6fa9e">μ:196</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#8748e11efa317460452da281f3033dc3">μ:198</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#d7164f7ddc3f05f3232dc958c733191e">μ:237</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#a2a522a6e574dd733151ef85e564dfec">μ:24</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#a2a522a6e574dd733151ef85e564dfec">μ:24</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#adf4aa10000b3e6062d8f8edffd311cb">μ:243</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#5f96413abf6dd937f72b669eb6748e3d">μ:254</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
@@ -5088,13 +5345,17 @@
 <a href="Top.bochner_integral.BInt_R.html#82c9a2b83ff1a357513c22dd4b5f63b0">μ:3</a> [binder, in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#82c9a2b83ff1a357513c22dd4b5f63b0">μ:3</a> [binder, in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#174ba38dc35a862829088bd22b581a95">μ:37</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#6941aac8dfa5391e43b8a4017a2cdcaf">μ:4</a> [binder, in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#6941aac8dfa5391e43b8a4017a2cdcaf">μ:4</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#6941aac8dfa5391e43b8a4017a2cdcaf">μ:4</a> [binder, in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#c8293e3a578dd7fbb92a8e5adbfefdca">μ:40</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#c8293e3a578dd7fbb92a8e5adbfefdca">μ:40</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#c3ca0fb5da432b8d4505b8eef253f4db">μ:453</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#12155c9fda1f84b63a646aae5863a5a0">μ:467</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#ff0962b7e29810d16219179fd8ca619c">μ:48</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#e7383248492bd61861f9283814495cc7">μ:498</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#a2ad755c5c2fe238ce5dfafab7942f14">μ:52</a> [binder, in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#ab164ea367fb00d274a4f08d3130976c">μ:520</a> [binder, in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#0ec7e4e7b315155e42a9dd87dc2cac16">μ:57</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#3b700ac6b049b495d52c4d5c3a1bba20">μ:68</a> [binder, in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#1e55420d230aa73c9b29ffd89a5d44cc">μ:7</a> [binder, in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -5202,6 +5463,7 @@
 <a href="Top.bochner_integral.Bsf_Lsf.html#a:4">a:4</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#a:41">a:41</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#A:45">A:45</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#a:482">a:482</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#a:5">a:5</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.series.html#A:5">A:5</a> [in <a href="Top.bochner_integral.series.html">Top.bochner_integral.series</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#A:50">A:50</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -5221,6 +5483,8 @@
 <a href="Top.bochner_integral.BInt_Bif.html#a:97">a:97</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <br/><br/><a id="binder_B"></a><h2>B </h2>
 <a href="Top.bochner_integral.BInt_Bif.html#bf':14">bf':14</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#bf':26">bf':26</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#bf':33">bf':33</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#bf:10">bf:10</a> [in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#bf:101">bf:101</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#bf:103">bf:103</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
@@ -5234,9 +5498,13 @@
 <a href="Top.bochner_integral.Bi_fun.html#bf:175">bf:175</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#bf:182">bf:182</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#bf:19">bf:19</a> [in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#bf:25">bf:25</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#bf:29">bf:29</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#bf:32">bf:32</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#bf:4">bf:4</a> [in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#bf:41">bf:41</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#bf:42">bf:42</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#bf:5">bf:5</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#bf:5">bf:5</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#bf:6">bf:6</a> [in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#bf:67">bf:67</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
@@ -5306,11 +5574,13 @@
 <a href="Top.bochner_integral.Bi_fun.html#E:192">E:192</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#E:194">E:194</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#E:196">E:196</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#E:2">E:2</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#E:2">E:2</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#E:2">E:2</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.complete_normed_module_series.html#E:2">E:2</a> [in <a href="Top.bochner_integral.complete_normed_module_series.html">Top.bochner_integral.complete_normed_module_series</a>]<br/>
 <a href="Top.bochner_integral.series.html#E:2">E:2</a> [in <a href="Top.bochner_integral.series.html">Top.bochner_integral.series</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#E:21">E:21</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#E:22">E:22</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.series.html#E:22">E:22</a> [in <a href="Top.bochner_integral.series.html">Top.bochner_integral.series</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#E:22">E:22</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#E:235">E:235</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
@@ -5325,7 +5595,10 @@
 <a href="Top.bochner_integral.BInt_sf.html#E:35">E:35</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#E:38">E:38</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#E:46">E:46</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#E:465">E:465</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#E:496">E:496</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#E:51">E:51</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#E:518">E:518</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#E:52">E:52</a> [in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#E:59">E:59</a> [in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.series.html#E:6">E:6</a> [in <a href="Top.bochner_integral.series.html">Top.bochner_integral.series</a>]<br/>
@@ -5359,8 +5632,17 @@
 <a href="Top.bochner_integral.Bsf_Lsf.html#f:45">f:45</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#f:454">f:454</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#f:459">f:459</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#f:468">f:468</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#f:472">f:472</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#f:473">f:473</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#f:48">f:48</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#f:481">f:481</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#f:487">f:487</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#f:493">f:493</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#f:499">f:499</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#f:5">f:5</a> [in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#f:521">f:521</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#f:525">f:525</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#f:53">f:53</a> [in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#f:53">f:53</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#f:60">f:60</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -5384,12 +5666,14 @@
 <a href="Top.bochner_integral.BInt_R.html#gen:2">gen:2</a> [in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#gen:2">gen:2</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#gen:2">gen:2</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#gen:23">gen:23</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#gen:23">gen:23</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#gen:236">gen:236</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#gen:242">gen:242</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#gen:251">gen:251</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#gen:253">gen:253</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#gen:267">gen:267</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#gen:3">gen:3</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#gen:3">gen:3</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#gen:3">gen:3</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#gen:30">gen:30</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -5397,7 +5681,10 @@
 <a href="Top.bochner_integral.Bi_fun.html#gen:39">gen:39</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#gen:44">gen:44</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#gen:452">gen:452</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#gen:466">gen:466</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#gen:497">gen:497</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#gen:51">gen:51</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#gen:519">gen:519</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#gen:52">gen:52</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#gen:6">gen:6</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#gen:66">gen:66</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -5411,17 +5698,24 @@
 <a href="Top.bochner_integral.Bi_fun.html#g:193">g:193</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.square_bij.html#G:20">G:20</a> [in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
 <a href="Top.bochner_integral.square_bij.html#G:26">G:26</a> [in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#g:474">g:474</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#g:494">g:494</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#g:5">g:5</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#g:5">g:5</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#g:68">g:68</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#g:91">g:91</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <br/><br/><a id="binder_H"></a><h2>H </h2>
 <a href="Top.bochner_integral.Bi_fun.html#Hfin:461">Hfin:461</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#Hfin:523">Hfin:523</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#Hfin:527">Hfin:527</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Hinteg:108">Hinteg:108</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Hinteg:204">Hinteg:204</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Hmeas:201">Hmeas:201</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Hmeas:460">Hmeas:460</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#Hmeas:522">Hmeas:522</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#Hmeas:526">Hmeas:526</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Hsep:203">Hsep:203</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#Hsm:500">Hsm:500</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#H:339">H:339</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <br/><br/><a id="binder_I"></a><h2>I </h2>
 <a href="Top.bochner_integral.simpl_fun.html#isf:59">isf:59</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -5659,6 +5953,8 @@
 <a href="Top.bochner_integral.BInt_Bif.html#k:46">k:46</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#k:48">k:48</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#k:50">k:50</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#k:508">k:508</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#k:512">k:512</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#k:52">k:52</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#k:54">k:54</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#k:56">k:56</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
@@ -5755,6 +6051,8 @@
 <a href="Top.bochner_integral.Bi_fun.html#m:363">m:363</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#m:368">m:368</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.square_bij.html#m:5">m:5</a> [in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#m:509">m:509</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#m:513">m:513</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#m:72">m:72</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.square_bij.html#m:9">m:9</a> [in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
 <br/><br/><a id="binder_N"></a><h2>N </h2>
@@ -5972,11 +6270,33 @@
 <a href="Top.bochner_integral.Bi_fun.html#n:455">n:455</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#n:456">n:456</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#n:46">n:46</a> [in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:471">n:471</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:475">n:475</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:476">n:476</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:477">n:477</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:478">n:478</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:479">n:479</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:480">n:480</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:483">n:483</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:484">n:484</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:485">n:485</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:486">n:486</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:489">n:489</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#n:49">n:49</a> [in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#n:49">n:49</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:490">n:490</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:491">n:491</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:492">n:492</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.complete_normed_module_series.html#n:5">n:5</a> [in <a href="Top.bochner_integral.complete_normed_module_series.html">Top.bochner_integral.complete_normed_module_series</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#n:50">n:50</a> [in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:501">n:501</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:505">n:505</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:507">n:507</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#n:51">n:51</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:511">n:511</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:514">n:514</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:515">n:515</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#n:516">n:516</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#n:53">n:53</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#n:53">n:53</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#n:55">n:55</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
@@ -6160,6 +6480,7 @@
 <a href="Top.bochner_integral.CUS_Lim_seq.html#S:39">S:39</a> [in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#s:41">s:41</a> [in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#s:43">s:43</a> [in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#s:469">s:469</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#s:61">s:61</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#s:64">s:64</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <br/><br/><a id="binder_T"></a><h2>T </h2>
@@ -6281,11 +6602,13 @@
 <a href="Top.bochner_integral.Bsf_Lsf.html#x1:166">x1:166</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x1:168">x1:168</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x1:170">x1:170</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#X:1">X:1</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#X:1">X:1</a> [in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#X:1">X:1</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#X:1">X:1</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#X:1">X:1</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#X:1">X:1</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:10">x:10</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:10">x:10</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:100">x:100</a> [in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:100">x:100</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
@@ -6324,6 +6647,7 @@
 <a href="Top.bochner_integral.Bi_fun.html#x:109">x:109</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#x:109">x:109</a> [in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:11">x:11</a> [in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:11">x:11</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:11">x:11</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:110">x:110</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:110">x:110</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
@@ -6358,6 +6682,7 @@
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:119">x:119</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:119">x:119</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#x:119">x:119</a> [in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:12">x:12</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:12">x:12</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:12">x:12</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:120">x:120</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
@@ -6393,6 +6718,7 @@
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:129">x:129</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:129">x:129</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:129">x:129</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:13">x:13</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:13">x:13</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:13">x:13</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:13">x:13</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
@@ -6420,6 +6746,7 @@
 <a href="Top.bochner_integral.BInt_sf.html#x:139">x:139</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:139">x:139</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#X:139">X:139</a> [in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:14">x:14</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:14">x:14</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:141">x:141</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:141">x:141</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
@@ -6439,6 +6766,7 @@
 <a href="Top.bochner_integral.BInt_sf.html#x:149">x:149</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:149">x:149</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#x:149">x:149</a> [in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:15">x:15</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:15">x:15</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:15">x:15</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:151">x:151</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
@@ -6452,6 +6780,7 @@
 <a href="Top.bochner_integral.CUS_Lim_seq.html#x:156">x:156</a> [in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#x:158">x:158</a> [in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:159">x:159</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:16">x:16</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:16">x:16</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:16">x:16</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#x:160">x:160</a> [in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
@@ -6466,6 +6795,7 @@
 <a href="Top.bochner_integral.CUS_Lim_seq.html#x:168">x:168</a> [in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#x:169">x:169</a> [in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:17">x:17</a> [in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:17">x:17</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#x:17">x:17</a> [in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:17">x:17</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:170">x:170</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -6482,6 +6812,7 @@
 <a href="Top.bochner_integral.BInt_sf.html#x:177">x:177</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:179">x:179</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:179">x:179</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:18">x:18</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#x:18">x:18</a> [in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:18">x:18</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:180">x:180</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
@@ -6501,6 +6832,7 @@
 <a href="Top.bochner_integral.BInt_sf.html#x:189">x:189</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:189">x:189</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:189">x:189</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:19">x:19</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:19">x:19</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:190">x:190</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:190">x:190</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
@@ -6523,6 +6855,7 @@
 <a href="Top.bochner_integral.simpl_fun.html#x:198">x:198</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:199">x:199</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:199">x:199</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:20">x:20</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:20">x:20</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:20">x:20</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:200">x:200</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
@@ -6545,6 +6878,7 @@
 <a href="Top.bochner_integral.simpl_fun.html#x:208">x:208</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:209">x:209</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:209">x:209</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#X:21">X:21</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#x:21">x:21</a> [in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:21">x:21</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#X:21">X:21</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
@@ -6624,6 +6958,7 @@
 <a href="Top.bochner_integral.simpl_fun.html#x:267">x:267</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:268">x:268</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:269">x:269</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:27">x:27</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:27">x:27</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:270">x:270</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:270">x:270</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -6635,6 +6970,7 @@
 <a href="Top.bochner_integral.BInt_sf.html#x:276">x:276</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:279">x:279</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:279">x:279</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:28">x:28</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:28">x:28</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:28">x:28</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:280">x:280</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
@@ -6646,9 +6982,11 @@
 <a href="Top.bochner_integral.simpl_fun.html#X:29">X:29</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:292">x:292</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:299">x:299</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:30">x:30</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:30">x:30</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:30">x:30</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:309">x:309</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:31">x:31</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:31">x:31</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:31">x:31</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:31">x:31</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
@@ -6661,18 +6999,21 @@
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:33">x:33</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:333">x:333</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:34">x:34</a> [in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:34">x:34</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:34">x:34</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#X:34">X:34</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:34">x:34</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:344">x:344</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:347">x:347</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:348">x:348</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:35">x:35</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:35">x:35</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:35">x:35</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:35">x:35</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:352">x:352</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:356">x:356</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:358">x:358</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:36">x:36</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:36">x:36</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:36">x:36</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:36">x:36</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -6680,6 +7021,7 @@
 <a href="Top.bochner_integral.Bi_fun.html#x:362">x:362</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:366">x:366</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:367">x:367</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:37">x:37</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:37">x:37</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:37">x:37</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:37">x:37</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -6688,12 +7030,14 @@
 <a href="Top.bochner_integral.Bi_fun.html#x:375">x:375</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:379">x:379</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:38">x:38</a> [in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:38">x:38</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:38">x:38</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:38">x:38</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:38">x:38</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:380">x:380</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:385">x:385</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:386">x:386</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:39">x:39</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:39">x:39</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:39">x:39</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:390">x:390</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
@@ -6701,6 +7045,7 @@
 <a href="Top.bochner_integral.Bi_fun.html#x:396">x:396</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:399">x:399</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:4">x:4</a> [in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:40">x:40</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:40">x:40</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:40">x:40</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:400">x:400</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
@@ -6709,9 +7054,11 @@
 <a href="Top.bochner_integral.Bi_fun.html#x:406">x:406</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:408">x:408</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:41">x:41</a> [in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:41">x:41</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:41">x:41</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:41">x:41</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:412">x:412</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:42">x:42</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:42">x:42</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:42">x:42</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:42">x:42</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
@@ -6720,6 +7067,7 @@
 <a href="Top.bochner_integral.Bi_fun.html#x:422">x:422</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:423">x:423</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:425">x:425</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:43">x:43</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:43">x:43</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:43">x:43</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:43">x:43</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
@@ -6732,43 +7080,52 @@
 <a href="Top.bochner_integral.Bi_fun.html#x:437">x:437</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:438">x:438</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:439">x:439</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:44">x:44</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:44">x:44</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:44">x:44</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:44">x:44</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:441">x:441</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:444">x:444</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:447">x:447</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:45">x:45</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:45">x:45</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:45">x:45</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:45">x:45</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#X:451">X:451</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:457">x:457</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:458">x:458</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:46">x:46</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:46">x:46</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:46">x:46</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:46">x:46</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:46">x:46</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:463">x:463</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#X:464">X:464</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:47">x:47</a> [in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:47">x:47</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:47">x:47</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:47">x:47</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:47">x:47</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:47">x:47</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#x:470">x:470</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:48">x:48</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:48">x:48</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#x:488">x:488</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:49">x:49</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:49">x:49</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#X:49">X:49</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#X:495">X:495</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:5">x:5</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#X:50">X:50</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:50">x:50</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:50">x:50</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:51">x:51</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:51">x:51</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#X:517">X:517</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:52">x:52</a> [in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:52">x:52</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:52">x:52</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#x:529">x:529</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#x:53">x:53</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:53">x:53</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:54">x:54</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
@@ -6788,6 +7145,7 @@
 <a href="Top.bochner_integral.BInt_Bif.html#x:59">x:59</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:59">x:59</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:59">x:59</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:6">x:6</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:6">x:6</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:6">x:6</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.CUS_Lim_seq.html#x:6">x:6</a> [in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
@@ -6820,6 +7178,7 @@
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:69">x:69</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:69">x:69</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:69">x:69</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:7">x:7</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#X:7">X:7</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:7">x:7</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.topology_compl.html#x:70">x:70</a> [in <a href="Top.bochner_integral.topology_compl.html">Top.bochner_integral.topology_compl</a>]<br/>
@@ -6850,6 +7209,7 @@
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:79">x:79</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#x:79">x:79</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:79">x:79</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:8">x:8</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:8">x:8</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#x:80">x:80</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:81">x:81</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
@@ -6878,6 +7238,7 @@
 <a href="Top.bochner_integral.BInt_sf.html#x:89">x:89</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:89">x:89</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#x:89">x:89</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#x:9">x:9</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#X:9">X:9</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#x:9">x:9</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#x:90">x:90</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
@@ -6955,6 +7316,8 @@
 <a href="Top.bochner_integral.CUS_Lim_seq.html#93e49effe4eb7f5fde4f11e0d52ed2c4">η:83</a> [in <a href="Top.bochner_integral.CUS_Lim_seq.html">Top.bochner_integral.CUS_Lim_seq</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#725b65839cf13f6084a9b992175da75f">ι:199</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#58b58118f241c87f44bdd97787302056">ι:462</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#a6d9e193502864f298662dd2593337cf">ι:524</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#de968f9a68aeae26f98823a4a790bdca">ι:528</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#36960e7dc43858cdd22c52fe0604e3c3">ι:63</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#b7a49531fbd31d2eddd6c917929eef6d">ι:65</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#5de5b59bc3a251e19ab59fcaa68bf2f7">ι:99</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
@@ -6967,6 +7330,7 @@
 <a href="Top.bochner_integral.Bsf_Lsf.html#69d3dc6762dd58ba95effb3df0f6fa9e">μ:196</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#8748e11efa317460452da281f3033dc3">μ:198</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#d7164f7ddc3f05f3232dc958c733191e">μ:237</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#a2a522a6e574dd733151ef85e564dfec">μ:24</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#a2a522a6e574dd733151ef85e564dfec">μ:24</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#adf4aa10000b3e6062d8f8edffd311cb">μ:243</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#5f96413abf6dd937f72b669eb6748e3d">μ:254</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
@@ -6974,13 +7338,17 @@
 <a href="Top.bochner_integral.BInt_R.html#82c9a2b83ff1a357513c22dd4b5f63b0">μ:3</a> [in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_LInt_p.html#82c9a2b83ff1a357513c22dd4b5f63b0">μ:3</a> [in <a href="Top.bochner_integral.BInt_LInt_p.html">Top.bochner_integral.BInt_LInt_p</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#174ba38dc35a862829088bd22b581a95">μ:37</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#6941aac8dfa5391e43b8a4017a2cdcaf">μ:4</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#6941aac8dfa5391e43b8a4017a2cdcaf">μ:4</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.BInt_sf.html#6941aac8dfa5391e43b8a4017a2cdcaf">μ:4</a> [in <a href="Top.bochner_integral.BInt_sf.html">Top.bochner_integral.BInt_sf</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#c8293e3a578dd7fbb92a8e5adbfefdca">μ:40</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#c8293e3a578dd7fbb92a8e5adbfefdca">μ:40</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#c3ca0fb5da432b8d4505b8eef253f4db">μ:453</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#12155c9fda1f84b63a646aae5863a5a0">μ:467</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#ff0962b7e29810d16219179fd8ca619c">μ:48</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#e7383248492bd61861f9283814495cc7">μ:498</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#a2ad755c5c2fe238ce5dfafab7942f14">μ:52</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#ab164ea367fb00d274a4f08d3130976c">μ:520</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#0ec7e4e7b315155e42a9dd87dc2cac16">μ:57</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.BInt_Bif.html#3b700ac6b049b495d52c4d5c3a1bba20">μ:68</a> [in <a href="Top.bochner_integral.BInt_Bif.html">Top.bochner_integral.BInt_Bif</a>]<br/>
 <a href="Top.bochner_integral.simpl_fun.html#1e55420d230aa73c9b29ffd89a5d44cc">μ:7</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
@@ -7009,6 +7377,8 @@
 <h1>Module Index</h1>
 <a id="module_B"></a><h2>B </h2>
 <a href="Top.bochner_integral.Bi_fun.html#Bif_adapted_seq">Bif_adapted_seq</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<br/><br/><a id="module_S"></a><h2>S </h2>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_separated_range_proof">strongly_measurable_separated_range_proof</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <br/><br/><hr/>
 <h1>Library Index</h1>
 <a id="library_B"></a><h2>B </h2>
@@ -7070,6 +7440,10 @@
 <a href="Top.bochner_integral.Bi_fun.html#Bif_fn_plus">Bif_fn_plus</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Bif_zero_fun">Bif_zero_fun</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Bif_integrable_sf_fun">Bif_integrable_sf_fun</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#BInt_norm1_zero_ae_eq">BInt_norm1_zero_ae_eq</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#BInt_ae_eq_norm1_zero">BInt_ae_eq_norm1_zero</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#BInt_ae_eq">BInt_ae_eq</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#BInt_ae_zero">BInt_ae_zero</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#BInt_monotone">BInt_monotone</a> [in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#BInt_ge_0">BInt_ge_0</a> [in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
 <a href="Top.bochner_integral.BInt_R.html#BInt_Rlinearity">BInt_Rlinearity</a> [in <a href="Top.bochner_integral.BInt_R.html">Top.bochner_integral.BInt_R</a>]<br/>
@@ -7204,6 +7578,15 @@
 <a href="Top.bochner_integral.square_bij.html#square_bij_sum">square_bij_sum</a> [in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
 <a href="Top.bochner_integral.square_bij.html#square_bij_inv_corner">square_bij_inv_corner</a> [in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
 <a href="Top.bochner_integral.square_bij.html#square_bij_corner">square_bij_corner</a> [in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_integrable_Bif_correct">strongly_measurable_integrable_Bif_correct</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_separated_range_proof.strongly_measurable_separated_range">strongly_measurable_separated_range_proof.strongly_measurable_separated_range</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_separated_range_proof.u_spec">strongly_measurable_separated_range_proof.u_spec</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_separated_range_proof.u_aux_spec">strongly_measurable_separated_range_proof.u_aux_spec</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_minus">strongly_measurable_minus</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_opp">strongly_measurable_opp</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_scal">strongly_measurable_scal</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_plus">strongly_measurable_plus</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_measurable">strongly_measurable_measurable</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.square_bij.html#sum_n_m_shift">sum_n_m_shift</a> [in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#sum_Rbar_map_sort">sum_Rbar_map_sort</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
 <a href="Top.bochner_integral.Bsf_Lsf.html#sum_Rbar_Permutation">sum_Rbar_Permutation</a> [in <a href="Top.bochner_integral.Bsf_Lsf.html">Top.bochner_integral.Bsf_Lsf</a>]<br/>
@@ -7240,7 +7623,11 @@
 <a href="Top.bochner_integral.simpl_fun.html#which">which</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <br/><br/><hr/>
 <h1>Section Index</h1>
-<a id="section_B"></a><h2>B </h2>
+<a id="section_A"></a><h2>A </h2>
+<a href="Top.bochner_integral.B_spaces.html#ae_eq_prop2">ae_eq_prop2</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
+<a href="Top.bochner_integral.B_spaces.html#ae_eq_prop">ae_eq_prop</a> [in <a href="Top.bochner_integral.B_spaces.html">Top.bochner_integral.B_spaces</a>]<br/>
+<br/><br/><a id="section_B"></a><h2>B </h2>
+<a href="Top.bochner_integral.Bi_fun.html#Bif_characterisation">Bif_characterisation</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Bif_adapted_seq.construction_of_seq">Bif_adapted_seq.construction_of_seq</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Bif_op">Bif_op</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <a href="Top.bochner_integral.Bi_fun.html#Bif_sf">Bif_sf</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
@@ -7297,6 +7684,8 @@
 <a href="Top.bochner_integral.square_bij.html#square_bij_sum">square_bij_sum</a> [in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
 <a href="Top.bochner_integral.square_bij.html#square_bij_prop">square_bij_prop</a> [in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
 <a href="Top.bochner_integral.square_bij.html#square_bij_def">square_bij_def</a> [in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_separated_range_proof.seq_construction">strongly_measurable_separated_range_proof.seq_construction</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_fun">strongly_measurable_fun</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <br/><br/><hr/>
 <h1>Definition Index</h1>
 <a id="definition_B"></a><h2>B </h2>
@@ -7368,6 +7757,10 @@
 <a href="Top.bochner_integral.simpl_fun.html#sf_indic_aux">sf_indic_aux</a> [in <a href="Top.bochner_integral.simpl_fun.html">Top.bochner_integral.simpl_fun</a>]<br/>
 <a href="Top.bochner_integral.square_bij.html#square_bij_inv">square_bij_inv</a> [in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
 <a href="Top.bochner_integral.square_bij.html#square_bij">square_bij</a> [in <a href="Top.bochner_integral.square_bij.html">Top.bochner_integral.square_bij</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_integrable_Bif">strongly_measurable_integrable_Bif</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_separated_range_proof.u">strongly_measurable_separated_range_proof.u</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable_separated_range_proof.u_aux">strongly_measurable_separated_range_proof.u_aux</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
+<a href="Top.bochner_integral.Bi_fun.html#strongly_measurable">strongly_measurable</a> [in <a href="Top.bochner_integral.Bi_fun.html">Top.bochner_integral.Bi_fun</a>]<br/>
 <br/><br/><a id="definition_U"></a><h2>U </h2>
 <a href="Top.bochner_integral.series.html#upper_bounded">upper_bounded</a> [in <a href="Top.bochner_integral.series.html">Top.bochner_integral.series</a>]<br/>
 <a href="Top.bochner_integral.series.html#upper_bounded_by">upper_bounded_by</a> [in <a href="Top.bochner_integral.series.html">Top.bochner_integral.series</a>]<br/>
@@ -7408,7 +7801,7 @@
 <td>Z</td>
 <td>_</td>
 <td><a href="index.html#global_*">other</a></td>
-<td>(2165 entries)</td>
+<td>(2295 entries)</td>
 </tr>
 <tr>
 <td>Notation Index</td>
@@ -7472,7 +7865,7 @@
 <td>Z</td>
 <td>_</td>
 <td><a href="index.html#binder_*">other</a></td>
-<td>(1822 entries)</td>
+<td>(1929 entries)</td>
 </tr>
 <tr>
 <td>Module Index</td>
@@ -7494,7 +7887,7 @@
 <td>P</td>
 <td>Q</td>
 <td>R</td>
-<td>S</td>
+<td><a href="index.html#module_S">S</a></td>
 <td>T</td>
 <td>U</td>
 <td>V</td>
@@ -7504,7 +7897,7 @@
 <td>Z</td>
 <td>_</td>
 <td>other</td>
-<td>(1 entry)</td>
+<td>(2 entries)</td>
 </tr>
 <tr>
 <td>Library Index</td>
@@ -7568,7 +7961,7 @@
 <td>Z</td>
 <td>_</td>
 <td>other</td>
-<td>(168 entries)</td>
+<td>(181 entries)</td>
 </tr>
 <tr>
 <td>Constructor Index</td>
@@ -7636,7 +8029,7 @@
 </tr>
 <tr>
 <td>Section Index</td>
-<td>A</td>
+<td><a href="index.html#section_A">A</a></td>
 <td><a href="index.html#section_B">B</a></td>
 <td><a href="index.html#section_C">C</a></td>
 <td><a href="index.html#section_D">D</a></td>
@@ -7664,7 +8057,7 @@
 <td>Z</td>
 <td>_</td>
 <td>other</td>
-<td>(48 entries)</td>
+<td>(53 entries)</td>
 </tr>
 <tr>
 <td>Definition Index</td>
@@ -7696,7 +8089,7 @@
 <td>Z</td>
 <td>_</td>
 <td>other</td>
-<td>(61 entries)</td>
+<td>(65 entries)</td>
 </tr>
 <tr>
 <td>Record Index</td>

@@ -1820,8 +1820,136 @@ Section strongly_measurable_fun.
         apply strongly_measurable_scal => //.
     Qed.
 
-    (*
-    Lemma strongly_measurable_separated_range :
-    *)
-
 End strongly_measurable_fun.
+
+Arguments strongly_measurable {X E} gen f. 
+
+Module strongly_measurable_separated_range_proof.
+
+    Section seq_construction.
+
+        (* espace de départ *)
+        Context {X : Set}.
+        (* espace d'arrivé *)
+        Context {E : CompleteNormedModule R_AbsRing}.
+        (* Un espace mesuré *)
+        Context {gen : (X -> Prop) -> Prop}.
+        Context {μ : measure gen}.
+        Context {f : X -> E}.
+        Context (Hsm : strongly_measurable gen f).
+
+        Fixpoint u_aux (n : nat) : (E * nat * nat) :=
+            match Hsm with exist s _ =>
+                match n with
+                    | O => 
+                        (val (s O) O, O, O)
+                    | S n' =>
+                        let '(_, term, value) := u_aux n' in
+                        if value =? max_which (s term) then
+                            (val (s (S term)) O, S term, O)
+                        else
+                            (val (s term) (S value), term, S value)
+                end
+            end.
+
+        Definition u : nat -> E := fun n => fst (fst (u_aux n)).
+
+        Lemma u_aux_spec :
+            match Hsm with exist s _ =>
+                ∀ n : nat, ∀ k : nat, k ≤ max_which (s n) ->
+                    ∃ m : nat, u_aux m = (val (s n) k, n, k)
+            end.
+        Proof.
+            case_eq Hsm => s Hs Eqs.
+            induction n; induction k.
+                move => _; exists O.
+                unfold u, u_aux; rewrite Eqs //.
+                move => Hk.
+                assert (k ≤ max_which (s 0%nat)) by lia.
+                move: H => /IHk; case => m Hm.
+                exists (S m) => /=; rewrite Hm Eqs.
+                assert (k ≠ max_which (s 0%nat)) by lia.
+                move: H => /Nat.eqb_neq -> //.
+                move => _.
+                case: (IHn (max_which (s n))).
+                    lia.
+                move => m Hm.
+                exists (S m) => /=; rewrite Hm Eqs.
+                assert (max_which (s n) = max_which (s n)) by easy.
+                move: H => /Nat.eqb_eq -> //.
+                move => Hk.
+                assert (k ≤ max_which (s (S n))) by lia.
+                move: H => /IHk; case => m Hm.
+                exists (S m) => /=; rewrite Hm Eqs.
+                assert (k ≠ max_which (s (S n))) by lia.
+                move: H => /Nat.eqb_neq -> //.
+        Qed.
+
+        Lemma u_spec :
+            match Hsm with exist s _ =>
+                ∀ n : nat, ∀ k : nat, k ≤ max_which (s n) ->
+                    ∃ m : nat, u m = val (s n) k
+            end.
+        Proof.
+            case_eq Hsm => s Hs Eqs.
+            move => n k Hkn.
+            pose H := u_aux_spec; clearbody H; rewrite Eqs in H.
+            case: (H n k Hkn); clear H.
+            move => m Hm.
+            exists m; unfold u.
+            rewrite Hm => //.
+        Qed.
+
+        Lemma strongly_measurable_separated_range :
+            NM_seq_separable_weak u (inRange f).
+        Proof.
+            case_eq Hsm => s Hs Eqs.
+            move => y; case => x <-.
+            move => [ɛ Hɛ].
+            case: ((proj1 (is_lim_seq_epsilon (λ n : nat, s n x) (f x))) (Hs x) ɛ Hɛ) 
+                => N HN.
+            assert (N ≤ N) by lia.
+            move: H => /HN => {}HN /=.
+            unfold fun_sf in HN.
+            assert (which (s N) x ≤ (max_which (s N))) by apply ax_which_max_which.
+            pose u_spec_loc := u_spec; clearbody u_spec_loc; rewrite Eqs in u_spec_loc.
+            case: (u_spec_loc _ _ H); clear H u_spec_loc.
+            move => m Hm; exists m.
+            rewrite Hm; unfold ball_norm => //.
+        Qed.
+        
+    End seq_construction.
+
+End strongly_measurable_separated_range_proof.
+
+Export strongly_measurable_separated_range_proof(strongly_measurable_separated_range).
+
+Section Bif_characterisation.
+
+    (* espace de départ *)
+    Context {X : Set}.
+    (* espace d'arrivé *)
+    Context {E : CompleteNormedModule R_AbsRing}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context {μ : measure gen}.
+
+    Definition strongly_measurable_integrable_Bif {f : X -> E}
+        : strongly_measurable gen f -> is_finite (LInt_p μ (‖f‖)%fn)
+            -> inhabited X -> Bif E μ
+        :=
+        fun Hmeas Hfin ι => Bif_separable_range ι
+            (strongly_measurable_measurable Hmeas)
+            (strongly_measurable_separated_range Hmeas)
+            (Hfin).
+
+    Lemma strongly_measurable_integrable_Bif_correct
+        {f : X -> E} {Hmeas : strongly_measurable gen f}
+        {Hfin : is_finite (LInt_p μ (‖f‖)%fn)} {ι : inhabited X}
+        : ∀ x : X, f x =
+        strongly_measurable_integrable_Bif Hmeas Hfin ι x.
+    Proof.
+        by [].
+    Qed.
+
+End Bif_characterisation.
