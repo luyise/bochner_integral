@@ -42,13 +42,13 @@ Section BInt_def.
     Context {gen : (X -> Prop) -> Prop}.
     Context {μ : measure gen}.
 
-    Definition BInt (bf : Bif E μ) :=
+    Definition BInt {f : X -> E} (bf : Bif μ f) :=
         lim_seq (fun n => BInt_sf μ (seq bf n)).
 
-    Theorem is_lim_seq_BInt (bf : Bif E μ) :
+    Theorem is_lim_seq_BInt {f : X -> E} (bf : Bif μ f) :
         is_lim_seq (fun n => BInt_sf μ (seq bf n)) (BInt bf).
     Proof.
-        case: bf => f s ι isf Hspw Hsl1.
+        case: bf => s ι isf Hspw Hsl1.
         apply NM_Cauchy_seq_lim_seq_correct.
         apply Cauchy_seq_approx with f => //.
     Qed.
@@ -70,16 +70,14 @@ Section BInt_prop.
 
     Open Scope Bif_scope.
 
-    Lemma BInt_ext :
-        ∀ bf bf' : Bif E μ, (∀ x : X, bf x = bf' x) ->
+    Lemma BInt_ext {f f' : X -> E} :
+        ∀ bf : Bif μ f, ∀ bf' : Bif μ f', (∀ x : X, f x = f' x) ->
             BInt bf = BInt bf'.
     Proof.
         move => bf bf' Ext;
-            case_eq bf => f s ι ints Hspw Hsl1 Eqπ;
-            case_eq bf' => f' s' ι' ints' Hs'pw Hs'l1 Eqπ';
+            case_eq bf => s ι ints Hspw Hsl1 Eqπ;
+            case_eq bf' => s' ι' ints' Hs'pw Hs'l1 Eqπ';
             unfold BInt => /=.
-            rewrite Eqπ in Ext; simpl in Ext.
-            rewrite Eqπ' in Ext; simpl in Ext.
         pose I := lim_seq (λ n : nat, BInt_sf μ (s n));
         pose I' := lim_seq (λ n : nat, BInt_sf μ (s' n)).
         pose HI := is_lim_seq_BInt bf;
@@ -202,7 +200,6 @@ Section BInt_prop.
             2, 3 : unfold fun_norm; apply norm_ge_0.
         replace ɛ with (real (Rbar_plus (ɛ*/2) (ɛ*/2))).
         clear H Ineq.
-        unfold "_ - _" in HsN.
         simpl in HsN, Hs'N'.
         rewrite Raxioms.Rplus_0_l in Hs'N'.
         rewrite Raxioms.Rplus_0_l in HsN.
@@ -333,13 +330,13 @@ Section BInt_op.
     Open Scope hy_scope.
     Open Scope Bif_scope.
 
-    Lemma BInt_plus :
-        ∀ (bf : Bif E μ) (bg : Bif E μ),
+    Lemma BInt_plus {f g : X -> E} :
+        ∀ (bf : Bif μ f) (bg : Bif μ g),
             BInt (Bif_plus bf bg) = ((BInt bf) + (BInt bg))%hy.
     Proof.
         move => bf bg;
-        case_eq bf => f sf ι isf Hfpw Hfl1 eqbf;
-        case_eq bg => g sg ι' isg Hgpw Hgl1 eqbg;
+        case_eq bf => sf ι isf Hfpw Hfl1 eqbf;
+        case_eq bg => sg ι' isg Hgpw Hgl1 eqbg;
         rewrite <-eqbf, <-eqbg. 
         unfold BInt.
         apply lim_seq_eq.
@@ -356,12 +353,12 @@ Section BInt_op.
             assumption.
     Qed.
 
-    Lemma BInt_scal :
-        ∀ (bf : Bif E μ), ∀ (a : R_AbsRing),
+    Lemma BInt_scal {f : X -> E} :
+        ∀ (bf : Bif μ f), ∀ (a : R_AbsRing),
             BInt (Bif_scal a bf) = (a ⋅ (BInt bf))%hy.
     Proof.
         move => bf a.
-        case: bf => f sf ι isf Hfpw Hfl1.
+        case: bf => sf ι isf Hfpw Hfl1.
         apply lim_seq_eq.
         apply (lim_seq_ext (fun n : nat => a ⋅ (BInt_sf μ (sf n)))%hy).
             move => n; rewrite BInt_sf_scal_aux => //.
@@ -371,12 +368,12 @@ Section BInt_op.
             assumption.
     Qed.
 
-    Lemma norm_BInt_le :
-        ∀ (bf : Bif E μ),
+    Lemma norm_BInt_le {f : X -> E} :
+        ∀ (bf : Bif μ f),
             ‖ BInt bf ‖%hy <= BInt (‖bf‖)%Bif.
     Proof.
         move => bf.
-        case: bf => f sf ι isf Hfpw Hfl1.
+        case: bf => sf ι isf Hfpw Hfl1.
         suff: (Rbar_le (‖ lim_seq (λ n : nat, BInt_sf μ (sf n)) ‖)%hy (lim_seq (λ n : nat, BInt_sf μ (‖ sf n ‖)%sf)))
             by simpl => //.
         apply is_lim_seq_le with (λ n : nat, ‖ BInt_sf μ (sf n) ‖)%hy (λ n : nat, BInt_sf μ (‖ sf n ‖%sf)).
@@ -405,8 +402,8 @@ Section BInt_linearity.
     Open Scope hy_scope.
     Open Scope Bif_scope.
     
-    Lemma BInt_linearity :
-        ∀ (bf : Bif E μ) (bg : Bif E μ), ∀ a b : R,
+    Lemma BInt_linearity {f g : X -> E} :
+        ∀ (bf : Bif μ f) (bg : Bif μ g), ∀ a b : R,
             BInt (a ⋅ bf + b ⋅ bg)
             = (a ⋅ (BInt bf) + (b ⋅ (BInt bg)))%hy.
     Proof.
@@ -415,8 +412,8 @@ Section BInt_linearity.
         do 2 rewrite BInt_scal => //.
     Qed.
 
-    Lemma BInt_zero :
-        ∀ (bf : Bif E μ),
+    Lemma BInt_zero {f : X -> E} :
+        ∀ (bf : Bif μ f),
             (∀ x : X, bf x = zero) -> BInt bf = zero.
     Proof.
         move => bf Hbf.
@@ -426,12 +423,12 @@ Section BInt_linearity.
         unfold BInt_sf => /=.
         rewrite sum_O.
         rewrite scal_zero_r => //.
-        move => x; rewrite Hbf.
-        rewrite Bif_zero_fun => //.
+        unfold fun_Bif in Hbf.
+        move => x; rewrite Hbf => //.
     Qed.
 
-    Lemma BInt_minus :
-        ∀ bf bg : Bif E μ,
+    Lemma BInt_minus {f g : X -> E} :
+        ∀ bf : Bif μ f, ∀ bg : Bif μ g,
             BInt (bf - bg)%Bif = ((BInt bf) - (BInt bg))%hy.
     Proof.
         move => bf bg.
@@ -439,8 +436,8 @@ Section BInt_linearity.
         rewrite scal_opp_one => //.
     Qed.
 
-    Lemma BInt_opp :
-        ∀ bf : Bif E μ,
+    Lemma BInt_opp {f : X -> E} :
+        ∀ bf : Bif μ f,
             (BInt (- bf)) = (- (BInt bf))%hy.
     Proof.
         move => bf.
@@ -448,3 +445,59 @@ Section BInt_linearity.
     Qed.
 
 End BInt_linearity.
+
+Section BInt_dominated_convergence_proof.
+
+    (* espace de départ *)
+    Context {X : Set}.
+    (* espace d'arrivé *)
+    Context {E : CompleteNormedModule R_AbsRing}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+    Context {μ : measure gen}.
+
+    Context {f : nat -> X -> E}.
+
+    Theorem BInt_dominated_convergence :
+        ∀ bf : ∀ n : nat, Bif μ (f n),
+        ∀ limf : X -> E,
+        (∀ x : X, is_lim_seq (λ n, f n x) (limf x)) ->
+        ∀ g : X -> R,
+        (∀ n : nat, ∀ x : X, ‖ f n x ‖ <= g x) ->
+        (is_finite (LInt_p μ g)) ->
+            { blimf : Bif μ limf 
+                    | is_lim_seq (λ n, BInt (bf n)) (BInt blimf) }.
+    Proof.
+        move => bf limf H_pw g H_dom H_fin.
+        assert (Bif μ limf) as blimf.
+        apply strongly_measurable_integrable_Bif.
+        apply strongly_measurable_lim_seq with f => //.
+        move => n; apply: Bif_strongly_measurable.
+        exact (bf n).
+        apply: Rbar_bounded_is_finite.
+        apply LInt_p_ge_0.
+        1, 6 : exact (ax_notempty (bf O)).
+        move => x; unfold fun_norm; apply norm_ge_0.
+        2 : by [].
+        all : swap 1 2.
+        exact H_fin.
+        apply LInt_p_monotone => x.
+        apply is_lim_seq_le with (fun n => ‖ f n x ‖) (fun _ => g x).
+        move => n; apply H_dom.
+        apply lim_seq_norm => //.
+        apply lim_seq_cte.
+        exists blimf.
+        apply is_lim_seq_epsilon.
+        setoid_rewrite <-BInt_minus.
+        suff: is_lim_seq (fun n => BInt (‖ bf n - blimf ‖)%Bif) 0%R.
+        move => /is_lim_seq_epsilon H.
+        move => ɛ /H; case; clear H => N HN.
+        exists N => n /HN; clear HN => H.
+        apply: RIneq.Rle_lt_trans.
+        unfold norm in H; simpl in H; unfold abs in H; simpl in H.
+        apply norm_BInt_le.
+        move: H => /Raux.Rabs_lt_inv; case => [_ H].
+        unfold minus in H; rewrite opp_zero plus_zero_r in H => //.
+    Admitted.
+
+End BInt_dominated_convergence_proof.

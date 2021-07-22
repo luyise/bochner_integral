@@ -209,8 +209,8 @@ Section BInt_to_LInt_p.
         by [].
     Qed.
 
-    Lemma is_finite_LInt_p_Bif :
-        ∀ bf : Bif R_NormedModule μ,
+    Lemma is_finite_LInt_p_Bif {f : X -> R} :
+        ∀ bf : Bif μ f,
         (∀ x : X, 0 <= bf x) ->
         is_finite (LInt_p μ (λ x : X, bf x)).
     Proof.
@@ -266,13 +266,13 @@ Section BInt_to_LInt_p.
         apply RIneq.Rle_refl.
     Qed.
 
-    Lemma BInt_LInt_p_eq :
-        ∀ bf : Bif R_NormedModule μ,
+    Lemma BInt_LInt_p_eq {f : X -> R} :
+        ∀ bf : Bif μ f,
         (∀ x : X, 0 <= bf x) ->
         BInt bf = LInt_p μ (bf : X -> R).
     Proof.
         move => bf.
-        case_eq bf => f sf ι isf axfpw axfl1 /= Eqf axpos.
+        case_eq bf => sf ι isf axfpw axfl1 /= Eqf axpos.
         apply lim_seq_eq => /=.
         apply is_lim_seq_epsilon.
         move => ɛ Hɛ.
@@ -348,7 +348,7 @@ Section BInt_to_LInt_p.
         move => Hmeas P /measurable_R_equiv_oo/Hmeas//.
         apply measurable_fun_ext with (fun x => bf x).
         move => x; rewrite Eqf //.
-        apply measurable_Bif.
+        apply: measurable_Bif; exact bf.
         apply measurable_fun_charac.
         apply (measurable_fun_sf (sf n) (λ x, x ≠ 0)).
         apply measurable_gen.
@@ -407,7 +407,7 @@ Section BInt_to_LInt_p.
         move => Hmeas P /measurable_R_equiv_oo/Hmeas//.
         apply measurable_fun_ext with (fun x => bf x).
         move => x; rewrite Eqf => //.
-        apply measurable_Bif.
+        apply: measurable_Bif; exact bf.
         suff: (measurable_fun gen open ss).
         move => Hmeas P /measurable_R_equiv_oo/Hmeas//.
         rewrite Eqss.
@@ -487,7 +487,7 @@ Section BInt_to_LInt_p.
         move => Hmeas P /measurable_R_equiv_oo/Hmeas//.
         apply measurable_fun_ext with (fun x => bf x).
         move => x; rewrite Eqf //.
-        apply measurable_Bif.
+        apply: measurable_Bif; exact bf.
         rewrite Eqss => x /=.
         case: (ClassicalDescription.excluded_middle_informative (sf n x ≠ 0)).
         1, 2 : case: (sf_bounded (sf n)) => M HM.

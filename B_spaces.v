@@ -52,7 +52,7 @@ Section ae_eq_prop.
 
     Open Scope Bif_scope.
 
-    Lemma BInt_ae_zero {bf : Bif E μ} :
+    Lemma BInt_ae_zero {f : X -> E} {bf : Bif μ f} :
         ae_eq μ bf (fun _ => zero) ->
             BInt bf = zero.
     Proof.
@@ -128,10 +128,11 @@ Section ae_eq_prop2.
 
     Open Scope Bif_scope.
 
-    Lemma BInt_ae_eq {bf bf' : Bif E μ} :
-        ae_eq μ bf bf' -> BInt bf = BInt bf'.
+    Lemma BInt_ae_eq {f f' : X -> E} :
+        ∀ bf : Bif μ f, ∀ bf' : Bif μ f',
+        ae_eq μ f f' -> BInt bf = BInt bf'.
     Proof.
-        move => H.
+        move => bf bf' H.
         suff: (BInt (bf + (opp one) ⋅ bf') = zero).
         rewrite BInt_plus BInt_scal.
         move => Hzero.
@@ -162,7 +163,7 @@ Section ae_eq_prop2.
         rewrite Hz plus_opp_r => //.
     Qed.
 
-    Lemma BInt_ae_eq_norm1_zero {bf : Bif E μ} :
+    Lemma BInt_ae_eq_norm1_zero {f : X -> E} {bf : Bif μ f} :
         ae_eq μ bf (fun _ => zero) ->
             BInt (‖bf‖) = zero.
     Proof.
@@ -176,7 +177,7 @@ Section ae_eq_prop2.
         assumption.
     Qed.
 
-    Lemma BInt_norm1_zero_ae_eq {bf bf' : Bif E μ} :
+    Lemma BInt_norm1_zero_ae_eq {f f' : X -> E} {bf : Bif μ f} {bf' : Bif μ f'} :
         BInt (‖bf‖) = 0 -> ae_eq μ bf (fun _ => zero).
     Proof.
         pose NZ := (fun x => bf x ≠ zero).
@@ -213,15 +214,17 @@ Section ae_eq_prop2.
         rewrite <-is_finite_LInt_p_Bif in HypLInt_p; swap 1 2.
         move => x; rewrite Bif_fn_norm; apply norm_ge_0.
         simpl => H.
-        assert (@eq Rbar
-        (Finite
-           (real
-              (@LInt_p X gen μ
-                 (fun x : X =>
-                  Finite
-                    (@fn X R_NormedModule gen μ
-                       (@Bif_norm X E gen μ bf) x)))))
-        (Finite (IZR Z0))) as Hstrange.
+        assert  (@eq Rbar
+                (Finite
+                (real
+                (@LInt_p X gen μ
+                (fun x : X =>
+                Finite
+                (@fun_Bif X R_NormedModule gen μ
+                (@fun_norm X R_AbsRing
+                (CompleteNormedModule.NormedModule R_AbsRing E) f)
+                (@Bif_norm X E gen μ f bf) x))))) 
+                (Finite (IZR Z0))) as Hstrange.
         congr Finite => //.
         move: Hstrange => /HypLInt_p GoalStrange.
         clear HypLInt_p.
