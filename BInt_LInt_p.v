@@ -506,8 +506,8 @@ Section BInt_to_LInt_p.
         rewrite Eqss.
         apply measurable_fun_sf.
         
-        rewrite (LInt_p_ext _ _ (λ x : X, (‖ f + (- sf n)%sf ‖)%fn x)).
-        assert (is_finite (LInt_p μ (λ x : X, (‖ f + (- sf n)%sf ‖)%fn x))).
+        rewrite (LInt_p_ext _ _ (λ x : X, (‖ f - sf n ‖)%fn x)).
+        assert (is_finite (LInt_p μ (λ x : X, (‖ f - sf n ‖)%fn x))).
         apply Rbar_bounded_is_finite with 0 ɛ.
         apply LInt_p_ge_0 => //.
         move => x; unfold fun_norm; apply norm_ge_0.
@@ -519,7 +519,7 @@ Section BInt_to_LInt_p.
         unfold abs => /=.
         unfold fun_plus.
         rewrite fun_sf_plus.
-        rewrite fun_sf_scal.
+        unfold fun_scal.
         rewrite scal_opp_one.
         unfold opp => /=.
         unfold plus => /=.

@@ -596,7 +596,7 @@ Notation "a ⋅ g" := (fun_scal a g) (left associativity, at level 45) : fun_sco
 Notation "a ⋅ sf" := (sf_scal_aux a sf) (left associativity, at level 45) : sf_scope.
 Notation "- g" := (fun_scal (opp one) g) : fun_scope.
 Notation "- sg" := (sf_scal_aux (opp one) sg) : sf_scope.
-Notation "f - g" := (fun_plus f (- g)) : fun_scope.
+Notation "f - g" := (fun_plus f (- g))%fn : fun_scope.
 Notation "sf - sg" := (sf_plus_aux sf (- sg)) : sf_scope.
 
 Section simpl_fun_bounded.

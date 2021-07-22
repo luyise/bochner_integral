@@ -168,10 +168,9 @@ Section BInt_prop.
             unfold sum_Rbar_nonneg.non_neg => x /=.
             rewrite fun_sf_norm.
             apply norm_ge_0.
-        assert (∀ x : X, Rbar_le ((‖ s n + (- s' n)%sf ‖)%fn x) (((‖ f - s n ‖) + (‖ f - s' n ‖))%fn x)).
+        assert (∀ x : X, Rbar_le ((‖ s n - s' n ‖)%fn x) (((‖ f - s n ‖) + (‖ f - s' n ‖))%fn x)).
             move => x; simpl.
-            unfold fun_norm, fun_plus.
-            do 2 rewrite fun_sf_scal.
+            unfold fun_norm, fun_plus, fun_scal.
             replace (s n x) with ((s n x) + zero)%hy at 1.
                 2 : rewrite plus_zero_r => //.
             replace zero with (opp (f x) + f x)%hy at 1.
@@ -189,13 +188,13 @@ Section BInt_prop.
             2 : easy.
         rewrite <-Rbar_lt_finite_eq_rlt.
             3 : easy.
-        rewrite (LInt_p_ext _ _ (λ x : X, (‖ s n + (- s' n)%sf ‖)%fn x)).
+        rewrite (LInt_p_ext _ _ (λ x : X, (‖ s n - s' n ‖)%fn x)).
             2 : unfold fun_norm.
             2 : setoid_rewrite fun_sf_norm.
             2 : setoid_rewrite fun_sf_plus => //.
         apply (Rbar_le_lt_trans _ _ (Finite ɛ) Ineq).
         unfold fun_plus at 1.
-        rewrite (LInt_p_ext _ _ (λ x : X, Rbar_plus ((‖ f + (- s n)%sf ‖)%fn x) ((‖ f + (- s' n)%sf ‖)%fn x)%hy)).
+        rewrite (LInt_p_ext _ _ (λ x : X, Rbar_plus ((‖ f - s n ‖)%fn x) ((‖ f - s' n ‖)%fn x)%hy)).
             2 : by [].
         rewrite LInt_p_plus.
             2 : exact ι.
@@ -207,14 +206,18 @@ Section BInt_prop.
         simpl in HsN, Hs'N'.
         rewrite Raxioms.Rplus_0_l in Hs'N'.
         rewrite Raxioms.Rplus_0_l in HsN.
-        apply (Rbar_plus_lt_compat (LInt_p μ (λ x : X, (‖ f + (- s n)%sf ‖)%fn x)) (ɛ*/2) 
-                                    (LInt_p μ (λ x : X, (‖ f + (- s' n)%sf ‖)%fn x)) (ɛ*/2)).
+        apply (Rbar_plus_lt_compat (LInt_p μ (λ x : X, (‖ f - s n ‖)%fn x)) (ɛ*/2) 
+                                    (LInt_p μ (λ x : X, (‖ f - s' n ‖)%fn x)) (ɛ*/2)).
             apply HsN; apply Max.max_lub_l with N' => //.
-            rewrite (LInt_p_ext _ _ (λ x : X, (‖ f' + (- s' n)%sf ‖)%fn x)).
+            rewrite (LInt_p_ext _ _ (λ x : X, (‖ f' - s' n ‖)%fn x)).
             apply Hs'N'; apply Max.max_lub_r with N => //.
             move => x; unfold fun_norm, fun_plus.
             rewrite Ext => //.
             simpl; rewrite Rlimit.eps2 => //.
+        all : swap 1 3.
+        move => x; rewrite fun_sf_scal.
+            rewrite scal_opp_one; unfold fun_plus, fun_scal.
+            rewrite scal_opp_one => //.
         all : swap 1 3.
         pose Lint_p_Bint_sf :=
             @Finite_BInt_sf_LInt_SFp _ _ μ (‖ s n - s' n ‖)%sf.
@@ -225,15 +228,15 @@ Section BInt_prop.
             2 : apply norm_ge_0.
             rewrite <-Lint_p_Bint_sf => //.
         
-        all : swap 1 2.
+        all : swap 1 3.
         assert
-            (∀ x : X, is_lim_seq (fun k => (‖ s k + (- s' n)%sf ‖)%fn x) ((‖ f + (- s' n)%sf ‖)%fn x)) as Limseqnorm.
+            (∀ x : X, is_lim_seq (fun k => (‖ s k - s' n ‖)%fn x) ((‖ f - s' n ‖)%fn x)) as Limseqnorm.
             move => x; unfold fun_norm.
             apply lim_seq_norm.
             apply lim_seq_plus.
             apply Hspw.
             apply lim_seq_cte.
-        apply measurable_fun_ext with (fun x : X => (Lim_seq' (λ k : nat, (‖ s k + (- s' n)%sf ‖)%fn x))).
+        apply measurable_fun_ext with (fun x : X => (Lim_seq' (λ k : nat, (‖ s k - s' n ‖)%fn x))).
             move => x; rewrite <-Lim_seq_seq'.
             apply is_lim_seq_unique.
             unfold Lim_seq.is_lim_seq.
@@ -244,23 +247,22 @@ Section BInt_prop.
         move => k; apply measurable_fun_R_Rbar.
         
         apply: (measurable_fun_composition _ open).
-        apply measurable_fun_ext with ((s k + (- s' n)%sf))%sf.
+        apply measurable_fun_ext with (s k - s' n)%sf.
             move => x.
-            rewrite fun_sf_plus => //.
+            rewrite fun_sf_plus fun_sf_scal => //.
         apply (measurable_fun_sf (s k - s' n)%sf).
         move => P; move /sigma_algebra_R_Rbar_new.measurable_R_equiv_oo.
         apply measurable_fun_continuous.
         apply filterlim_norm.
 
-        all : swap 1 2.
         assert
-            (∀ x : X, is_lim_seq (fun k => (‖ s k + (- s n)%sf ‖)%fn x) ((‖ f + (- s n)%sf ‖)%fn x)) as Limseqnorm.
+            (∀ x : X, is_lim_seq (fun k => (‖ s k - s n ‖)%fn x) ((‖ f - s n ‖)%fn x)) as Limseqnorm.
             move => x; unfold fun_norm.
             apply lim_seq_norm.
             apply lim_seq_plus.
             apply Hspw.
             apply lim_seq_cte.
-        apply measurable_fun_ext with (fun x : X => (Lim_seq' (λ k : nat, (‖ s k + (- s n)%sf ‖)%fn x))).
+        apply measurable_fun_ext with (fun x : X => (Lim_seq' (λ k : nat, (‖ s k - s n ‖)%fn x))).
             move => x; rewrite <-Lim_seq_seq'.
             apply is_lim_seq_unique.
             unfold Lim_seq.is_lim_seq.
@@ -271,9 +273,9 @@ Section BInt_prop.
         move => k; apply measurable_fun_R_Rbar.
         
         apply: (measurable_fun_composition _ open).
-        apply measurable_fun_ext with ((s k + (- s n)%sf))%sf.
+        apply measurable_fun_ext with (s k - s n)%sf.
             move => x.
-            rewrite fun_sf_plus => //.
+            rewrite fun_sf_plus fun_sf_scal => //.
         apply (measurable_fun_sf (s k - s n)%sf).
         move => P; move /sigma_algebra_R_Rbar_new.measurable_R_equiv_oo.
         apply measurable_fun_continuous.
