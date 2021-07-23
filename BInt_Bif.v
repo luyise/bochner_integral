@@ -5,6 +5,7 @@ From Coq Require Import
 
     Rdefinitions
     Rbasic_fun
+    Lra
 .
 
 From Coquelicot Require Import
@@ -30,6 +31,7 @@ Require Import
     simple_fun
     measurable_fun
     sigma_algebra
+    sigma_algebra_R_Rbar_new
 .
 
 Section BInt_def.
@@ -418,7 +420,7 @@ Section BInt_linearity.
     Proof.
         move => bf Hbf.
         rewrite (BInt_ext bf (Bif_zero (ax_notempty bf))).
-        unfold Bif_zero. 
+        unfold Bif_zero.
         rewrite <-BInt_BInt_sf.
         unfold BInt_sf => /=.
         rewrite sum_O.
@@ -445,59 +447,3 @@ Section BInt_linearity.
     Qed.
 
 End BInt_linearity.
-
-Section BInt_dominated_convergence_proof.
-
-    (* espace de départ *)
-    Context {X : Set}.
-    (* espace d'arrivé *)
-    Context {E : CompleteNormedModule R_AbsRing}.
-    (* Un espace mesuré *)
-    Context {gen : (X -> Prop) -> Prop}.
-    Context {μ : measure gen}.
-
-    Context {f : nat -> X -> E}.
-
-    Theorem BInt_dominated_convergence :
-        ∀ bf : ∀ n : nat, Bif μ (f n),
-        ∀ limf : X -> E,
-        (∀ x : X, is_lim_seq (λ n, f n x) (limf x)) ->
-        ∀ g : X -> R,
-        (∀ n : nat, ∀ x : X, ‖ f n x ‖ <= g x) ->
-        (is_finite (LInt_p μ g)) ->
-            { blimf : Bif μ limf 
-                    | is_lim_seq (λ n, BInt (bf n)) (BInt blimf) }.
-    Proof.
-        move => bf limf H_pw g H_dom H_fin.
-        assert (Bif μ limf) as blimf.
-        apply strongly_measurable_integrable_Bif.
-        apply strongly_measurable_lim_seq with f => //.
-        move => n; apply: Bif_strongly_measurable.
-        exact (bf n).
-        apply: Rbar_bounded_is_finite.
-        apply LInt_p_ge_0.
-        1, 6 : exact (ax_notempty (bf O)).
-        move => x; unfold fun_norm; apply norm_ge_0.
-        2 : by [].
-        all : swap 1 2.
-        exact H_fin.
-        apply LInt_p_monotone => x.
-        apply is_lim_seq_le with (fun n => ‖ f n x ‖) (fun _ => g x).
-        move => n; apply H_dom.
-        apply lim_seq_norm => //.
-        apply lim_seq_cte.
-        exists blimf.
-        apply is_lim_seq_epsilon.
-        setoid_rewrite <-BInt_minus.
-        suff: is_lim_seq (fun n => BInt (‖ bf n - blimf ‖)%Bif) 0%R.
-        move => /is_lim_seq_epsilon H.
-        move => ɛ /H; case; clear H => N HN.
-        exists N => n /HN; clear HN => H.
-        apply: RIneq.Rle_lt_trans.
-        unfold norm in H; simpl in H; unfold abs in H; simpl in H.
-        apply norm_BInt_le.
-        move: H => /Raux.Rabs_lt_inv; case => [_ H].
-        unfold minus in H; rewrite opp_zero plus_zero_r in H => //.
-    Admitted.
-
-End BInt_dominated_convergence_proof.
