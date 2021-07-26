@@ -37,6 +37,7 @@ Require Import
     sigma_algebra
     sigma_algebra_R_Rbar_new
     sum_Rbar_nonneg
+    R_compl
 .
 
 Lemma LInt_p_dominated_convergence' {E : Set} {gen : (E -> Prop) -> Prop} {mu : measure gen} :
@@ -2006,3 +2007,38 @@ Section Bif_characterisation.
     Qed.
 
 End Bif_characterisation.
+
+Section strongly_measurable_prop.
+
+    Context {X : Set}.
+    Context {gen : (X -> Prop) -> Prop}.
+
+    Lemma strongly_measurable_norm {E : CompleteNormedModule R_AbsRing} (f : X -> E) :
+        strongly_measurable gen f -> strongly_measurable gen (‖ f ‖)%fn.
+    Proof.
+        move => [s Hs].
+        exists (fun n => ‖ s n ‖)%sf.
+        move => x.
+        apply lim_seq_ext with (fun n => ‖ (s n x) ‖)%hy.
+            move => n; rewrite fun_sf_norm //.
+        apply: lim_seq_norm => //.
+    Qed.
+
+    Lemma strongly_measurable_power {f : X -> R_NormedModule} (p : RIneq.posreal) : (strongly_measurable gen f) -> (∀ x, 0 <= f x)%R -> strongly_measurable gen (f ^ p)%fn.
+    Proof.
+        case => sf Hfpw f_pos.
+        exists (fun n : nat => ‖sf n‖ ^ p)%sf.
+            move => x; unfold fun_norm.
+            replace ((f ^ p)%fn x) with ((‖f‖ ^ p)%fn x).
+            apply (lim_seq_ext (fun n => Rpow (‖ sf n x ‖) p.(RIneq.pos))).
+            move => n; rewrite fun_sf_power fun_sf_norm => //.
+            apply: lim_seq_power => //.
+            move => n; apply norm_ge_0.
+            apply lim_seq_norm, Hfpw.
+            unfold fun_power, fun_norm.
+            case: p => p Hp /=.
+            congr Rpow.
+            apply Rabs_pos_eq => //.
+    Qed.
+
+End strongly_measurable_prop.

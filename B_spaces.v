@@ -8,6 +8,8 @@ From Coq Require Import
     Rdefinitions
     Rbasic_fun
     Raxioms
+    Rpower
+    RIneq
 .
 
 From Coquelicot Require Import
@@ -239,3 +241,39 @@ Section ae_eq_prop2.
     Qed.
 
 End ae_eq_prop2.
+
+Section B_space_def.
+
+    (* espace de départ *)
+    Context {X : Set}.
+    (* espace d'arrivé *)
+    Context {E : CompleteNormedModule R_AbsRing}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+
+    Definition in_B_space (μ : measure gen) (p : posreal) (f : X -> E) :=
+        prod (strongly_measurable gen f) (is_finite (LInt_p μ (‖f‖ ^ p)%fn) ∧ inhabited X).
+
+    Lemma Bif_norm_power (μ : measure gen) (p : posreal) (f : X -> E)
+        : in_B_space μ p f -> Bif μ (‖f‖^p)%fn.
+    Proof.
+        move => Hf.
+        apply: strongly_measurable_integrable_Bif.
+        assert (∀ x : X, 0 <= (‖ f ‖)%fn x) as normf_pos.
+        move => x; unfold fun_norm; apply norm_ge_0.
+        case: Hf => /strongly_measurable_norm/(strongly_measurable_power p).
+        move => Hf _; apply Hf => //.
+        case: Hf => _ [Hf _].
+        rewrite (LInt_p_ext _ _ (λ x : X, ((‖ f ‖) ^ p)%fn x)) => //.
+        move => x; unfold fun_norm, fun_power.
+        unfold norm at 1 => /=.
+        unfold abs at 1 => /=.
+        rewrite Rabs_pos_eq => //.
+        apply R_compl.Rpow_pos', norm_ge_0.
+        case: Hf => [_ [ι _]] //.
+    Qed.
+
+    Definition semi_norm_p (μ : measure gen) (p : posreal) {f : X -> E} (inBf : in_B_space μ p f) :=
+        BInt (Bif_norm_power μ p f inBf).
+
+End B_space_def.

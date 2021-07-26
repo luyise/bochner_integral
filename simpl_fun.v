@@ -9,6 +9,8 @@ From Coq Require Import
     ClassicalDescription
 
     Rdefinitions
+    Rpower
+    RIneq
 .
 
 From Coquelicot Require Import
@@ -23,6 +25,7 @@ Require Import
     Rbar_compl
     measurable_fun
     LInt_p
+    R_compl
 .
 
 Require Import
@@ -293,9 +296,57 @@ End simpl_fun_norm.
 Notation "‖ f ‖" := (fun_norm f) (at level 100) : fun_scope.
 Notation "‖ sf ‖" := (sf_norm_aux sf) (at level 100) : sf_scope.
 
-Open Scope nat_scope.
+Section simpl_fun_power.
 
-Close Scope nat_scope.
+    (* espace de départ *)
+    Context  {X : Set}.
+    (* Un espace mesuré *)
+    Context {gen : (X -> Prop) -> Prop}.
+
+    Definition fun_power (f : X -> R_NormedModule) (p : posreal) :=
+        (fun x => Rpow (f x) p.(pos)).
+
+    Definition sf_power_aux (sf : simpl_fun R_NormedModule gen) (p : RIneq.posreal) : simpl_fun R_NormedModule gen.
+    case: sf => which val max_which ax1 ax2 ax3.
+    pose nval :=
+        fun n => Rpow (val n) p.(pos).
+    apply (mk_simpl_fun which nval max_which).
+        (* ax_val_max_which *)
+        unfold nval; rewrite ax1.
+        rewrite Rpow_0' => //.
+        case p => //.
+        (* ax_which_max_which *)
+        exact ax2.
+        (* ax_measurable *)
+        exact ax3.
+    Defined.
+
+    Notation "sf ^ p" := (sf_power_aux sf p).
+
+    Lemma fun_sf_power :
+        ∀ sf : simpl_fun R_NormedModule gen, ∀ p : RIneq.posreal,
+            (∀ x : X, fun_sf (sf ^ p) x = (Rpow (fun_sf sf x) p)).
+    Proof.
+        move => sf.
+        case_eq sf => wf vf maxf axf1 axf2 axf3 Eqf; rewrite <-Eqf => /=.
+        unfold fun_sf.
+        rewrite Eqf => //.
+    Qed.
+
+    Context {μ : measure gen}.
+
+    Lemma integrable_sf_power {sf : simpl_fun R_NormedModule gen} (p : RIneq.posreal) (isf : integrable_sf μ sf) :
+        integrable_sf μ (sf ^ p).
+    Proof.
+        unfold integrable_sf in *.
+        case_eq sf => wf vf mawf axf1 axf2 axf3 Eqf => /=.
+        rewrite Eqf in isf; simpl in isf => //.
+    Qed.
+
+End simpl_fun_power.
+
+Notation "f ^ p" := (fun_power f p) : fun_scope.
+Notation "sf '^' p" := (sf_power_aux sf p) : sf_scope.
 
 Section simpl_fun_plus.
 

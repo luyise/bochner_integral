@@ -4,12 +4,14 @@ From Coq Require Import
 
     Rdefinitions
     RIneq
+    Rbasic_fun
     Lia
     Lra
 .
 
 From Coquelicot Require Import
     Hierarchy
+    Rbar
 .
 
 Require Import
@@ -18,6 +20,7 @@ Require Import
     sigma_algebra
     measurable_fun
     series
+    R_compl
 .
 
 Open Scope nat_scope.
@@ -210,12 +213,10 @@ End NM_Cauchy_lim_seq_def.
 
 Section NM_lim_seq_prop.
 
-    Context {A : AbsRing}.
-    Context {E : NormedModule A}.
     Open Scope hy_scope.
     Open Scope fun_scope.
 
-    Lemma is_lim_seq_epsilon :
+    Lemma is_lim_seq_epsilon {A : AbsRing} {E : NormedModule A} :
         ∀ u : nat -> E, ∀ l : E,
             is_lim_seq u l <-> 
             (∀ ɛ : R, 0 < ɛ -> ∃ N : nat, ∀ n : nat, N ≤ n -> (‖ minus (u n) l ‖%hy < ɛ)%R).
@@ -247,6 +248,9 @@ Section NM_lim_seq_prop.
         case: (Hloc ɛ Hɛ) => N HN.
         exists N => n; move => /HN/Hloc'//.
     Qed.
+
+    Context {A : AbsRing}.
+    Context {E : NormedModule A}.
 
     Lemma lim_seq_plus :
         ∀ u v : nat -> E, ∀ lu lv : E,
@@ -341,6 +345,86 @@ Section NM_lim_seq_prop.
     Proof.
         move => u Hu.
         apply filterlim_norm_zero => //.
+    Qed.
+
+    Lemma lim_seq_power :
+        ∀ p : posreal, ∀ u : nat -> R, (∀ n : nat, 0 <= u n) -> ∀ l : R,
+        is_lim_seq u l -> is_lim_seq (u ^ p) (Rpow l p).
+    Proof.
+        move => p u u_pos l Hu.
+        unfold fun_power, Rpow.
+        assert (0 <= l) as l_pos.
+            assert (Lim_seq.is_lim_seq u (Rbar.Finite l)) as Hu' by easy.
+            suff: Rbar.Rbar_le (Rbar.Finite 0) (Rbar.Finite l).
+            simpl => //.
+            apply Lim_seq.is_lim_seq_le with (fun _ => 0) u.
+            assumption.
+            apply lim_seq_cte.
+            assumption.
+        case: (Req_EM_T l 0); swap 1 2.
+        move => H.
+        suff: (Lim_seq.is_lim_seq (λ x : nat,
+        match Req_EM_T (u x) 0 with | left _ => 0 | right _ => Rtrigo_def.exp (p * Rpower.ln (u x)) end)
+        (Rbar.Finite (Rtrigo_def.exp (p * Rpower.ln l)))).
+        easy.
+        apply Lim_seq.is_lim_seq_ext_loc with (fun n => Rtrigo_def.exp (p * Rpower.ln (u n))).
+        assert (0 < l) as l_stpos by lra.
+        pose sigl := {| RIneq.pos := l; RIneq.cond_pos := l_stpos |}.
+        move: Hu => /is_lim_seq_epsilon Hu.
+        case: (Hu sigl) => //.
+        move => N HN; exists N => n /HN.
+        unfold norm => /=; unfold abs => /=.
+        unfold minus, plus, opp => /=/Rcomplements.Rabs_lt_between'.
+        move => [Hul _]; rewrite Rminus_eq_0 in Hul.
+        case: (Req_EM_T (u n) 0); lra.
+        apply: filterlim_comp.
+        2 : apply: ElemFct.continuous_exp.
+        suff: (Lim_seq.is_lim_seq (λ x : nat, (p * Rpower.ln (u x))%R) (Rbar_mult p (Rpower.ln l))%R).
+        easy.
+        apply Lim_seq.is_lim_seq_scal_l.
+        apply: filterlim_comp.
+        exact Hu.
+        apply ElemFct.continuous_ln.
+        lra.
+
+        move => Eql0; rewrite Eql0 in Hu.
+        apply is_lim_seq_epsilon => ɛ Hɛ.
+        move: ElemFct.is_lim_exp_m.
+        unfold Continuity.is_lim, filterlim, filter_le, filtermap,
+            Rbar_locally, Rbar_locally', locally => Hexp.
+        move: ElemFct.is_lim_ln_0.
+        unfold Continuity.is_lim, filterlim, filter_le, filtermap,
+            Rbar_locally, Rbar_locally', at_right, within, locally => Hln.
+            assert ((∃ eps : posreal, ∀ y : R_UniformSpace, ball 0 eps y → ball 0 ɛ y)) as Hballɛ.
+            exists (RIneq.mkposreal ɛ Hɛ); easy.
+            case: (Hexp _ Hballɛ) => M HM; clear Hballɛ.
+            assert (∃ M' : R, ∀ x : R, x < M' → x < M*/p) as HMloc.
+            exists (M*/p) => //.
+            case: (Hln _ HMloc) => sigη Hη; clear HMloc.
+        unfold is_lim_seq, filterlim, eventually, filter_le, filtermap, locally in Hu.
+        assert (∃ eps : posreal, ∀ y : R_NormedModule, ball 0 eps y → ball 0 sigη y) as Hballη.
+        exists sigη => //.
+        case: (Hu _ Hballη) => N HN; clear Hballη.
+        exists N => n /HN/Hη Hun.
+        case: (Req_EM_T (u n) 0).
+        move => _; rewrite minus_eq_zero.
+        rewrite norm_zero //.
+        move => Nequn0.
+        assert (Rpower.ln (u n) < M * / p).
+        apply Hun; pose Hun' := u_pos n; lra.
+        assert (p * Rpower.ln (u n) < M).
+        replace M with (p.(RIneq.pos) * (M * /p.(RIneq.pos))).
+        all : swap 1 2.
+        setoid_rewrite Rmult_comm.
+        rewrite Rmult_assoc.
+        rewrite Raxioms.Rinv_l.
+        rewrite Rmult_1_r => //.
+        case p => p' Hp' /=; lra.
+        unfold mult => /=.
+        apply Rmult_lt_compat_l.
+        case p => p' Hp' /=; lra.
+        assumption.
+        clear H; move: H0 => /HM//.
     Qed.
 
     Lemma lim_seq_bounded :
