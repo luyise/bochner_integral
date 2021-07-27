@@ -1,3 +1,19 @@
+(**
+This file is part of the Elfic library
+
+Copyright (C) Boldo, Clément, Leclerc
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 3 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+COPYING file for more details.
+*)
+
 From Coq Require Import 
     ssreflect
     ssrsearch
@@ -275,5 +291,23 @@ Section B_space_def.
 
     Definition semi_norm_p (μ : measure gen) (p : posreal) {f : X -> E} (inBf : in_B_space μ p f) :=
         BInt (Bif_norm_power μ p f inBf).
+
+    (*
+    ln concave.
+    x×y ≤ x^p/p + y^q/q.
+    ‖∫fg‖ ≤ ‖∫f^p‖^(1/p)*‖∫g^q‖^(1/q)
+    ‖f+g‖ₚ ≤ ‖f‖ₚ + ‖g‖ₚ
+
+    Record mixin_of (K : AbsRing) (V : NormedModuleAux K) := Mixin {
+        norm : V → R ;
+        norm_factor : R ;
+        ax1 : ∀ (x y : V), norm (plus x y) ≤ norm x + norm y ;
+        ax2 : ∀ (l : K) (x : V), norm (scal l x) ≤ abs l × norm x ;
+        ax3 : ∀ (x y : V) (eps : R), norm (minus y x) < eps → ball x eps y ;
+        ax4 : ∀ (x y : V) (eps : posreal), ball x eps y → norm (minus y x) < norm_factor × eps ;
+        ax5 : ∀ x : V, norm x = 0 → x = zero
+    }.
+
+    *)
 
 End B_space_def.
